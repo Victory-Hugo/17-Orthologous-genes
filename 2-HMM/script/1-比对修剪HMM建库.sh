@@ -1,8 +1,8 @@
 #!/bin/bash
 
-INPUT_FASTA="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-HMM/data/lolD_merge.faa"
+INPUT_FASTA="/mnt/f/14_Lol蛋白/data/lolF/lolF.aln.fasta"
 ALN_FASTA="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-HMM/data/lolD.aln.faa"
-OUTPUT_HMM="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-HMM/data/LolD.hmm"
+OUTPUT_HMM="/mnt/f/14_Lol蛋白/data/lolF/LolF.hmm"
 
 
 
