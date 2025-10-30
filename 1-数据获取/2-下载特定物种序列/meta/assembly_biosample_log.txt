@@ -1,0 +1,9 @@
+# Assembly->BioSample Download Log - Created on Thu Oct 30 12:03:15 CST 2025
+# Format: TIMESTAMP | INPUT_ID | STATUS | STANDARD_ID | BIOSAMPLE_ID | XML_FILE | NOTES
+# STATUS: SUCCESS/FAILED/SKIPPED
+
+2025-10-30 12:03:26 | GCF_000772165.1 | SUCCESS | GCF_000772165.1 | SAMN03010507 | /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-数据获取/2-下载特定物种序列/meta/SAMN03010507.xml | Completed successfully
+2025-10-30 12:03:26 | GCF_000772125.1 | SUCCESS | GCF_000772125.1 | SAMN03010508 | /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-数据获取/2-下载特定物种序列/meta/SAMN03010508.xml | Completed successfully
+2025-10-30 12:03:26 | GCF_000772205.1 | SUCCESS | GCF_000772205.1 | SAMN03009557 | /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-数据获取/2-下载特定物种序列/meta/SAMN03009557.xml | Completed successfully
+2025-10-30 12:03:26 | GCA_000009705.1 | SUCCESS | GCF_000009705.1 | SAMD00061094 | /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-数据获取/2-下载特定物种序列/meta/SAMD00061094.xml | Completed successfully
+2025-10-30 12:03:26 | GCF_000009705.1 | SUCCESS | GCF_000009705.1 | SAMD00061094 | /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-数据获取/2-下载特定物种序列/meta/SAMD00061094.xml | Completed successfully

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE BioSampleSet>
+<BioSampleSet>
+  <BioSample last_update="2020-04-13T21:03:04.835" publication_date="2016-09-27T00:00:00.000" access="public" submission_date="2016-09-28T01:02:45.010" id="5831897" accession="SAMD00061094">
+    <Ids>
+      <Id db="BioSample" is_primary="1">SAMD00061094</Id>
+    </Ids>
+    <Description>
+      <Title>Generic sample from Nostoc sp. PCC 7120</Title>
+      <Organism taxonomy_id="103690" taxonomy_name="Nostoc sp. PCC 7120 = FACHB-418">
+        <OrganismName>Nostoc sp. PCC 7120 = FACHB-418</OrganismName>
+      </Organism>
+    </Description>
+    <Owner>
+      <Name>DDBJ</Name>
+    </Owner>
+    <Models>
+      <Model>Generic</Model>
+    </Models>
+    <Package display_name="Generic">Generic.1.0</Package>
+    <Attributes>
+      <Attribute attribute_name="sample_name" harmonized_name="sample_name" display_name="sample name">BA000019-BA000020.AP003602-AP003606</Attribute>
+      <Attribute attribute_name="strain" harmonized_name="strain" display_name="strain">PCC 7120</Attribute>
+    </Attributes>
+    <Links>
+      <Link type="entrez" target="bioproject" label="PRJNA244">244</Link>
+    </Links>
+    <Status status="live" when="2016-09-28T01:02:45.011"/>
+  </BioSample>
+</BioSampleSet>

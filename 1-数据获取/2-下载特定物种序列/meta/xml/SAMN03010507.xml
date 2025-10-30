@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE BioSampleSet>
+<BioSampleSet>
+  <BioSample access="public" publication_date="2014-08-27T21:49:26.700" last_update="2014-08-27T21:49:26.700" submission_date="2014-08-27T21:49:26.700" id="3010507" accession="SAMN03010507">
+    <Ids>
+      <Id db="BioSample" is_primary="1">SAMN03010507</Id>
+      <Id db_label="Sample name">Bacillus subtilis ATCC 19217</Id>
+    </Ids>
+    <Description>
+      <Title>MIGS Cultured Bacterial/Archaeal sample from Bacillus subtilis</Title>
+      <Organism taxonomy_id="1423" taxonomy_name="Bacillus subtilis">
+        <OrganismName>Bacillus subtilis</OrganismName>
+      </Organism>
+      <Comment>
+        <Paragraph>Keywords: GSC:MIxS;MIGS:6.0</Paragraph>
+      </Comment>
+    </Description>
+    <Owner>
+      <Name>Jiangxi Normal University</Name>
+      <Contacts>
+        <Contact>
+          <Name>
+            <First>Yang</First>
+            <Last>Huilin</Last>
+          </Name>
+        </Contact>
+      </Contacts>
+    </Owner>
+    <Models>
+      <Model>MIGS.ba</Model>
+    </Models>
+    <Package display_name="MIGS: cultured bacteria/archaea; version 6.0">MIGS.ba.6.0</Package>
+    <Attributes>
+      <Attribute attribute_name="strain" harmonized_name="strain" display_name="strain">ATCC 19217</Attribute>
+      <Attribute attribute_name="collection_date" harmonized_name="collection_date" display_name="collection date">missing</Attribute>
+      <Attribute attribute_name="geo_loc_name" harmonized_name="geo_loc_name" display_name="geographic location">missing</Attribute>
+      <Attribute attribute_name="isolation_source" harmonized_name="isolation_source" display_name="isolation source">ATCC</Attribute>
+      <Attribute attribute_name="env_biome" harmonized_name="env_broad_scale" display_name="broad-scale environmental context">missing</Attribute>
+      <Attribute attribute_name="lat_lon" harmonized_name="lat_lon" display_name="latitude and longitude">missing</Attribute>
+      <Attribute attribute_name="env_feature" harmonized_name="env_local_scale" display_name="local-scale environmental context">missing</Attribute>
+      <Attribute attribute_name="env_material" harmonized_name="env_medium" display_name="environmental medium">missing</Attribute>
+      <Attribute attribute_name="isol_growth_condt" harmonized_name="isol_growth_condt" display_name="isolation and growth condition">LB</Attribute>
+      <Attribute attribute_name="num_replicons" harmonized_name="num_replicons" display_name="number of replicons">1</Attribute>
+      <Attribute attribute_name="ref_biomaterial" harmonized_name="ref_biomaterial" display_name="reference for biomaterial">bacillus subtilis 168</Attribute>
+    </Attributes>
+    <Status when="2014-08-27T21:49:26.700" status="live"/>
+  </BioSample>
+</BioSampleSet>

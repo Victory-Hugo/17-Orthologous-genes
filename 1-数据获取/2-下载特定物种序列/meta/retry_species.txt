@@ -1,0 +1,2 @@
+Bacillussubtilis(firmicutes)
+Nostocsp.PCC7120=FACHB-418(cyanobacteria)

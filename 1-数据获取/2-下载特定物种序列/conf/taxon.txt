@@ -1,0 +1,21 @@
+Rickettsia prowazekii
+Caulobacter crescentus
+Rhizobium leguminosarum
+Sinorhizobium meliloti
+Paracoccus denitrificans
+Neisseria meningitidis
+Burkholderia cenocepacia
+Cupriavidus necator
+Comamonas testosteroni
+Escherichia coli K-12 MG1655
+Pseudomonas aeruginosa
+Vibrio cholerae
+Salmonella enterica
+Synechocystis sp. PCC 6803
+Prochlorococcus marinus
+Anabaena sp. PCC 7120
+Bacillus subtilis
+Staphylococcus aureus
+Clostridium difficile
+Bacteroides fragilis
+Chlamydia trachomatis

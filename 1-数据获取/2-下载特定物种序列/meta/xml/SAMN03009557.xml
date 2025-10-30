@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE BioSampleSet>
+<BioSampleSet>
+  <BioSample access="public" publication_date="2014-08-27T00:00:00.000" last_update="2021-02-28T02:26:14.195" submission_date="2014-08-27T03:43:41.166" id="3009557" accession="SAMN03009557">
+    <Ids>
+      <Id db="BioSample" is_primary="1">SAMN03009557</Id>
+      <Id db_label="Sample name">Bs916</Id>
+    </Ids>
+    <Description>
+      <Title>MIGS Cultured Bacterial/Archaeal sample from Bacillus subtilis</Title>
+      <Organism taxonomy_id="1423" taxonomy_name="Bacillus subtilis">
+        <OrganismName>Bacillus subtilis</OrganismName>
+      </Organism>
+      <Comment>
+        <Paragraph>Bacillus cyclic lipopeptides (LPs) have well-studied for their antagonistic activities. Recently researches showed that these LPs also contributed to typical phenotypic features of Bacillus strains including hemolytic activity, swarming motility, biofilm formation and colony morphology. B. subtilis 916 not only co-produce three well-known surfactins, bacillomycin L and fengycins, but also produce a new LPs Locillomycins. The genome of B. subtilis 916 contained four NRPSs gene clusters srf, bac, fen and loc which are responsibile for surfactins, bacillomycin L, fengycins and locillomycins biosynthesis respectively. While genome analysis and the chemical structures of the four LPs indicated that the biosynthesis of surfactins, bacillomycin L and fengycins obeyed the co-linear mechanism, the biosynthesis of the locillomycins exhibited a rare non-linear assembly line. Furthermore, B. subtilis 916 derivatives which lost productions of one, two or three LPs were constructed and used for the phenotypic features study. We demonstrated that bacillomycin L and fengycins contributed mainly to the antifungal activity. While surfactins has weak antifungal activity in vitro, the strain mutated in srfA-A decreased antifungal activity significantly due to impairing productions of fengycins and bacillomycin L. Except to fengycins, the deficiency productions of any other LPs resulted in the change of colony morphology. While the fengycins and locillomycins had little influence on hemolytic activity, swarming motility and biofilm formation, surfactins and bacillomycin L play very important roles in these phenotypic features. In conclusion, it is unusual for B. subtilis 916 to coproduce four LPs and the four LPs contributed the phenotypic features of B. subtilis 916 by their own ways.</Paragraph>
+        <Paragraph>Keywords: GSC:MIxS;MIGS:6.0</Paragraph>
+      </Comment>
+    </Description>
+    <Owner>
+      <Name>Jiangsu Academy of Agricultural Sciences</Name>
+      <Contacts>
+        <Contact>
+          <Name>
+            <First>Chuping</First>
+            <Last>Luo</Last>
+          </Name>
+        </Contact>
+      </Contacts>
+    </Owner>
+    <Models>
+      <Model>MIGS.ba</Model>
+      <Model>MIGS/MIMS/MIMARKS.plant-associated</Model>
+    </Models>
+    <Package display_name="MIGS: cultured bacteria/archaea, plant-associated; version 6.0">MIGS.ba.plant-associated.6.0</Package>
+    <Attributes>
+      <Attribute attribute_name="strain" harmonized_name="strain" display_name="strain">Bs-916</Attribute>
+      <Attribute attribute_name="collection_date" harmonized_name="collection_date" display_name="collection date">1996-10-08</Attribute>
+      <Attribute attribute_name="env_biome" harmonized_name="env_broad_scale" display_name="broad-scale environmental context">rice field</Attribute>
+      <Attribute attribute_name="env_feature" harmonized_name="env_local_scale" display_name="local-scale environmental context">rice roots</Attribute>
+      <Attribute attribute_name="env_material" harmonized_name="env_medium" display_name="environmental medium">soil</Attribute>
+      <Attribute attribute_name="geo_loc_name" harmonized_name="geo_loc_name" display_name="geographic location">China: Nanjing</Attribute>
+      <Attribute attribute_name="host" harmonized_name="host" display_name="host">soil microorganism</Attribute>
+      <Attribute attribute_name="isol_growth_condt" harmonized_name="isol_growth_condt" display_name="isolation and growth condition">missing</Attribute>
+      <Attribute attribute_name="lat_lon" harmonized_name="lat_lon" display_name="latitude and longitude">missing</Attribute>
+      <Attribute attribute_name="num_replicons" harmonized_name="num_replicons" display_name="number of replicons">missing</Attribute>
+      <Attribute attribute_name="ref_biomaterial" harmonized_name="ref_biomaterial" display_name="reference for biomaterial">missing</Attribute>
+    </Attributes>
+    <Links>
+      <Link type="entrez" target="bioproject" label="PRJNA259307">259307</Link>
+    </Links>
+    <Status when="2014-08-27T03:43:41.167" status="live"/>
+  </BioSample>
+</BioSampleSet>

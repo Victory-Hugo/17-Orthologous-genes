@@ -1,0 +1,6 @@
+id	description	species_name	kingdom	phylum	class	order	family	genus	species
+Bacillus subtilis (firmicutes)	Bacillus subtilis (firmicutes)	Bacillus subtilis (firmicutes)							
+Nostoc sp. PCC 7120 = FACHB-418 (cyanobacteria)	Nostoc sp. PCC 7120 = FACHB-418 (cyanobacteria)	Nostoc sp. PCC 7120 = FACHB-418 (cyanobacteria)							
+GCA_000007005.1,GCF_000007005.1,Saccharolobus solfataricus P2	GCA_000007005.1,GCF_000007005.1,Saccharolobus solfataricus P2	GCA_000007005.1,GCF_000007005.1,Saccharolobus solfataricus P2	Thermoproteati	Thermoproteota	Thermoprotei	Sulfolobales	Sulfolobaceae	Saccharolobus	Saccharolobus solfataricus
+GCA_000007985.2,GCF_000007985.2,Geobacter sulfurreducens PCA	GCA_000007985.2,GCF_000007985.2,Geobacter sulfurreducens PCA	GCA_000007985.2,GCF_000007985.2,Geobacter sulfurreducens PCA	Pseudomonadati	Thermodesulfobacteriota	Desulfuromonadia	Geobacterales	Geobacteraceae	Geobacter	Geobacter sulfurreducens
+GCA_000011385.1,GCF_000011385.1,Gloeobacter violaceus PCC 7421	GCA_000011385.1,GCF_000011385.1,Gloeobacter violaceus PCC 7421	GCA_000011385.1,GCF_000011385.1,Gloeobacter violaceus PCC 7421	Bacillati	Cyanobacteriota	Cyanophyceae	Gloeobacterales	Gloeobacteraceae	Gloeobacter	Gloeobacter violaceus

@@ -1,0 +1,6 @@
+Input_ID,Standard_ID,BioSample,Organism
+GCF_000772165.1,GCF_000772165.1,SAMN03010507,"Bacillus subtilis (firmicutes)"
+GCF_000772125.1,GCF_000772125.1,SAMN03010508,"Bacillus subtilis (firmicutes)"
+GCF_000772205.1,GCF_000772205.1,SAMN03009557,"Bacillus subtilis (firmicutes)"
+GCA_000009705.1,GCF_000009705.1,SAMD00061094,"Nostoc sp. PCC 7120 = FACHB-418 (cyanobacteria)"
+GCF_000009705.1,GCF_000009705.1,SAMD00061094,"Nostoc sp. PCC 7120 = FACHB-418 (cyanobacteria)"

@@ -1,0 +1,12 @@
+# Gene->Protein FASTA Download Log - Created on Thu Oct 30 11:44:22 CST 2025
+# Format: TIMESTAMP | GENE_ID | STATUS | OUTPUT_FILE | FILE_SIZE | SEQUENCE_COUNT | NOTES
+# STATUS: SUCCESS/FAILED/SKIPPED
+
+2025-10-30 11:44:31 | 11772450 | SUCCESS | /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-数据获取/1-下载特定基因序列/data//Gene_ID_11772450.faa | 594 | 2 | Protein sequences downloaded successfully
+2025-10-30 11:44:31 | 1209094 | SUCCESS | /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-数据获取/1-下载特定基因序列/data//Gene_ID_1209094.faa | 913 | 3 | Protein sequences downloaded successfully
+2025-10-30 11:44:31 | 23445124 | SUCCESS | /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-数据获取/1-下载特定基因序列/data//Gene_ID_23445124.faa | 803 | 3 | Protein sequences downloaded successfully
+2025-10-30 11:44:31 | 1188611 | SUCCESS | /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-数据获取/1-下载特定基因序列/data//Gene_ID_1188611.faa | 908 | 3 | Protein sequences downloaded successfully
+2025-10-30 11:44:31 | 1252480 | SUCCESS | /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-数据获取/1-下载特定基因序列/data//Gene_ID_1252480.faa | 613 | 2 | Protein sequences downloaded successfully
+2025-10-30 11:44:31 | 11636701 | SUCCESS | /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-数据获取/1-下载特定基因序列/data//Gene_ID_11636701.faa | 614 | 2 | Protein sequences downloaded successfully
+2025-10-30 11:44:31 | 1027554 | SUCCESS | /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-数据获取/1-下载特定基因序列/data//Gene_ID_1027554.faa | 545 | 2 | Protein sequences downloaded successfully
+2025-10-30 11:44:32 | 1185007 | SUCCESS | /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-数据获取/1-下载特定基因序列/data//Gene_ID_1185007.faa | 916 | 3 | Protein sequences downloaded successfully

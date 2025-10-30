@@ -1,0 +1,9 @@
+# Taxonomy Query Log - Created on Thu Oct 30 12:07:54 CST 2025
+# Format: TIMESTAMP | SPECIES_NAME | STATUS | KINGDOM | PHYLUM | CLASS | ORDER | FAMILY | GENUS | SPECIES | NOTES
+# STATUS: SUCCESS/FAILED/SKIPPED
+
+2025-10-30 12:17:54 | Bacillus subtilis (firmicutes) | FAILED |  |  |  |  |  |  |  | Query failed after retries for ID: Bacillus subtilis (firmicutes)
+2025-10-30 12:17:56 | Nostoc sp. PCC 7120 = FACHB-418 (cyanobacteria) | FAILED |  |  |  |  |  |  |  | Query failed after retries for ID: Nostoc sp. PCC 7120 = FACHB-418 (cyanobacteria)
+2025-10-30 12:18:33 | GCA_000007005.1,GCF_000007005.1,Saccharolobus solfataricus P2 | SUCCESS | Thermoproteati | Thermoproteota | Thermoprotei | Sulfolobales | Sulfolobaceae | Saccharolobus | Saccharolobus solfataricus | Query completed successfully for ID: GCA_000007005.1,GCF_000007005.1,Saccharolobus solfataricus P2
+2025-10-30 12:18:33 | GCA_000007985.2,GCF_000007985.2,Geobacter sulfurreducens PCA | SUCCESS | Pseudomonadati | Thermodesulfobacteriota | Desulfuromonadia | Geobacterales | Geobacteraceae | Geobacter | Geobacter sulfurreducens | Query completed successfully for ID: GCA_000007985.2,GCF_000007985.2,Geobacter sulfurreducens PCA
+2025-10-30 12:18:34 | GCA_000011385.1,GCF_000011385.1,Gloeobacter violaceus PCC 7421 | SUCCESS | Bacillati | Cyanobacteriota | Cyanophyceae | Gloeobacterales | Gloeobacteraceae | Gloeobacter | Gloeobacter violaceus | Query completed successfully for ID: GCA_000011385.1,GCF_000011385.1,Gloeobacter violaceus PCC 7421
