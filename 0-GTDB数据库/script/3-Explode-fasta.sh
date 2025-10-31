@@ -6,8 +6,8 @@
 # ============================================================
 
 # -------- 写死的配置（按需自行修改后再运行） -------------------
-INPUT="/data_ssd3/7-luolintao-ssd/0-GTDB-Database/GTDB_arc.faa"      # 多序列 FASTA 输入文件
-OUTDIR="/data_ssd3/7-luolintao-ssd/0-GTDB-Database/GTDB_arc_fasta"     # 输出目录
+INPUT="/data_ssd3/7-luolintao-ssd/0-GTDB-Database/GTDB_bac.faa"      # 多序列 FASTA 输入文件
+OUTDIR="/data_ssd3/7-luolintao-ssd/0-GTDB-Database/GTDB_bac_fasta"     # 输出目录
 BAR_WIDTH=40                                   # 进度条宽度（字符数）
 # ------------------------------------------------------------
 
