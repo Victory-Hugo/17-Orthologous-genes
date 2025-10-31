@@ -31,9 +31,10 @@ set -o pipefail
 # ============================================================================
 # 配置变量（全部写死）
 # ============================================================================
-LIST_FILE="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-HMM/conf/鲍曼faa.list.txt"
-HMM_FILE="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-HMM/data/LolD.hmm"
-OUTPUT_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-HMM/output/"
+LIST_FILE="/home/luolintao/0-tmp/3-Bam_Tam/conf/GTDB_all_list.txt"
+# TXT文件，每行一个HMM文件的绝对路径
+HMM_FILE_TXT="/home/luolintao/0-tmp/3-Bam_Tam/conf/hmm_all.txt"
+OUTPUT_DIR="/home/luolintao/0-tmp/3-Bam_Tam/output/"
 CHECKPOINT_DIR="${OUTPUT_DIR}.checkpoint"
 LOG_FILE="${OUTPUT_DIR}processing.log"
 FAILED_LOG_FILE="${OUTPUT_DIR}failed_tasks.log"
@@ -43,6 +44,12 @@ TEMP_DIR="${CHECKPOINT_DIR}/temp"
 JOBS="4"
 CPU_PER_JOB="2"
 E_VALUE="1e-50"
+
+declare -a FAA_FILES=()
+declare -a HMM_FILES=()
+TOTAL_FAA_FILES=0
+TOTAL_HMM_FILES=0
+TOTAL_TASKS=0
 
 # ============================================================================
 # 颜色定义
@@ -131,23 +138,68 @@ check_input_files() {
         exit 1
     fi
     
-    if [[ ! -f "$HMM_FILE" ]]; then
-        print_error "HMM文件不存在: $HMM_FILE"
+    if [[ ! -f "$HMM_FILE_TXT" ]]; then
+        print_error "HMM列表文件不存在: $HMM_FILE_TXT"
         exit 1
     fi
     
-    local empty_lines=0
-    local total_lines=0
-    while IFS= read -r line; do
-        ((total_lines++))
-        if [[ -z "$line" ]] || [[ "$line" == " "* ]]; then
-            ((empty_lines++))
-        elif [[ ! -f "$line" ]]; then
-            print_warning "FAA文件不存在: $line"
+    FAA_FILES=()
+    HMM_FILES=()
+
+    local faa_empty_lines=0
+    local faa_total_entries=0
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        line="${line%$'\r'}"
+        if [[ "$line" =~ ^[[:space:]]*$ ]]; then
+            ((faa_empty_lines++))
+            continue
         fi
+
+        local trimmed
+    trimmed=$(printf '%s\n' "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+        [[ "$trimmed" == \#* ]] && continue
+
+        ((faa_total_entries++))
+        if [[ ! -f "$trimmed" ]]; then
+            print_warning "FAA文件不存在: $trimmed"
+            continue
+        fi
+        FAA_FILES+=("$trimmed")
     done < "$LIST_FILE"
-    
-    print_info "列表文件总行数: $total_lines (空行: $empty_lines)"
+
+    TOTAL_FAA_FILES=${#FAA_FILES[@]}
+    print_info "FAA列表有效文件数: $TOTAL_FAA_FILES (总行数: $faa_total_entries, 空行: $faa_empty_lines)"
+
+    local hmm_empty_lines=0
+    local hmm_total_entries=0
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        line="${line%$'\r'}"
+        if [[ "$line" =~ ^[[:space:]]*$ ]]; then
+            ((hmm_empty_lines++))
+            continue
+        fi
+
+    local trimmed
+    trimmed=$(printf '%s\n' "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+        [[ "$trimmed" == \#* ]] && continue
+
+        ((hmm_total_entries++))
+        if [[ ! -f "$trimmed" ]]; then
+            print_warning "HMM文件不存在: $trimmed"
+            continue
+        fi
+        HMM_FILES+=("$trimmed")
+    done < "$HMM_FILE_TXT"
+
+    TOTAL_HMM_FILES=${#HMM_FILES[@]}
+    print_info "HMM列表有效文件数: $TOTAL_HMM_FILES (总行数: $hmm_total_entries, 空行: $hmm_empty_lines)"
+
+    TOTAL_TASKS=$((TOTAL_FAA_FILES * TOTAL_HMM_FILES))
+    if [[ $TOTAL_TASKS -eq 0 ]]; then
+        print_error "没有可执行的任务，请检查FAA列表和HMM列表"
+        exit 1
+    fi
+
     print_success "输入文件检查完成"
 }
 
@@ -162,9 +214,9 @@ load_completed_tasks() {
 
 # 检查任务是否已完成
 is_task_completed() {
-    local filename="$1"
+    local task_key="$1"
     for completed in "${COMPLETED_TASKS[@]}"; do
-        if [[ "$completed" == "$filename" ]]; then
+        if [[ "$completed" == "$task_key" ]]; then
             return 0
         fi
     done
@@ -173,73 +225,86 @@ is_task_completed() {
 
 # 记录已完成的任务
 mark_task_completed() {
-    local filename="$1"
-    echo "$filename" >> "$COMPLETED_FILE"
+    local task_key="$1"
+    if [[ -z "$task_key" ]]; then
+        return
+    fi
+
+    if [[ -f "$COMPLETED_FILE" ]] && grep -qxF "$task_key" "$COMPLETED_FILE"; then
+        return
+    fi
+
+    echo "$task_key" >> "$COMPLETED_FILE"
+    COMPLETED_TASKS+=("$task_key")
 }
 
-# 处理单个FAA文件的函数
-process_faa_file() {
-    local faa_file="$1"
-    local output_dir="$2"
-    local hmm_file="$3"
+# 处理 HMM 与 FAA 组合的函数
+process_hmm_faa_combo() {
+    local hmm_file="$1"
+    local faa_file="$2"
+    local output_dir="$3"
     local checkpoint_dir="$4"
     local temp_dir="$5"
     local cpu_per_job="$6"
     local e_value="$7"
-    
-    # 跳过空行和注释行
-    [[ -z "$faa_file" ]] || [[ "$faa_file" == " "* ]] && return 0
-    
-    # 检查文件是否存在
-    if [[ ! -f "$faa_file" ]]; then
-        echo "[ERROR] 文件不存在: $faa_file" >> "${temp_dir}/errors.log"
+
+    [[ -z "$hmm_file" ]] && return 0
+    [[ -z "$faa_file" ]] && return 0
+
+    if [[ ! -f "$hmm_file" ]]; then
+        echo "[ERROR] HMM不存在: $hmm_file" >> "${temp_dir}/errors.log"
         return 1
     fi
-    
-    # 提取文件名（不含路径和扩展名）
-    local filename=$(basename "$faa_file" .faa)
-    
-    # 检查是否已完成
-    if [[ -f "${checkpoint_dir}/completed.txt" ]] && grep -q "^${filename}$" "${checkpoint_dir}/completed.txt"; then
-        echo "[SKIP] $filename - 已完成" >> "${temp_dir}/process.log"
+
+    if [[ ! -f "$faa_file" ]]; then
+        echo "[ERROR] FAA不存在: $faa_file" >> "${temp_dir}/errors.log"
+        return 1
+    fi
+
+    local hmm_filename=$(basename "$hmm_file")
+    local hmm_basename="${hmm_filename%.*}"
+    local faa_filename=$(basename "$faa_file")
+    local faa_basename="${faa_filename%.*}"
+    local task_key="${hmm_basename}|${faa_basename}"
+
+    if [[ -f "${checkpoint_dir}/completed.txt" ]] && grep -qxF "$task_key" "${checkpoint_dir}/completed.txt"; then
+        echo "[SKIP] ${task_key} - 已完成" >> "${temp_dir}/process.log"
         return 0
     fi
-    
-    # 设置输出文件名
-    local output_file="${output_dir}/hits_${filename}.tbl"
-    local temp_output="${temp_dir}/${filename}.tbl.tmp"
-    
-    # 确保临时目录存在
-    mkdir -p "$temp_dir" 2>/dev/null
-    
-    # 执行 hmmsearch，捕获完整错误信息
-    local error_log="${temp_dir}/${filename}.err"
+
+    local output_subdir="${output_dir}/${hmm_basename}"
+    local output_file="${output_subdir}/${faa_basename}.tbl"
+    local temp_output="${temp_dir}/${hmm_basename}_${faa_basename}.tbl.tmp"
+
+    mkdir -p "$output_subdir" "$temp_dir" 2>/dev/null
+
+    local error_log="${temp_dir}/${hmm_basename}_${faa_basename}.err"
     if hmmsearch --cpu "$cpu_per_job" \
         -E "$e_value" \
         --tblout "$temp_output" \
         "$hmm_file" \
         "$faa_file" 2> "$error_log"; then
-        
-        # 移动临时文件到最终位置
+
         if [[ -f "$temp_output" ]]; then
             mv "$temp_output" "$output_file"
-            echo "[SUCCESS] $filename" >> "${temp_dir}/success.log"
+            echo "[SUCCESS] $task_key" >> "${temp_dir}/success.log"
             rm -f "$error_log"
             return 0
         else
-            echo "[FAILED] $filename - 输出文件未生成" >> "${temp_dir}/failed.log"
+            echo "[FAILED] $task_key - 输出文件未生成" >> "${temp_dir}/failed.log"
             cat "$error_log" >> "${temp_dir}/failed.log"
             return 1
         fi
     else
-        echo "[FAILED] $filename - hmmsearch返回错误" >> "${temp_dir}/failed.log"
+        echo "[FAILED] $task_key - hmmsearch返回错误" >> "${temp_dir}/failed.log"
         cat "$error_log" >> "${temp_dir}/failed.log"
         rm -f "$temp_output" "$error_log"
         return 1
     fi
 }
 
-export -f process_faa_file
+export -f process_hmm_faa_combo
+export -f is_task_completed
 
 # 清理临时文件和未完成的任务
 cleanup_and_exit() {
@@ -294,7 +359,7 @@ show_progress() {
 trap 'cleanup_and_exit SIGINT' SIGINT SIGTERM
 
 # 打印头部信息
-print_header "HMM蛋白序列比对工具 v1.0 - 作者: BigLin"
+print_header "HMM序列比对工具 v1.0 - 作者: BigLin"
 
 # 初始化
 initialize_dirs
@@ -308,7 +373,7 @@ print_info "并行任务数: $JOBS"
 print_info "每任务CPU线程数: $CPU_PER_JOB"
 
 # 统计总任务数
-local_total_tasks=$(grep -cv '^\s*$' "$LIST_FILE")
+local_total_tasks=$TOTAL_TASKS
 print_info "总任务数: $local_total_tasks"
 
 # 使用 parallel 进行并行处理，带进度条
@@ -321,13 +386,25 @@ print_info "已完成任务数: $local_completed_before"
 : > "$TEMP_DIR/failed.log"
 : > "$TEMP_DIR/errors.log"
 
-cat "$LIST_FILE" | \
-    grep -v '^\s*$' | \
+tasks_file="${TEMP_DIR}/tasks.tsv"
+: > "$tasks_file"
+for hmm_file in "${HMM_FILES[@]}"; do
+    for faa_file in "${FAA_FILES[@]}"; do
+        printf '%s\t%s\n' "$hmm_file" "$faa_file" >> "$tasks_file"
+    done
+done
+
+if [[ ! -s "$tasks_file" ]]; then
+    print_warning "任务列表为空，未执行任何操作"
+else
     parallel --jobs "$JOBS" \
+        --colsep '\t' \
         --tag \
         --line-buffer \
         --joblog "${CHECKPOINT_DIR}/joblog.txt" \
-        process_faa_file {} "$OUTPUT_DIR" "$HMM_FILE" "$CHECKPOINT_DIR" "$TEMP_DIR" "$CPU_PER_JOB" "$E_VALUE"
+        process_hmm_faa_combo {1} {2} "$OUTPUT_DIR" "$CHECKPOINT_DIR" "$TEMP_DIR" "$CPU_PER_JOB" "$E_VALUE" \
+        :::: "$tasks_file"
+fi
 
 # 等待所有后台任务完成
 wait
@@ -341,9 +418,9 @@ local_failed_count=0
 if [[ -f "$TEMP_DIR/success.log" ]]; then
     local_success_count=$(wc -l < "$TEMP_DIR/success.log")
     while IFS= read -r line; do
-        # 格式: [SUCCESS] filename
-        filename=$(echo "$line" | sed 's/\[SUCCESS\] //')
-        [[ -n "$filename" ]] && mark_task_completed "$filename"
+        # 格式: [SUCCESS] HMM|FAA
+        task_key=$(echo "$line" | sed 's/\[SUCCESS\] //')
+        [[ -n "$task_key" ]] && mark_task_completed "$task_key"
     done < "$TEMP_DIR/success.log"
     print_success "成功完成任务数: $local_success_count"
 fi

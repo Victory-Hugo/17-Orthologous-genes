@@ -30,8 +30,8 @@ NC='\033[0m' # No Color
 
 # ==================== 全部变量写死 ====================
 LIST_FILE="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-HMM/conf/鲍曼faa.list.txt"
-RESULTS_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-HMM/output/"
-OUTPUT_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-HMM/output/"
+RESULTS_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-HMM/output/" #! 这里写tbl文件的目录
+OUTPUT_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-HMM/output/" #! 这里写提取序列的输出目录
 SCRIPT_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-HMM/script"
 JOBS=4
 STATE_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-HMM/.job_state"
