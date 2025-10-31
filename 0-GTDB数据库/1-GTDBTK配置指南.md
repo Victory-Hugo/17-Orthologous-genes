@@ -65,8 +65,13 @@ conda activate gtdbtk
 # 检查 GTDB-Tk 安装
 gtdbtk --version
 
+# 设置数据路径（如果未配置环境变量）
+export GTDBTK_DATA_PATH=/mnt/d/3-GTDB-Database/data/release###
+
 # 验证数据库
-gtdbtk check_install_dir --install_dir $GTDBTK_DATA_PATH
+gtdbtk check_install_dir 
+gtdbtk test --out_dir gtdbtk_test  # 测试结果存储在gtdbtk_test目录
+
 ```
 
 ## 三、数据库信息
@@ -85,8 +90,6 @@ GTDB-Tk 数据库包含：
 # 激活环境
 conda activate gtdbtk
 
-# 设置数据路径（如果未配置环境变量）
-export GTDBTK_DATA_PATH=/mnt/d/3-GTDB-Database/data/release###
 
 # 运行完整分类
 gtdbtk classify_wf \

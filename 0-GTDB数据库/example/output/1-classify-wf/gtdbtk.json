@@ -1,0 +1,86 @@
+{
+    "version": "2.5.2",
+    "command_line": "gtdbtk classify_wf --genome_dir /home/luolintao/0_Github/17-Orthologous-genes/0-GTDB\u6570\u636e\u5e93/example/input/1-classify/ --out_dir /home/luolintao/0_Github/17-Orthologous-genes/0-GTDB\u6570\u636e\u5e93/example/output/1-classify --min_af 0.5 --extension fasta --pplacer_cpus 32 --prefix classify_Result --cpus 32 --skip_ani_screen",
+    "database_version": "r226",
+    "database_path": "/data_ssd3/7-luolintao-ssd/release226",
+    "steps": [
+        {
+            "name": "identify",
+            "output_dir": "/home/luolintao/0_Github/17-Orthologous-genes/0-GTDB\u6570\u636e\u5e93/example/output/1-classify",
+            "starts_at": "2025-10-31T11:14:51.236289",
+            "ends_at": "2025-10-31T11:15:07.692510",
+            "duration": "0:00:16",
+            "status": "completed",
+            "genes": false,
+            "extension": "fasta",
+            "write_single_copy_genes": false,
+            "genome_dir": "/home/luolintao/0_Github/17-Orthologous-genes/0-GTDB\u6570\u636e\u5e93/example/input/1-classify/",
+            "batchfile": null,
+            "output_files": {
+                "all": [
+                    "/home/luolintao/0_Github/17-Orthologous-genes/0-GTDB\u6570\u636e\u5e93/example/output/1-classify/identify/classify_Result.failed_genomes.tsv",
+                    "/home/luolintao/0_Github/17-Orthologous-genes/0-GTDB\u6570\u636e\u5e93/example/output/1-classify/identify/classify_Result.translation_table_summary.tsv"
+                ],
+                "ar53": [
+                    "/home/luolintao/0_Github/17-Orthologous-genes/0-GTDB\u6570\u636e\u5e93/example/output/1-classify/identify/classify_Result.ar53.markers_summary.tsv"
+                ],
+                "bac120": [
+                    "/home/luolintao/0_Github/17-Orthologous-genes/0-GTDB\u6570\u636e\u5e93/example/output/1-classify/identify/classify_Result.bac120.markers_summary.tsv"
+                ]
+            }
+        },
+        {
+            "name": "align",
+            "output_dir": "/home/luolintao/0_Github/17-Orthologous-genes/0-GTDB\u6570\u636e\u5e93/example/output/1-classify",
+            "starts_at": "2025-10-31T11:15:07.692747",
+            "ends_at": "2025-10-31T11:20:44.508775",
+            "duration": "0:05:36",
+            "status": "completed",
+            "identify_dir": "/home/luolintao/0_Github/17-Orthologous-genes/0-GTDB\u6570\u636e\u5e93/example/output/1-classify",
+            "skip_gtdb_refs": false,
+            "taxa_filter": null,
+            "min_perc_aa": 10,
+            "custom_msa_filters": false,
+            "skip_trimming": false,
+            "rnd_seed": null,
+            "cols_per_gene": null,
+            "min_consensus": null,
+            "max_consensus": null,
+            "min_perc_taxa": null,
+            "outgroup_taxon": null,
+            "output_files": {
+                "bac120": [
+                    "/home/luolintao/0_Github/17-Orthologous-genes/0-GTDB\u6570\u636e\u5e93/example/output/1-classify/align/classify_Result.bac120.filtered.tsv",
+                    "/home/luolintao/0_Github/17-Orthologous-genes/0-GTDB\u6570\u636e\u5e93/example/output/1-classify/align/classify_Result.bac120.msa.fasta",
+                    "/home/luolintao/0_Github/17-Orthologous-genes/0-GTDB\u6570\u636e\u5e93/example/output/1-classify/align/classify_Result.bac120.user_msa.fasta"
+                ]
+            }
+        },
+        {
+            "name": "classify",
+            "output_dir": "/home/luolintao/0_Github/17-Orthologous-genes/0-GTDB\u6570\u636e\u5e93/example/output/1-classify",
+            "starts_at": "2025-10-31T11:20:44.509738",
+            "ends_at": "2025-10-31T11:45:32.809612",
+            "duration": "0:24:48",
+            "status": "completed",
+            "align_dir": "/home/luolintao/0_Github/17-Orthologous-genes/0-GTDB\u6570\u636e\u5e93/example/output/1-classify",
+            "genome_dir": "/home/luolintao/0_Github/17-Orthologous-genes/0-GTDB\u6570\u636e\u5e93/example/input/1-classify/",
+            "batchfile": null,
+            "scratch_dir": null,
+            "debug_option": false,
+            "full_tree": false,
+            "skip_ani_screen": true,
+            "output_files": {
+                "bac120": [
+                    "/home/luolintao/0_Github/17-Orthologous-genes/0-GTDB\u6570\u636e\u5e93/example/output/1-classify/classify/classify_Result.backbone.bac120.classify.tree",
+                    "/home/luolintao/0_Github/17-Orthologous-genes/0-GTDB\u6570\u636e\u5e93/example/output/1-classify/classify/classify_Result.bac120.classify.tree.8.tree",
+                    "/home/luolintao/0_Github/17-Orthologous-genes/0-GTDB\u6570\u636e\u5e93/example/output/1-classify/classify/classify_Result.bac120.classify.tree.1.tree",
+                    "/home/luolintao/0_Github/17-Orthologous-genes/0-GTDB\u6570\u636e\u5e93/example/output/1-classify/classify/classify_Result.bac120.tree.mapping.tsv",
+                    "/home/luolintao/0_Github/17-Orthologous-genes/0-GTDB\u6570\u636e\u5e93/example/output/1-classify/classify/classify_Result.bac120.summary.tsv"
+                ]
+            }
+        }
+    ],
+    "output_dir": "/home/luolintao/0_Github/17-Orthologous-genes/0-GTDB\u6570\u636e\u5e93/example/output/1-classify",
+    "path": "/home/luolintao/0_Github/17-Orthologous-genes/0-GTDB\u6570\u636e\u5e93/example/output/1-classify/gtdbtk.json"
+}

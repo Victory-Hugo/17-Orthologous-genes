@@ -1,0 +1,56 @@
+[2025-10-31 11:14:37] INFO: GTDB-Tk v2.5.2
+[2025-10-31 11:14:37] INFO: gtdbtk classify_wf --genome_dir /home/luolintao/0_Github/17-Orthologous-genes/0-GTDB数据库/example/input/1-classify/ --out_dir /home/luolintao/0_Github/17-Orthologous-genes/0-GTDB数据库/example/output/1-classify --min_af 0.5 --extension fna --pplacer_cpus 32 --prefix classify_Result --cpus 32 --skip_ani_screen
+[2025-10-31 11:14:37] INFO: Using GTDB-Tk reference data version r226: /data_ssd3/7-luolintao-ssd/release226
+[2025-10-31 11:14:37] ERROR: No genomes found in directory: /home/luolintao/0_Github/17-Orthologous-genes/0-GTDB数据库/example/input/1-classify/. Check the --extension flag used to identify genomes.
+[2025-10-31 11:14:37] ERROR: Controlled exit resulting from an unrecoverable error or warning.
+[2025-10-31 11:14:51] INFO: GTDB-Tk v2.5.2
+[2025-10-31 11:14:51] INFO: gtdbtk classify_wf --genome_dir /home/luolintao/0_Github/17-Orthologous-genes/0-GTDB数据库/example/input/1-classify/ --out_dir /home/luolintao/0_Github/17-Orthologous-genes/0-GTDB数据库/example/output/1-classify --min_af 0.5 --extension fasta --pplacer_cpus 32 --prefix classify_Result --cpus 32 --skip_ani_screen
+[2025-10-31 11:14:51] INFO: Using GTDB-Tk reference data version r226: /data_ssd3/7-luolintao-ssd/release226
+[2025-10-31 11:14:51] INFO: Identifying markers in 2 genomes with 32 threads.
+[2025-10-31 11:14:51] TASK: Running Prodigal V2.6.3 to identify genes.
+[2025-10-31 11:15:03] INFO: Completed 2 genomes in 12.23 seconds (6.11 seconds/genome).
+[2025-10-31 11:15:03] TASK: Identifying TIGRFAM protein families.
+[2025-10-31 11:15:07] INFO: Completed 2 genomes in 3.62 seconds (1.81 seconds/genome).
+[2025-10-31 11:15:07] TASK: Identifying Pfam protein families.
+[2025-10-31 11:15:07] INFO: Completed 2 genomes in 0.30 seconds (6.73 genomes/second).
+[2025-10-31 11:15:07] INFO: Annotations done using HMMER 3.4 (Aug 2023).
+[2025-10-31 11:15:07] TASK: Summarising identified marker genes.
+[2025-10-31 11:15:07] INFO: Completed 2 genomes in 0.04 seconds (47.21 genomes/second).
+[2025-10-31 11:15:07] INFO: Done.
+[2025-10-31 11:15:07] INFO: Aligning markers in 2 genomes with 32 CPUs.
+[2025-10-31 11:15:08] INFO: Processing 2 genomes identified as bacterial.
+[2025-10-31 11:15:26] INFO: Read concatenated alignment for 136,646 GTDB genomes.
+[2025-10-31 11:15:26] TASK: Generating concatenated alignment for each marker.
+[2025-10-31 11:15:34] INFO: Completed 2 genomes in 0.28 seconds (7.26 genomes/second).
+[2025-10-31 11:15:34] TASK: Aligning 120 identified markers using hmmalign 3.4 (Aug 2023).
+[2025-10-31 11:15:41] INFO: Completed 120 markers in 0.23 seconds (522.64 markers/second).
+[2025-10-31 11:15:41] TASK: Masking columns of bacterial multiple sequence alignment using canonical mask.
+[2025-10-31 11:19:51] INFO: Completed 136,648 sequences in 4.16 minutes (32,834.13 sequences/minute).
+[2025-10-31 11:19:51] INFO: Masked bacterial alignment from 41,084 to 5,036 AAs.
+[2025-10-31 11:19:51] INFO: 0 bacterial user genomes have amino acids in <10.0% of columns in filtered MSA.
+[2025-10-31 11:19:51] INFO: Creating concatenated alignment for 136,648 bacterial GTDB and user genomes.
+[2025-10-31 11:20:43] INFO: Creating concatenated alignment for 2 bacterial user genomes.
+[2025-10-31 11:20:44] INFO: Done.
+[2025-10-31 11:20:45] TASK: Placing 2 bacterial genomes into backbone reference tree with pplacer using 32 CPUs (be patient).
+[2025-10-31 11:20:45] INFO: pplacer version: v1.1.alpha19-0-g807f6f3
+[2025-10-31 11:24:25] INFO: Calculating RED values based on reference tree.
+[2025-10-31 11:24:26] INFO: 2 out of 2 have an class assignments. Those genomes will be reclassified.
+[2025-10-31 11:24:26] TASK: Placing 1 bacterial genomes into class-level reference tree 8 (1/2) with pplacer using 32 CPUs (be patient).
+[2025-10-31 11:29:13] INFO: Calculating RED values based on reference tree.
+[2025-10-31 11:29:14] TASK: Traversing tree to determine classification method.
+[2025-10-31 11:29:14] INFO: Completed 1 genome in 0.00 seconds (2,004.93 genomes/second).
+[2025-10-31 11:29:14] TASK: Calculating average nucleotide identity using skani (v0.3.1).
+[2025-10-31 11:29:14] INFO: Completed 31 comparisons in 0.17 seconds (186.65 comparisons/second).
+[2025-10-31 11:29:14] INFO: 1 genome(s) have been classified using skani and pplacer.
+[2025-10-31 11:29:14] TASK: Placing 1 bacterial genomes into class-level reference tree 1 (2/2) with pplacer using 32 CPUs (be patient).
+[2025-10-31 11:45:27] INFO: Calculating RED values based on reference tree.
+[2025-10-31 11:45:31] TASK: Traversing tree to determine classification method.
+[2025-10-31 11:45:32] INFO: Completed 1 genome in 0.01 seconds (195.55 genomes/second).
+[2025-10-31 11:45:32] TASK: Calculating average nucleotide identity using skani (v0.3.1).
+[2025-10-31 11:45:32] INFO: Completed 100 comparisons in 0.39 seconds (254.98 comparisons/second).
+[2025-10-31 11:45:32] INFO: 1 genome(s) have been classified using skani and pplacer.
+[2025-10-31 11:45:32] INFO: Note that Tk classification mode is insufficient for publication of new taxonomic designations. New designations should be based on one or more de novo trees, an example of which can be produced by Tk in de novo mode.
+[2025-10-31 11:45:32] INFO: Done.
+[2025-10-31 11:45:32] INFO: Removing intermediate files.
+[2025-10-31 11:45:32] INFO: Intermediate files removed.
+[2025-10-31 11:45:32] INFO: Done.
