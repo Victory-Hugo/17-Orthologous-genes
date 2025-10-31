@@ -43,7 +43,7 @@ COMPLETED_FILE="${CHECKPOINT_DIR}/completed.txt"
 TEMP_DIR="${CHECKPOINT_DIR}/temp"
 JOBS="4"
 CPU_PER_JOB="2"
-E_VALUE="1e-50"
+E_VALUE="1e-1"
 
 declare -a FAA_FILES=()
 declare -a HMM_FILES=()
@@ -406,34 +406,6 @@ else
         :::: "$tasks_file"
 fi
 
-# 等待所有后台任务完成
-wait
-
-# 收集结果
-print_info "收集处理结果..."
-
-local_success_count=0
-local_failed_count=0
-
-if [[ -f "$TEMP_DIR/success.log" ]]; then
-    local_success_count=$(wc -l < "$TEMP_DIR/success.log")
-    while IFS= read -r line; do
-        # 格式: [SUCCESS] HMM|FAA
-        task_key=$(echo "$line" | sed 's/\[SUCCESS\] //')
-        [[ -n "$task_key" ]] && mark_task_completed "$task_key"
-    done < "$TEMP_DIR/success.log"
-    print_success "成功完成任务数: $local_success_count"
-fi
-
-if [[ -f "$TEMP_DIR/failed.log" ]]; then
-    local_failed_count=$(wc -l < "$TEMP_DIR/failed.log")
-    cat "$TEMP_DIR/failed.log" >> "$FAILED_LOG_FILE"
-    if [[ $local_failed_count -gt 0 ]]; then
-        print_error "失败任务数: $local_failed_count"
-        print_warning "失败详情请查看: $FAILED_LOG_FILE"
-    fi
-fi
-
 # 打印完成信息
 print_header "处理完成"
 print_success "所有任务处理完成！"
@@ -443,3 +415,4 @@ print_info "日志文件: $LOG_FILE"
 
 echo ""
 print_success "脚本执行成功！" 
+python3 /home/luolintao/test_mail.py "2-HMM/script/2-HMM比对.sh任务完成通知" "<p>2-HMM/script/2-HMM比对.sh分析已完成，请查看结果目录。</p>"
