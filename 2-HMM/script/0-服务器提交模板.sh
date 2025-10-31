@@ -2,9 +2,9 @@
 # 一键运行批处理脚本（支持 screen / tmux）
 
 # 配置
-SESSION_NAME="HMM_run"
-SCRIPT_PATH="/home/luolintao/0_Github/17-Orthologous-genes/2-HMM/script/2-HMM比对.sh"
-LOG_FILE="/home/luolintao/0-tmp/3-Bam_Tam/HMM_run.log"
+SESSION_NAME="Matrix_run"
+SCRIPT_PATH="/home/luolintao/0_Github/17-Orthologous-genes/2-HMM/script/4-邮件.sh"
+LOG_FILE="/home/luolintao/0-tmp/3-Bam_Tam/Matrix_run.log"
 
 echo "🧬 启动 $SESSION_NAME 批处理..."
 echo "会话名称: $SESSION_NAME"
