@@ -6,12 +6,12 @@
 ###############################################################################
 
 # ==================== 变量写死配置 ====================
-INPUT_LIST="/mnt/f/15_Bam_Tam/2-物种树/prokka/conf/correct_fna_input.txt"
-OUTPUT_DIR="/mnt/f/15_Bam_Tam/2-物种树/prokka/output"
-LOG_DIR="/mnt/f/15_Bam_Tam/2-物种树/prokka/logs"
-STATUS_DIR="/mnt/f/15_Bam_Tam/2-物种树/prokka/status"
+INPUT_LIST="/mnt/f/15_Bam_Tam/5-补齐更多物种/prokka/conf/prokka_input.txt"
+OUTPUT_DIR="/mnt/f/15_Bam_Tam/5-补齐更多物种/prokka/output"
+LOG_DIR="/mnt/f/15_Bam_Tam/5-补齐更多物种/prokka/logs"
+STATUS_DIR="/mnt/f/15_Bam_Tam/5-补齐更多物种/prokka/status"
 PARALLEL_JOBS=4
-THREADS_PER_JOB=8
+THREADS_PER_JOB=4
 TEMP_FIFO="/tmp/prokka_pipe_$$"
 
 # ==================== 颜色定义 ====================
