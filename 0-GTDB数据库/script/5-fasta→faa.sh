@@ -31,6 +31,7 @@ INPUT_LIST="/data_ssd3/7-luolintao-ssd/0-GTDB-Database/GTDB_ALL.genome.list.txt"
 OUTPUT_DIR="/data_ssd3/7-luolintao-ssd/0-GTDB-Database/all_faa"                    # 输出目录
 TEMP_DIR="/data_ssd3/7-luolintao-ssd/0-GTDB-Database/temp"                        #? 临时目录（用于解压缩文件）,如果原文件不是压缩文件，直接运行即可
 PARALLEL_JOBS="8"                                                                  # 并行任务数
+BATCH_SIZE="5000"                                                                  # 每批处理的任务数（防止参数列表过长）
 CHECKPOINT_FILE="/data_ssd3/7-luolintao-ssd/0-GTDB-Database/.completed_paths.log"  # 已完成任务记录文件
 LOCK_FILE="/data_ssd3/7-luolintao-ssd/0-GTDB-Database/.completed_paths.lock"        # 文件锁，防止并发写入
 JOBLOG_FILE="/data_ssd3/7-luolintao-ssd/0-GTDB-Database/.parallel_joblog.tsv"       # GNU parallel 的日志
@@ -74,6 +75,10 @@ cleanup_partial() {
 	fi
 	if [[ -d "${TEMP_DIR}" ]]; then
 		find "${TEMP_DIR}" -type f -name "*.fna" -print0 | xargs -0r rm -f
+		# 清理拆分的临时文件
+		if [[ -d "${TEMP_DIR}/split_lists" ]]; then
+			rm -rf "${TEMP_DIR}/split_lists"
+		fi
 	fi
 }
 
@@ -146,59 +151,108 @@ if [[ -s "${CHECKPOINT_FILE}" ]]; then
 fi
 
 #=============================
+# 拆分大文件函数
+#=============================
+split_large_file() {
+	local input_file="$1"
+	local temp_split_dir="${TEMP_DIR}/split_lists"
+	local total_lines batch_count i start_line end_line batch_file
+	
+	mkdir -p "${temp_split_dir}"
+	
+	# 统计总行数（排除空行和注释行）
+	total_lines=$(grep -v '^[[:space:]]*$' "${input_file}" | grep -v '^#' | wc -l)
+	
+	if [[ "${total_lines}" -le "${BATCH_SIZE}" ]]; then
+		# 如果文件不大，直接返回原文件
+		echo "${input_file}"
+		return 0
+	fi
+	
+	log_info "输入文件包含 ${total_lines} 行，将拆分为每批 ${BATCH_SIZE} 行的子文件" >&2
+	
+	# 计算需要拆分的批次数
+	batch_count=$(((total_lines + BATCH_SIZE - 1) / BATCH_SIZE))
+	
+	# 清理旧的拆分文件
+	rm -f "${temp_split_dir}"/batch_*.txt
+	
+	# 拆分文件
+	i=1
+	start_line=1
+	while [[ "${i}" -le "${batch_count}" ]]; do
+		end_line=$((start_line + BATCH_SIZE - 1))
+		if [[ "${end_line}" -gt "${total_lines}" ]]; then
+			end_line="${total_lines}"
+		fi
+		
+		batch_file="${temp_split_dir}/batch_$(printf "%04d" "${i}").txt"
+		
+		# 提取指定行范围到批次文件
+		grep -v '^[[:space:]]*$' "${input_file}" | grep -v '^#' | \
+		sed -n "${start_line},${end_line}p" > "${batch_file}"
+		
+		echo "${batch_file}"
+		
+		start_line=$((end_line + 1))
+		i=$((i + 1))
+	done
+}
+
+#=============================
 # 生成任务列表
 #=============================
-declare -a TASKS=()
-TOTAL_INPUTS="0"
-
-if [[ ! -f "${INPUT_LIST}" ]]; then
-	log_err "未找到输入列表文件: ${INPUT_LIST}"
-	exit 1
-fi
-
-while IFS= read -r raw_path; do
-	if [[ -z "${raw_path}" ]]; then
-		continue
+generate_tasks_from_file() {
+	local file_list="$1"
+	local tasks_array_name="$2"
+	local -n tasks_ref="${tasks_array_name}"
+	local total_inputs="0"
+	
+	tasks_ref=()
+	
+	if [[ ! -f "${file_list}" ]]; then
+		log_err "未找到输入列表文件: ${file_list}"
+		return 1
 	fi
-	if [[ "${raw_path}" == \#* ]]; then
-		continue
-	fi
-	input_path="${raw_path%$'\r'}"
-	input_path="${input_path#${input_path%%[![:space:]]*}}"
-	input_path="${input_path%${input_path##*[![:space:]]}}"
-	if [[ -z "${input_path}" ]]; then
-		continue
-	fi
-	TOTAL_INPUTS=$((TOTAL_INPUTS + 1))
-	if [[ ! -f "${input_path}" ]]; then
-		log_warn "文件不存在，跳过: ${input_path}"
-		continue
-	fi
-	if [[ -n "${COMPLETED_MAP["$input_path"]+x}" ]]; then
-		continue
-	fi
-	output_name="$(basename "${input_path}")${FINAL_EXTENSION}"
-	final_path="${OUTPUT_DIR}/${output_name}"
-	if [[ -f "${final_path}" ]]; then
-		if [[ -z "${COMPLETED_MAP["$input_path"]+x}" ]]; then
-			{
-				flock -x 200
-				printf '%s\n' "${input_path}" >> "${CHECKPOINT_FILE}"
-			} 200>"${LOCK_FILE}"
-			COMPLETED_MAP["${input_path}"]=1
+	
+	while IFS= read -r raw_path; do
+		if [[ -z "${raw_path}" ]]; then
+			continue
 		fi
-		continue
-	fi
-	TASKS+=("${input_path}|${final_path}")
-done < "${INPUT_LIST}"
-
-if [[ "${#TASKS[@]}" -eq 0 ]]; then
-	log_info "无待处理任务，所有翻译均已完成。"
-	exit 0
-fi
-
-log_info "扫描到输入文件总数: ${TOTAL_INPUTS}"
-log_info "待翻译任务数: ${#TASKS[@]}"
+		if [[ "${raw_path}" == \#* ]]; then
+			continue
+		fi
+		input_path="${raw_path%$'\r'}"
+		input_path="${input_path#${input_path%%[![:space:]]*}}"
+		input_path="${input_path%${input_path##*[![:space:]]}}"
+		if [[ -z "${input_path}" ]]; then
+			continue
+		fi
+		total_inputs=$((total_inputs + 1))
+		if [[ ! -f "${input_path}" ]]; then
+			log_warn "文件不存在，跳过: ${input_path}"
+			continue
+		fi
+		if [[ -n "${COMPLETED_MAP["$input_path"]+x}" ]]; then
+			continue
+		fi
+		output_name="$(basename "${input_path}")${FINAL_EXTENSION}"
+		final_path="${OUTPUT_DIR}/${output_name}"
+		if [[ -f "${final_path}" ]]; then
+			if [[ -z "${COMPLETED_MAP["$input_path"]+x}" ]]; then
+				{
+					flock -x 200
+					printf '%s\n' "${input_path}" >> "${CHECKPOINT_FILE}"
+				} 200>"${LOCK_FILE}"
+				COMPLETED_MAP["${input_path}"]=1
+			fi
+			continue
+		fi
+		tasks_ref+=("${input_path}|${final_path}")
+	done < "${file_list}"
+	
+	return 0
+}
 
 #=============================
 # 导出环境变量供 parallel 使用
@@ -253,9 +307,62 @@ process_entry() {
 export -f process_entry
 
 #=============================
-# 并行执行所有任务
+# 处理主逻辑
 #=============================
-parallel --jobs "${PARALLEL_JOBS}" --bar --halt soon,fail=1 --joblog "${JOBLOG_FILE}" process_entry ::: "${TASKS[@]}"
+log_info "开始处理输入文件列表..."
+
+# 获取拆分后的文件列表
+mapfile -t SPLIT_FILES < <(split_large_file "${INPUT_LIST}")
+
+TOTAL_INPUTS="0"
+TOTAL_TASKS="0"
+
+# 统计总输入文件数
+if [[ "${#SPLIT_FILES[@]}" -eq 1 ]] && [[ "${SPLIT_FILES[0]}" == "${INPUT_LIST}" ]]; then
+	# 未拆分的情况
+	TOTAL_INPUTS=$(grep -v '^[[:space:]]*$' "${INPUT_LIST}" | grep -v '^#' | wc -l)
+else
+	# 拆分的情况
+	for split_file in "${SPLIT_FILES[@]}"; do
+		file_count=$(wc -l < "${split_file}")
+		TOTAL_INPUTS=$((TOTAL_INPUTS + file_count))
+	done
+fi
+
+log_info "扫描到输入文件总数: ${TOTAL_INPUTS}"
+log_info "文件已拆分为 ${#SPLIT_FILES[@]} 个批次进行处理"
+
+# 逐批处理
+declare -a CURRENT_TASKS=()
+batch_num=1
+
+for split_file in "${SPLIT_FILES[@]}"; do
+	log_info "处理批次 ${batch_num}/${#SPLIT_FILES[@]}: $(basename "${split_file}")"
+	
+	generate_tasks_from_file "${split_file}" CURRENT_TASKS
+	
+	if [[ "${#CURRENT_TASKS[@]}" -eq 0 ]]; then
+		log_info "批次 ${batch_num} 无待处理任务，跳过。"
+		batch_num=$((batch_num + 1))
+		continue
+	fi
+	
+	TOTAL_TASKS=$((TOTAL_TASKS + ${#CURRENT_TASKS[@]}))
+	log_info "批次 ${batch_num} 待翻译任务数: ${#CURRENT_TASKS[@]}"
+
+	# 执行当前批次的并行处理
+	parallel --jobs "${PARALLEL_JOBS}" --bar --halt soon,fail=1 --joblog "${JOBLOG_FILE}.batch_${batch_num}" process_entry ::: "${CURRENT_TASKS[@]}"
+	
+	log_ok "批次 ${batch_num} 处理完成。"
+	batch_num=$((batch_num + 1))
+done
+
+if [[ "${TOTAL_TASKS}" -eq 0 ]]; then
+	log_info "无待处理任务，所有翻译均已完成。"
+	exit 0
+fi
+
+log_info "总计处理任务数: ${TOTAL_TASKS}"
 
 log_ok "全部处理完成。"
 
