@@ -43,7 +43,7 @@ COMPLETED_FILE="${CHECKPOINT_DIR}/completed.txt"
 TEMP_DIR="${CHECKPOINT_DIR}/temp"
 JOBS="4"
 CPU_PER_JOB="2"
-E_VALUE="1e-1"
+E_VALUE="100e-0"
 
 declare -a FAA_FILES=()
 declare -a HMM_FILES=()
