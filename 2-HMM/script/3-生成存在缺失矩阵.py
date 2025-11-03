@@ -23,7 +23,7 @@ from pathlib import Path
 # ==============================
 BASE_DIR = Path("/home/luolintao/0-tmp/3-Bam_Tam/output")  # 包含所有tbl的文件夹
 OUTPUT_TSV = Path("/home/luolintao/0-tmp/3-Bam_Tam/output/presence_absence_matrix.tsv")
-EVALUE_CUTOFF = 1e-5  # 新增：E-value 阈值，小于该值记为1，否则0
+EVALUE_CUTOFF = 1e-50  # 新增：E-value 阈值，小于该值记为1，否则0
 
 # 控制台颜色
 COLOR_INFO = "\033[94m"

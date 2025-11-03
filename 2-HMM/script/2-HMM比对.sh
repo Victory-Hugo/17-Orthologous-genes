@@ -31,7 +31,7 @@ set -o pipefail
 # ============================================================================
 # 配置变量（全部写死）
 # ============================================================================
-LIST_FILE="/home/luolintao/0-tmp/3-Bam_Tam/conf/GTDB_all_faa.list.txt"
+LIST_FILE="/home/luolintao/0-tmp/3-Bam_Tam/conf/remained.txt"
 # TXT文件，每行一个HMM文件的绝对路径
 HMM_FILE_TXT="/home/luolintao/0-tmp/3-Bam_Tam/conf/hmm_all.txt"
 OUTPUT_DIR="/home/luolintao/0-tmp/3-Bam_Tam/output/"
