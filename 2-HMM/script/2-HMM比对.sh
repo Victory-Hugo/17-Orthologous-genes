@@ -41,7 +41,7 @@ FAILED_LOG_FILE="${OUTPUT_DIR}failed_tasks.log"
 STATE_FILE="${CHECKPOINT_DIR}/state.txt"
 COMPLETED_FILE="${CHECKPOINT_DIR}/completed.txt"
 TEMP_DIR="${CHECKPOINT_DIR}/temp"
-JOBS="4"
+JOBS="8"
 CPU_PER_JOB="2"
 E_VALUE="1e-1"
 
