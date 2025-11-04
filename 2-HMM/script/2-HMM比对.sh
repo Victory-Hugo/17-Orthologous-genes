@@ -33,8 +33,8 @@ set -o pipefail
 # ============================================================================
 LIST_FILE="/home/luolintao/0-tmp/3-Bam_Tam/conf/remained.txt"
 # TXT文件，每行一个HMM文件的绝对路径
-HMM_FILE_TXT="/home/luolintao/0-tmp/3-Bam_Tam/conf/hmm_all.txt"
-OUTPUT_DIR="/home/luolintao/0-tmp/3-Bam_Tam/output/"
+HMM_FILE_TXT="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-HMM/conf/hmm_list.txt"
+OUTPUT_DIR="/mnt/f/15_Bam_Tam/5-补齐更多物种/output_基因存在/"
 CHECKPOINT_DIR="${OUTPUT_DIR}.checkpoint"
 LOG_FILE="${OUTPUT_DIR}processing.log"
 FAILED_LOG_FILE="${OUTPUT_DIR}failed_tasks.log"

@@ -138,20 +138,29 @@ initialize() {
 
 # ==================== 获取基因列表 ====================
 get_gene_ids() {
-    local first_sample
     local single_copy_dir
-    
-    print_info "扫描基因ID列表..."
-    
-    first_sample=$(ls "$BUSCO_OUTPUT_DIR" | head -n 1)
-    single_copy_dir="$BUSCO_OUTPUT_DIR/$first_sample/$BUSCO_RUN_NAME/$SINGLE_COPY_SUBDIR"
-    
-    if [ ! -d "$single_copy_dir" ]; then
-        print_error "找不到单拷贝基因目录: $single_copy_dir"
+    local first_sample
+    local samples=()
+
+    mapfile -t samples < <(find "$BUSCO_OUTPUT_DIR" -mindepth 1 -maxdepth 1 -type d ! -name '.*' | sort)
+
+    first_sample=${samples[0]:-}
+
+    if [ -z "$first_sample" ]; then
+        print_error "BUSCO输出目录为空: $BUSCO_OUTPUT_DIR" >&2
         exit 1
     fi
-    
-    ls "$single_copy_dir" | sed 's/.faa$//' | sort
+
+    single_copy_dir="$first_sample/$BUSCO_RUN_NAME/$SINGLE_COPY_SUBDIR"
+
+    if [ ! -d "$single_copy_dir" ]; then
+        print_error "找不到单拷贝基因目录: $single_copy_dir" >&2
+        exit 1
+    fi
+
+    find "$single_copy_dir" -maxdepth 1 -type f -name '*.faa' -printf '%f\n' 2>/dev/null | \
+        sed 's/\.faa$//' | \
+        sort || true
 }
 
 # ==================== 并行收集基因序列 ====================
@@ -196,9 +205,19 @@ main() {
     initialize
     
     # 3. 获取基因列表
+    print_info "扫描基因ID列表..."
     local gene_ids_array
     mapfile -t gene_ids_array < <(get_gene_ids)
     local total_genes=${#gene_ids_array[@]}
+    
+    # 检查是否获取到基因列表
+    if [ "$total_genes" -eq 0 ]; then
+        print_warning "未发现任何单拷贝基因，脚本退出"
+        print_success "输出目录已创建: $OUTPUT_DIR"
+        echo ""
+        print_success "✓ 任务完成！"
+        return 0
+    fi
     
     print_info "发现 ${total_genes} 个单拷贝基因"
     echo ""
@@ -222,12 +241,14 @@ main() {
     
     # 5. 将临时文件移到最终位置
     print_info "整理输出文件..."
-    for gene_id in "${gene_ids_array[@]}"; do
-        if [ -d "$TEMP_DIR/$gene_id" ]; then
-            mkdir -p "$OUTPUT_DIR/$gene_id"
-            mv "$TEMP_DIR/$gene_id"/* "$OUTPUT_DIR/$gene_id/" 2>/dev/null || true
-        fi
-    done
+    if [ ${#gene_ids_array[@]} -gt 0 ]; then
+        for gene_id in "${gene_ids_array[@]}"; do
+            if [ -d "$TEMP_DIR/$gene_id" ]; then
+                mkdir -p "$OUTPUT_DIR/$gene_id"
+                mv "$TEMP_DIR/$gene_id"/* "$OUTPUT_DIR/$gene_id/" 2>/dev/null || true
+            fi
+        done
+    fi
     
     # 6. 统计结果
     print_info "生成统计信息..."
@@ -237,20 +258,25 @@ main() {
     local total_sequences=0
     local genes_with_sequences=0
     
-    for gene_dir in "$OUTPUT_DIR"/*; do
-        if [ -d "$gene_dir" ]; then
-            local gene_id
-            gene_id=$(basename "$gene_dir")
-            local count
-            count=$(ls "$gene_dir"/*.faa 2>/dev/null | wc -l)
-            
-            if [ "$count" -gt 0 ]; then
-                ((genes_with_sequences++))
-                ((total_sequences += count))
-                print_success "  $gene_id: $count 个序列"
+    # 安全地遍历输出目录
+    if [ -d "$OUTPUT_DIR" ] && [ "$(ls -A "$OUTPUT_DIR" 2>/dev/null | grep -v '^\.' | wc -l)" -gt 0 ]; then
+        while IFS= read -r gene_dir; do
+            if [ -d "$gene_dir" ]; then
+                local gene_id
+                gene_id=$(basename "$gene_dir")
+                local count
+                count=$(find "$gene_dir" -maxdepth 1 -type f -name '*.faa' 2>/dev/null | wc -l)
+                
+                if [ "$count" -gt 0 ]; then
+                    ((genes_with_sequences++))
+                    ((total_sequences += count))
+                    print_success "  $gene_id: $count 个序列"
+                fi
             fi
-        fi
-    done
+        done < <(find "$OUTPUT_DIR" -maxdepth 1 -type d ! -name '.*' 2>/dev/null)
+    else
+        print_warning "输出目录为空，未找到任何基因序列"
+    fi
     
     echo ""
     print_info "====== 总体统计 ======"
@@ -261,7 +287,9 @@ main() {
     
     # 7. 清理临时文件
     print_info "清理临时文件..."
-    rm -rf "$TEMP_DIR"
+    if [ -d "$TEMP_DIR" ]; then
+        rm -rf "$TEMP_DIR"
+    fi
     
     echo ""
     print_success "✓ 任务完成！"

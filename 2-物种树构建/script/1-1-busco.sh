@@ -37,10 +37,10 @@
 ################################################################################
 # 配置部分 - 所有变量写死
 ################################################################################
-INPUT_DIR="/mnt/f/15_Bam_Tam/5-补齐更多物种/download"
-OUTPUT_DIR="/mnt/f/15_Bam_Tam/5-补齐更多物种/output/busco_out"
+INPUT_DIR="/mnt/f/15_Bam_Tam/5-补齐更多物种/prokka/output/"
+OUTPUT_DIR="/mnt/f/15_Bam_Tam/5-补齐更多物种/busco_out"
 DATABASE_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-物种树构建/database/busco_downloads/"
-JOBS=7
+JOBS=14
 LINEAGE="bacteria_odb10"
 MODE="proteins"
 
