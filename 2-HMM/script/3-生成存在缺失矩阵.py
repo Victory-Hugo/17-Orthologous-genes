@@ -6,24 +6,12 @@ import os
 import sys
 from pathlib import Path
 
-# 硬编码的配置路径
-#* 输入文件结构如下
-#* ├── geneA/
-#* │   ├── genome_001.tbl
-#* │   ├── genome_002.tbl
-#* │   └── genome_003.tbl
-#* │
-#* ├── geneB/
-#* │   ├── genome_001.tbl
-#* │   ├── genome_002.tbl
-#* │   └── genome_004.tbl
-
 # ==============================
 # 硬编码配置
 # ==============================
 BASE_DIR = Path("/home/luolintao/0-tmp/3-Bam_Tam/output")  # 包含所有tbl的文件夹
 OUTPUT_TSV = Path("/home/luolintao/0-tmp/3-Bam_Tam/output/presence_absence_matrix.tsv")
-EVALUE_CUTOFF = 1e-5  # 新增：E-value 阈值，小于该值记为1，否则0
+EVALUE_CUTOFF = 1e-5  # E-value 阈值，小于该值记为1
 
 # 控制台颜色
 COLOR_INFO = "\033[94m"
@@ -35,13 +23,22 @@ COLOR_RESET = "\033[0m"
 def collect_tbl_files(base_dir: Path):
     """
     遍历指定目录下的所有 .tbl 文件。
-    返回 (gene_name, genome_name, has_hit)
+    返回列表: (gene_name, genome_name, has_hit)
+
+    其中:
+    - gene_name = 基因目录名 (比如 geneA)
+    - genome_name = 文件基名 (比如 genome_001)
+    - has_hit:
+        True  => 该tbl内存在 e-value < EVALUE_CUTOFF 的命中
+        False => 该tbl存在，但没有任何满足阈值的命中
+        None  => 文件存在但读取失败 (I/O错误等)
     """
     tbl_paths = [path for path in base_dir.rglob("*.tbl") if path.is_file()]
     total = len(tbl_paths)
     if total == 0:
         print(f"{COLOR_WARNING}[WARN]{COLOR_RESET} 未在 {base_dir} 找到 .tbl 文件")
         return []
+
     tbl_pairs = []
     for index, file_path in enumerate(sorted(tbl_paths), start=1):
         gene_name = file_path.parent.name
@@ -49,6 +46,7 @@ def collect_tbl_files(base_dir: Path):
         has_hit = tbl_has_hit(file_path)
         tbl_pairs.append((gene_name, genome_name, has_hit))
         render_progress(index, total, prefix="[COLLECT]")
+
     if total:
         sys.stdout.write("\n")
         sys.stdout.flush()
@@ -57,18 +55,45 @@ def collect_tbl_files(base_dir: Path):
 
 def build_presence_absence_matrix(tbl_pairs):
     """
-    构建存在/缺失矩阵。
+    构建存在/缺失矩阵 (presence/absence matrix)。
+
+    规则:
+    - 初始化时，所有 [genome][gene] = "NA"
+      含义: 这个组合没有对应的 .tbl 文件 => 没跑，不知道
+    - 如果有该 .tbl 文件:
+        has_hit is True  => 1
+        has_hit is False => 0
+        has_hit is None  => "NA" (读文件失败，视为未知)
+
+    返回:
+    gene_names (按字母序)
+    genome_names (按字母序)
+    presence[genome][gene] -> "NA" / 0 / 1
     """
     gene_names = sorted({gene for gene, _, _ in tbl_pairs})
     genome_names = sorted({genome for _, genome, _ in tbl_pairs})
-    presence = {genome: {gene: 0 for gene in gene_names} for genome in genome_names}
+
+    # 全部预填为 "NA"
+    presence = {
+        genome: {gene: "NA" for gene in gene_names}
+        for genome in genome_names
+    }
+
+    # 用真实有文件的组合覆盖 "NA"
     for gene, genome, has_hit in tbl_pairs:
-        presence[genome][gene] = 1 if has_hit else 0
+        if has_hit is True:
+            presence[genome][gene] = 1
+        elif has_hit is False:
+            presence[genome][gene] = 0
+        else:
+            # has_hit is None，维持/设为 "NA"
+            presence[genome][gene] = "NA"
+
     return gene_names, genome_names, presence
 
 
 def _parse_float_evalue(token: str):
-    """安全解析 e-value 字符串为 float"""
+    """安全解析 e-value 字符串为 float。无法解析返回 None。"""
     t = token.strip()
     if t in {"*", "-", "NA", "na"}:
         return None
@@ -78,11 +103,16 @@ def _parse_float_evalue(token: str):
         return None
 
 
-def tbl_has_hit(file_path: Path) -> bool:
+def tbl_has_hit(file_path: Path):
     """
-    检查 .tbl 文件是否有符合 EVALUE_CUTOFF 的命中：
-    - 使用 “full sequence E-value” （第5列）
-    - 若小于 EVALUE_CUTOFF，则返回 True，否则 False。
+    检查 .tbl 文件是否有符合 EVALUE_CUTOFF 的命中。
+
+    逻辑:
+    - 扫描非注释、非空行
+    - 取第5列 (full sequence E-value)
+    - 如果 e-value < EVALUE_CUTOFF => True
+    - 如果文件能读但都不满足 => False
+    - 如果文件读失败(IO错误等) => None
     """
     try:
         with file_path.open("r", encoding="utf-8", errors="ignore") as handle:
@@ -96,9 +126,11 @@ def tbl_has_hit(file_path: Path) -> bool:
                 e_full = _parse_float_evalue(cols[4])
                 if e_full is not None and e_full < EVALUE_CUTOFF:
                     return True
+        # 能正常读完整个文件，但没有命中
+        return False
     except OSError as exc:
         print(f"{COLOR_WARNING}[WARN]{COLOR_RESET} 无法读取文件 {file_path}: {exc}")
-    return False
+        return None
 
 
 def render_progress(current, total, prefix=""):
@@ -119,7 +151,12 @@ def render_progress(current, total, prefix=""):
 
 
 def write_matrix(output_path: Path, gene_names, genome_names, presence):
-    """写出 TSV 矩阵"""
+    """
+    写出 TSV 矩阵:
+    第一列: 文件名(即genome名)
+    后面一列列是各gene
+    单元格为 1 / 0 / NA
+    """
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w", encoding="utf-8") as handle:
         header = ["文件名", *gene_names]
@@ -134,6 +171,7 @@ def main():
     if not BASE_DIR.exists():
         print(f"{COLOR_WARNING}[WARN]{COLOR_RESET} 目录不存在: {BASE_DIR}")
         sys.exit(1)
+
     print(f"{COLOR_INFO}[INFO]{COLOR_RESET} 使用 e-value 阈值: {EVALUE_CUTOFF:g}")
 
     tbl_pairs = collect_tbl_files(BASE_DIR)
