@@ -30,10 +30,10 @@ CYAN='\033[0;36m'
 NC='\033[0m'  # No Color
 
 # ==================== 变量定义 ====================
-INPUT_DIR="/mnt/f/15_Bam_Tam/2-物种树/output/all_single_copy"
-OUTPUT_DIR="/mnt/f/15_Bam_Tam/2-物种树/output/all_core_genomes"
-COVERAGE_FILE="/mnt/f/15_Bam_Tam/2-物种树/output/coverage_analysis/gene_species_count.csv"
-THRESHOLD=100
+INPUT_DIR="/mnt/f/15_Bam_Tam/5-补齐更多物种/output/all_single_copy"
+OUTPUT_DIR="/mnt/f/15_Bam_Tam/5-补齐更多物种/output/all_core_genomes"
+COVERAGE_FILE="/mnt/f/15_Bam_Tam/5-补齐更多物种/output/coverage_analysis/gene_species_count.csv"
+THRESHOLD=1200  #? 这个值代表在1200个物种中存在该基因
 TEMP_DIR="/tmp/core_genes_$$"
 MAX_PARALLEL_JOBS=8
 PROCESSED_DIR="${OUTPUT_DIR}/.processed"

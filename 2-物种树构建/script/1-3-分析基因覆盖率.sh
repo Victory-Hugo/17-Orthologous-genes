@@ -34,8 +34,8 @@ NC='\033[0m' # No Color
 # ============================================================================
 # 硬编码的变量配置
 # ============================================================================
-SINGLE_COPY_DIR="/mnt/f/15_Bam_Tam/2-物种树/output/all_single_copy"
-OUTPUT_DIR="/mnt/f/15_Bam_Tam/2-物种树/output/coverage_analysis"
+SINGLE_COPY_DIR="/mnt/f/15_Bam_Tam/5-补齐更多物种/output/all_single_copy"
+OUTPUT_DIR="/mnt/f/15_Bam_Tam/5-补齐更多物种/output/coverage_analysis"
 LOG_FILE="${OUTPUT_DIR}/analysis.log"
 CHECKPOINT_DIR="${OUTPUT_DIR}/.checkpoint"
 TEMP_DIR="${OUTPUT_DIR}/.temp"

@@ -20,8 +20,8 @@
 # =========================================================================
 
 # 设置路径 - 所有变量写死
-CORE_GENES_DIR="/mnt/f/15_Bam_Tam/2-物种树/output/all_core_genomes"
-OUTPUT_DIR="/mnt/f/15_Bam_Tam/2-物种树/output/alignments"
+CORE_GENES_DIR="/mnt/f/15_Bam_Tam/5-补齐更多物种/output/all_core_genomes"
+OUTPUT_DIR="/mnt/f/15_Bam_Tam/5-补齐更多物种/output/alignments"
 ALL_SPECIES_FILE="/mnt/f/15_Bam_Tam/2-物种树/conf/all_species.txt"
 TEMP_GENES_LIST="/tmp/core_genes_list_$$.txt"
 CHECKPOINT_DIR="/mnt/f/15_Bam_Tam/2-物种树/output/.checkpoint"

@@ -28,9 +28,9 @@ from collections import defaultdict
 # ============================================================================
 
 # 输入/输出路径配置
-ALIGNMENT_DIR = "/mnt/f/15_Bam_Tam/2-物种树/output/alignments"
-OUTPUT_DIR = "/mnt/f/15_Bam_Tam/2-物种树/output/concatenated"
-OUTPUT_FILE = "/mnt/f/15_Bam_Tam/2-物种树/output/concatenated/supermatrix.faa"
+ALIGNMENT_DIR = "/mnt/f/15_Bam_Tam/5-补齐更多物种/output/alignments"
+OUTPUT_DIR = "/mnt/f/15_Bam_Tam/5-补齐更多物种/output/concatenated"
+OUTPUT_FILE = "/mnt/f/15_Bam_Tam/5-补齐更多物种/output/concatenated/supermatrix.faa"
 TEMP_FILES = []  # 用于记录临时文件
 
 # 颜色定义

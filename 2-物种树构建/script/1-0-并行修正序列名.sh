@@ -7,9 +7,9 @@
 
 # ===== 可配置区域 =====
 EXT="${EXT:-.faa}"  # 文件后缀（可通过命令行 EXT=.fna ./script.sh 指定）
-CORE_GENES_DIR="/mnt/f/15_Bam_Tam/2-物种树/output/all_core_genomes" #* 将该文件夹下（子文件夹）中的所有序列修改
-LOG_FILE="/mnt/f/15_Bam_Tam/2-物种树/output/sequence_rename_log.txt"
-THREADS=$(nproc)
+CORE_GENES_DIR="/mnt/f/15_Bam_Tam/5-补齐更多物种/output/all_single_copy" #* 将该文件夹下（子文件夹）中的所有序列修改
+LOG_FILE="/mnt/f/15_Bam_Tam/5-补齐更多物种/output/sequence_rename_log.txt"
+THREADS=21
 # =====================
 
 echo "=========================================="
@@ -38,7 +38,7 @@ process_faa_file() {
     fi
 
     # 修改点：删除注释，仅保留'>'后的第一个字段作为原序列名基础
-    awk -v prefix="$filename" -v log="$log_file" -v file="$faa_file" '
+    awk -v prefix="$filename" -v logfile="$log_file" -v file="$faa_file" '
         BEGIN { seqnum=0 }
         /^>/ {
             seqnum++
@@ -47,7 +47,7 @@ process_faa_file() {
             oldname = arr[1]
             newname = ">" prefix "_" seqnum
             print newname
-            print file ": " oldname " -> " newname >> log
+            print file ": " oldname " -> " newname >> logfile
             next
         }
         { print }
