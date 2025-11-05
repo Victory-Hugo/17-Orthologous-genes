@@ -1,8 +1,8 @@
 #!/bin/bash
 
-INPUT_ALN="/mnt/f/15_Bam_Tam/5-补齐更多物种/output/concatenated/supermatrix.faa"
-OUTPUT_TREE="/mnt/f/15_Bam_Tam/5-补齐更多物种/output/concatenated/tree"
-THREADS="16"
+INPUT_ALN="/home/luolintao/0-tmp/3-Bam_Tam/output/物种树/supermatrix.faa"
+OUTPUT_TREE="/home/luolintao/0-tmp/3-Bam_Tam/output/物种树/tree"
+THREADS="64"
 SOFTWARE="VeryFastTree"
 
 
