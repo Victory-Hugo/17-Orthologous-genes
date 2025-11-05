@@ -10,7 +10,10 @@
 #   - 标准库: os, sys, argparse, pathlib, collections, signal, atexit, shutil
 #
 # 使用方式:
-#   python3 2-3-串联基因.py
+#   python3 2-3-串联基因.py [--min-genes N]
+#   
+#   参数说明:
+#   --min-genes: 筛选在至少N个基因中都出现的物种 (默认为所有基因)
 #
 # ============================================================================
 
@@ -101,10 +104,10 @@ atexit.register(cleanup_on_exit)
 def parse_fasta_files(alignment_dir):
     """
     解析alignment目录中的所有FASTA文件
-    返回字典：{species_id: concatenated_sequence}
+    返回字典：{gene_name: {species_id: sequence}}
     同时返回物种基因覆盖信息
     """
-    sequences = defaultdict(str)
+    gene_sequences = {}  # {gene_name: {species_id: sequence}}
     gene_files = sorted(Path(alignment_dir).glob("*_aligned.faa"))
     
     if not gene_files:
@@ -113,10 +116,14 @@ def parse_fasta_files(alignment_dir):
     
     print_success(f"找到 {len(gene_files)} 个基因文件\n")
     
-    species_gene_count = defaultdict(int)  # 记录每个物种找到的基因数
+    all_species = set()  # 收集所有物种
     
     for idx, gene_file in enumerate(gene_files, 1):
         print_progress_bar(idx, len(gene_files))
+        
+        # 从文件名提取基因名
+        gene_name = gene_file.stem.replace('_aligned', '')
+        gene_sequences[gene_name] = {}
         
         with open(gene_file, 'r') as f:
             current_species = None
@@ -129,9 +136,9 @@ def parse_fasta_files(alignment_dir):
                 
                 if line.startswith('>'):
                     # 保存前一个序列
-                    if current_species:
-                        sequences[current_species] += current_seq
-                        species_gene_count[current_species] += 1
+                    if current_species and current_seq:
+                        gene_sequences[gene_name][current_species] = current_seq
+                        all_species.add(current_species)
                     
                     # 解析新的头部行，提取物种ID (GCA_XXXXX.X)
                     header = line[1:]  # 去掉 '>'
@@ -143,11 +150,17 @@ def parse_fasta_files(alignment_dir):
                     current_seq += line
             
             # 保存最后一个序列
-            if current_species:
-                sequences[current_species] += current_seq
-                species_gene_count[current_species] += 1
+            if current_species and current_seq:
+                gene_sequences[gene_name][current_species] = current_seq
+                all_species.add(current_species)
     
     print()  # 换行
+    
+    # 统计每个物种的基因覆盖情况
+    species_gene_count = defaultdict(int)
+    for gene_name, species_seqs in gene_sequences.items():
+        for species_id in species_seqs.keys():
+            species_gene_count[species_id] += 1
     
     print_info("物种基因覆盖情况：")
     # 检查每个物种覆盖的基因数
@@ -158,7 +171,45 @@ def parse_fasta_files(alignment_dir):
     for count in sorted(gene_counts.keys()):
         print(f"  {Colors.CYAN}•{Colors.RESET} {gene_counts[count]} 个物种包含 {count} 个基因")
     
-    return dict(sequences), species_gene_count
+    return gene_sequences, species_gene_count
+
+def generate_concatenated_sequences(gene_sequences, filtered_species, gene_files_order):
+    """
+    为筛选后的物种生成串联序列
+    对于缺失的基因，用相应长度的gap(-)填充
+    """
+    concatenated_sequences = {}
+    
+    print_info("生成串联序列...")
+    
+    # 获取每个基因的序列长度（从第一个有该基因的物种获取）
+    gene_lengths = {}
+    for gene_name in gene_files_order:
+        if gene_name in gene_sequences and gene_sequences[gene_name]:
+            # 获取第一个物种的序列长度作为该基因的标准长度
+            first_seq = next(iter(gene_sequences[gene_name].values()))
+            gene_lengths[gene_name] = len(first_seq)
+        else:
+            gene_lengths[gene_name] = 0
+    
+    total_species = len(filtered_species)
+    
+    for idx, species_id in enumerate(sorted(filtered_species), 1):
+        print_progress_bar(idx, total_species)
+        
+        concatenated_seq = ""
+        for gene_name in gene_files_order:
+            if gene_name in gene_sequences and species_id in gene_sequences[gene_name]:
+                # 物种有这个基因
+                concatenated_seq += gene_sequences[gene_name][species_id]
+            else:
+                # 物种缺失这个基因，用gap填充
+                concatenated_seq += "-" * gene_lengths.get(gene_name, 0)
+        
+        concatenated_sequences[species_id] = concatenated_seq
+    
+    print()  # 换行
+    return concatenated_sequences
 
 def write_concatenated_fasta(sequences, output_file, species_gene_count=None, min_genes=None):
     """
@@ -211,8 +262,37 @@ def write_concatenated_fasta(sequences, output_file, species_gene_count=None, mi
         print_error(f"写入文件失败: {e}")
         return False
 
+def parse_args():
+    """解析命令行参数"""
+    parser = argparse.ArgumentParser(
+        description="蛋白质序列串联工具 - 串联多个对齐的蛋白质序列文件，生成用于物种树构建的超矩阵",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+使用示例:
+  # 使用默认设置（筛选在所有基因中都出现的物种）
+  python3 2-3-串联基因.py
+  
+  # 筛选在至少5个基因中出现的物种
+  python3 2-3-串联基因.py --min-genes 5
+  
+  # 筛选在至少80%的基因中出现的物种（使用百分比）
+  python3 2-3-串联基因.py --min-genes 80%
+        """)
+    
+    parser.add_argument(
+        '--min-genes',
+        type=str,
+        default=None,
+        help='筛选在至少N个基因中都出现的物种。可以是具体数字或百分比（如"80%%"）。默认为所有基因。'
+    )
+    
+    return parser.parse_args()
+
 def main():
     """主程序函数"""
+    # 解析命令行参数
+    args = parse_args()
+    
     print_header("蛋白质序列串联工具")
     print_info(f"作者: BigLin\n")
     
@@ -238,40 +318,74 @@ def main():
     # 解析FASTA文件
     print_header("第一步: 读取基因对齐文件")
     print_info(f"从 {alignment_dir} 读取基因对齐文件...\n")
-    sequences, species_gene_count = parse_fasta_files(alignment_dir)
+    gene_sequences, species_gene_count = parse_fasta_files(alignment_dir)
     
-    if not sequences:
+    if not gene_sequences:
         return False
     
-    # 获取基因总数
-    total_genes = len([f for f in Path(alignment_dir).glob("*_aligned.faa")])
+    # 获取基因总数和基因文件顺序
+    gene_files = sorted(Path(alignment_dir).glob("*_aligned.faa"))
+    total_genes = len(gene_files)
+    gene_files_order = [f.stem.replace('_aligned', '') for f in gene_files]
     print_success(f"总基因数: {total_genes}")
     
-    # 过滤：只保留在所有基因中都出现的物种
-    print_header("第二步: 筛选物种")
-    print_info(f"筛选在所有 {total_genes} 个基因中都出现的物种...\n")
+    # 解析最小基因数参数
+    if args.min_genes is None:
+        min_genes_required = total_genes  # 默认为所有基因
+        min_genes_desc = f"所有 {total_genes} 个基因"
+    else:
+        if args.min_genes.endswith('%'):
+            # 百分比形式
+            percentage = float(args.min_genes[:-1])
+            min_genes_required = max(1, int(total_genes * percentage / 100))
+            min_genes_desc = f"至少 {min_genes_required} 个基因 ({percentage}% of {total_genes})"
+        else:
+            # 具体数字
+            min_genes_required = int(args.min_genes)
+            min_genes_desc = f"至少 {min_genes_required} 个基因"
     
-    filtered_sequences = {}
-    for species_id, seq in sequences.items():
-        if species_gene_count[species_id] == total_genes:
-            filtered_sequences[species_id] = seq
-    
-    print_success(f"原始物种数: {len(sequences)}")
-    print_success(f"筛选后物种数: {len(filtered_sequences)}\n")
-    
-    if not filtered_sequences:
-        print_error("没有物种在所有基因中都出现！")
+    # 验证参数合理性
+    if min_genes_required > total_genes:
+        print_error(f"指定的最小基因数 ({min_genes_required}) 超过了总基因数 ({total_genes})！")
         return False
     
+    # 过滤：只保留在指定数量基因中都出现的物种
+    print_header("第二步: 筛选物种")
+    print_info(f"筛选在{min_genes_desc}中都出现的物种...\n")
+    
+    filtered_species = set()
+    all_species_count = len(species_gene_count)
+    
+    for species_id, gene_count in species_gene_count.items():
+        if gene_count >= min_genes_required:
+            filtered_species.add(species_id)
+    
+    print_success(f"原始物种数: {all_species_count}")
+    print_success(f"筛选后物种数: {len(filtered_species)}")
+    print_success(f"筛选条件: {min_genes_desc}\n")
+    
+    if not filtered_species:
+        print_error(f"没有物种满足筛选条件（{min_genes_desc}）！")
+        print_warning("建议尝试降低 --min-genes 参数值")
+        return False
+    
+    # 生成串联序列
+    print_header("第三步: 生成串联序列")
+    concatenated_sequences = generate_concatenated_sequences(
+        gene_sequences, 
+        filtered_species, 
+        gene_files_order
+    )
+    
     # 统计串联长度
-    first_species = list(filtered_sequences.keys())[0]
-    total_length = len(filtered_sequences[first_species])
+    first_species = list(concatenated_sequences.keys())[0]
+    total_length = len(concatenated_sequences[first_species])
     print_success(f"每个物种的串联序列长度: {total_length}")
     
     # 写入输出文件
-    print_header("第三步: 生成串联序列文件")
+    print_header("第四步: 写入输出文件")
     success = write_concatenated_fasta(
-        filtered_sequences,
+        concatenated_sequences,
         output_file,
         species_gene_count=species_gene_count,
         min_genes=None,
@@ -281,7 +395,7 @@ def main():
         return False
     
     # 验证输出
-    print_header("第四步: 验证输出文件")
+    print_header("第五步: 验证输出文件")
     print_info("验证输出文件...\n")
     
     try:

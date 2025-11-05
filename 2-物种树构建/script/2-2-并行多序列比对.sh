@@ -21,10 +21,11 @@
 
 # 设置路径 - 所有变量写死
 CORE_GENES_DIR="/mnt/f/15_Bam_Tam/5-补齐更多物种/output/all_core_genomes"
+SINGLE_COPY_DIR="/mnt/f/15_Bam_Tam/5-补齐更多物种/output/all_single_copy"
 OUTPUT_DIR="/mnt/f/15_Bam_Tam/5-补齐更多物种/output/alignments"
-ALL_SPECIES_FILE="/mnt/f/15_Bam_Tam/2-物种树/conf/all_species.txt"
+ALL_SPECIES_FILE="/mnt/f/15_Bam_Tam/5-补齐更多物种/conf/all_species.txt" #! 自动生成
 TEMP_GENES_LIST="/tmp/core_genes_list_$$.txt"
-CHECKPOINT_DIR="/mnt/f/15_Bam_Tam/2-物种树/output/.checkpoint"
+CHECKPOINT_DIR="/mnt/f/15_Bam_Tam/5-补齐更多物种/output/.checkpoint"
 COMPLETED_GENES_FILE="$CHECKPOINT_DIR/completed_genes.txt"
 PROGRESS_FILE="$CHECKPOINT_DIR/progress.log"
 
@@ -114,9 +115,9 @@ print_info "输出目录: $OUTPUT_DIR"
 print_separator
 
 print_info "Step 1/5: 获取完整物种列表..."
-find /mnt/f/15_Bam_Tam/2-物种树/output/all_single_copy -name "*.faa" | sed 's|.*/||; s|\.faa$||' | sort -u > "$ALL_SPECIES_FILE"
+find "$SINGLE_COPY_DIR" -name "*.faa" | sed 's|.*/||; s|\.faa$||' | sort -u > "$ALL_SPECIES_FILE"
 if [[ -f "$ALL_SPECIES_FILE" ]]; then
-    local species_count=$(wc -l < "$ALL_SPECIES_FILE")
+    species_count=$(wc -l < "$ALL_SPECIES_FILE")
     print_success "已获取 $species_count 个物种"
 else
     print_error "无法生成物种列表"
@@ -125,18 +126,18 @@ fi
 
 print_info "Step 2/5: 获取核心基因列表..."
 ls -1 "$CORE_GENES_DIR" | grep -E "^[0-9].*at2$" > "$TEMP_GENES_LIST"
-local gene_count=$(wc -l < "$TEMP_GENES_LIST")
+gene_count=$(wc -l < "$TEMP_GENES_LIST")
 print_success "已找到 $gene_count 个核心基因"
 
 # 检查checkpoint，识别已完成的基因
 print_info "Step 3/5: 检查断点续跑信息..."
 if [[ -f "$COMPLETED_GENES_FILE" ]]; then
-    local completed_count=$(wc -l < "$COMPLETED_GENES_FILE")
+    completed_count=$(wc -l < "$COMPLETED_GENES_FILE")
     print_success "发现 $completed_count 个已完成的基因，将跳过这些基因"
     # 生成待处理的基因列表（排除已完成的）
     grep -vFf "$COMPLETED_GENES_FILE" "$TEMP_GENES_LIST" > "${TEMP_GENES_LIST}.todo" || true
     mv "${TEMP_GENES_LIST}.todo" "$TEMP_GENES_LIST"
-    local remaining_count=$(wc -l < "$TEMP_GENES_LIST")
+    remaining_count=$(wc -l < "$TEMP_GENES_LIST")
     print_info "还需处理 $remaining_count 个基因"
 else
     print_info "首次运行，将处理所有基因"
@@ -210,7 +211,7 @@ print_info "输出目录: $OUTPUT_DIR"
 print_info "已完成基因数: $(wc -l < "$COMPLETED_GENES_FILE" 2>/dev/null || echo 0)"
 
 # 统计输出文件
-local aligned_count=$(find "$OUTPUT_DIR" -name "*_aligned.faa" -type f | wc -l)
+aligned_count=$(find "$OUTPUT_DIR" -name "*_aligned.faa" -type f | wc -l)
 print_success "已生成 $aligned_count 个比对文件"
 
 print_separator
