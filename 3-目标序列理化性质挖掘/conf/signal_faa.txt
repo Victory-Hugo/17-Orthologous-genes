@@ -1,0 +1,2 @@
+/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-HMM/download/GCF_000163355.2.faa
+/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-HMM/download/GCF_030585305.1.faa

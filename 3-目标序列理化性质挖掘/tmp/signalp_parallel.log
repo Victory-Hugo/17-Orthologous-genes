@@ -1,0 +1,3 @@
+Seq	Host	Starttime	JobRuntime	Send	Receive	Exitval	Signal	Command
+1	:	1762779276.911	    38.408	0	0	0	0	process_faa /mnt/f/OneDrive/\æ\–\‡\æ\¡\£\ï\¼\ˆ\ç\§\‘\ç\ \”\ï\¼\‰/\è\„\š\æ\œ\¬/Download/17-Orthologous-genes/2-HMM/download/GCF_000163355.2.faa
+2	:	1762779276.912	    39.470	0	0	0	0	process_faa /mnt/f/OneDrive/\æ\–\‡\æ\¡\£\ï\¼\ˆ\ç\§\‘\ç\ \”\ï\¼\‰/\è\„\š\æ\œ\¬/Download/17-Orthologous-genes/2-HMM/download/GCF_030585305.1.faa
