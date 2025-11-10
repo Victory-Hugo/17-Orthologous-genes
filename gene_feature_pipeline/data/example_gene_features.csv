@@ -1,4 +1,0 @@
-gene_id,description,length_nt,gc_content,protein_length,is_valid_orf,pi,gravy,cai
-geneA,hypothetical protein,33,0.5758,10,True,6.01,1.810,0.564
-geneB,membrane protein,33,0.2727,10,True,10.11,3.160,0.518
-geneC,enzyme,24,0.4583,7,True,2.87,-1.086,0.564
