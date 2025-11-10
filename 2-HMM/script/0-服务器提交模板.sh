@@ -2,9 +2,9 @@
 # 一键运行批处理脚本（支持 screen / tmux）
 
 # 配置
-SESSION_NAME="HMM_run"
-SCRIPT_PATH="/home/luolintao/0_Github/17-Orthologous-genes/2-HMM/script/2-HMM比对.sh"
-LOG_FILE="/home/luolintao/5-AB-Baoman/2-Lol家族基因搜索/HMM_run.log"
+SESSION_NAME="4-并行提取最佳匹配序列_run"
+SCRIPT_PATH="/home/luolintao/0_Github/17-Orthologous-genes/2-HMM/script/4-并行提取最佳匹配序列.sh"
+LOG_FILE="/home/luolintao/5-AB-Baoman/2-Lol家族基因搜索/data/4-并行提取最佳匹配序列_run.log"
 
 echo "🧬 启动 $SESSION_NAME 批处理..."
 echo "会话名称: $SESSION_NAME"

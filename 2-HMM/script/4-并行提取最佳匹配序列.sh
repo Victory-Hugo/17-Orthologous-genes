@@ -28,14 +28,22 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
+#* 输出目录结构示例:
+#*├── 基因名字1
+#*├── 基因名字2
+#*├── 基因名字3
+
 # ==================== 全部变量写死 ====================
-LIST_FILE="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-HMM/conf/鲍曼faa.list.txt"
-RESULTS_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-HMM/output/" #! 这里写tbl文件的目录
-OUTPUT_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-HMM/output/" #! 这里写提取序列的输出目录
-SCRIPT_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-HMM/script"
+BASEDIR="/home/luolintao/0_Github/17-Orthologous-genes/2-HMM"
+SCRIPT_DIR="${BASEDIR}/script"
+LIST_FILE="${BASEDIR}/conf/鲍曼faa.list.txt"
+
+TBL_FILE="/home/luolintao/5-AB-Baoman/2-Lol家族基因搜索/tbl_merge.tsv" #! 这里写上一步合成的tbl文件
+OUTPUT_DIR="/home/luolintao/5-AB-Baoman/2-Lol家族基因搜索/data/" #! 这里写提取序列的输出目录
+
 JOBS=4
-STATE_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-HMM/.job_state"
-LOG_FILE="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-HMM/log/parallel_extract.log"
+STATE_DIR="${OUTPUT_DIR}/.job_state"
+LOG_FILE="${OUTPUT_DIR}/parallel_extract.log"
 TEMP_FILE_LIST="/tmp/extract_file_list_$$.txt"
 CHECKPOINT_FILE="${STATE_DIR}/checkpoint_$$.json"
 
@@ -120,10 +128,6 @@ validate_inputs() {
         exit 1
     fi
     
-    if [ ! -d "$RESULTS_DIR" ]; then
-        print_error "结果目录不存在: $RESULTS_DIR"
-        exit 1
-    fi
     
     if [ ! -d "$SCRIPT_DIR" ]; then
         print_error "脚本目录不存在: $SCRIPT_DIR"
@@ -149,18 +153,6 @@ get_total_count() {
     wc -l < "$TEMP_FILE_LIST"
 }
 
-# 处理单个文件的包装函数
-process_file_wrapper() {
-    local file=$1
-    local result_dir=$2
-    local output_dir=$3
-    local script_dir=$4
-    
-    python3 "$script_dir/4-提取最佳匹配序列.py" "$file" "$result_dir" "$output_dir"
-    return $?
-}
-
-export -f process_file_wrapper
 
 # 中断处理函数
 cleanup_on_interrupt() {
@@ -199,8 +191,7 @@ run_parallel_processing() {
         --bar \
         --line-buffer \
         --joblog "$STATE_DIR/job_log_$$.txt" \
-        "python3 '$SCRIPT_DIR/4-提取最佳匹配序列.py' {} '$RESULTS_DIR' '$OUTPUT_DIR' 2>&1" >> "$LOG_FILE" 2>&1
-    
+        "python3 '$SCRIPT_DIR/4-提取最佳匹配序列.py' {} '$TBL_FILE' '$OUTPUT_DIR' 2>&1" >> "$LOG_FILE" 2>&1
     local exit_code=$?
     
     if [ $exit_code -eq 0 ]; then
@@ -298,3 +289,4 @@ main() {
 
 # 执行主程序
 main "$@"
+python3 /home/luolintao/test_mail.py "2-HMM/script/4-并行提取最佳匹配序列.sh任务完成通知" "<p>2-HMM/script/4-并行提取最佳匹配序列.sh分析已完成，请查看结果目录。</p>"

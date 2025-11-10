@@ -5,14 +5,17 @@ import csv
 import os
 import sys
 import argparse
+from collections import OrderedDict, defaultdict
 from pathlib import Path
 
 
 def load_hits_for_sample(tbl_file, sample_name):
     """
-    从合并后的 tbl 文件中提取指定样本的命中蛋白 ID（target name 列）。
+    从合并后的 tbl 文件中提取指定样本、按 query name 分类的命中蛋白 ID。
+    返回 OrderedDict[str, list[str]]，保持 query name 与 target 的原始顺序。
     """
-    hits = []
+    hits_by_query: OrderedDict[str, list[str]] = OrderedDict()
+    seen_per_query: defaultdict[str, set[str]] = defaultdict(set)
 
     try:
         with open(tbl_file, 'r', encoding='utf-8', errors='ignore', newline='') as handle:
@@ -32,6 +35,11 @@ def load_hits_for_sample(tbl_file, sample_name):
             except ValueError:
                 target_idx = 1 if len(header) > 1 else 0
 
+            try:
+                query_idx = header.index('query name')
+            except ValueError:
+                query_idx = 3 if len(header) > 3 else target_idx
+
             header_sample_value = header[sample_idx] if sample_idx < len(header) else ''
             header_target_value = header[target_idx] if target_idx < len(header) else ''
 
@@ -48,14 +56,20 @@ def load_hits_for_sample(tbl_file, sample_name):
                     continue
 
                 if row[sample_idx] == sample_name:
-                    hits.append(row[target_idx])
+                    query_name = row[query_idx] if query_idx < len(row) else ''
+                    query_name = query_name.strip() or 'unknown_query'
+                    target_name = row[target_idx]
+
+                    if target_name and target_name not in seen_per_query[query_name]:
+                        hits_by_query.setdefault(query_name, []).append(target_name)
+                        seen_per_query[query_name].add(target_name)
 
     except FileNotFoundError:
         raise
     except Exception as exc:
         raise RuntimeError(f"解析 {tbl_file} 失败: {exc}") from exc
 
-    return hits
+    return hits_by_query
 
 
 def extract_sequences_from_faa(faa_file, target_ids):
@@ -112,7 +126,7 @@ def extract_hit_sequences(faa_file, tbl_file, output_dir):
     filename_base = Path(faa_file).stem
 
     try:
-        hits = load_hits_for_sample(tbl_file, filename_base)
+        hits_by_query = load_hits_for_sample(tbl_file, filename_base)
     except FileNotFoundError:
         print(f"警告: tbl 文件不存在 - {tbl_file}")
         return False
@@ -120,16 +134,14 @@ def extract_hit_sequences(faa_file, tbl_file, output_dir):
         print(exc)
         return False
 
-    if not hits:
+    if not hits_by_query:
         print(f"❌ 无匹配结果: {filename_base}")
         return False
 
-    ordered_hits = []
-    seen = set()
-    for hit in hits:
-        if hit not in seen:
-            ordered_hits.append(hit)
-            seen.add(hit)
+    ordered_hits = [hit for hits in hits_by_query.values() for hit in hits]
+    if not ordered_hits:
+        print(f"❌ 无匹配结果: {filename_base}")
+        return False
 
     try:
         sequences = extract_sequences_from_faa(faa_file, ordered_hits)
@@ -141,35 +153,45 @@ def extract_hit_sequences(faa_file, tbl_file, output_dir):
         print(f"⚠️  警告: 在 FAA 文件中未找到任何命中序列 - {filename_base}")
         return False
 
-    missing = [hit for hit in ordered_hits if hit not in sequences]
-    if missing:
-        print(f"⚠️  警告: {filename_base} 缺失 {len(missing)} 条序列 (示例: {', '.join(missing[:3])})")
+    missing_overall = [hit for hit in ordered_hits if hit not in sequences]
+    if missing_overall:
+        print(f"⚠️  警告: {filename_base} 缺失 {len(missing_overall)} 条序列 (示例: {', '.join(missing_overall[:3])})")
 
-    output_file = os.path.join(output_dir, f"{filename_base}.hits.faa")
+    total_written = 0
+    for query_name, query_hits in hits_by_query.items():
+        if not query_hits:
+            continue
 
-    try:
-        with open(output_file, 'w', encoding='utf-8') as handle:
-            count = 0
-            for hit in ordered_hits:
-                sequence = sequences.get(hit)
-                if not sequence:
-                    continue
-                count += 1
-                header = f"{filename_base}_{count}"
-                handle.write(f">{header}\n")
-                for chunk in format_fasta_sequence(sequence):
-                    handle.write(chunk + '\n')
+        query_dir = os.path.join(output_dir, query_name)
+        os.makedirs(query_dir, exist_ok=True)
+        output_file = os.path.join(query_dir, f"{filename_base}.hits.faa")
 
-        if count == 0:
-            print(f"⚠️  警告: 未能为 {filename_base} 写入任何序列")
-            return False
+        try:
+            with open(output_file, 'w', encoding='utf-8') as handle:
+                count = 0
+                for hit in query_hits:
+                    sequence = sequences.get(hit)
+                    if not sequence:
+                        continue
+                    count += 1
+                    header = f"{filename_base}_{count}"
+                    handle.write(f">{header}\n")
+                    for chunk in format_fasta_sequence(sequence):
+                        handle.write(chunk + '\n')
 
-        print(f"✓ 成功: {filename_base} -> 输出 {count} 条序列")
-        return True
+            if count == 0:
+                print(f"⚠️  警告: {filename_base} 在 {query_name} 中未写入任何序列")
+            else:
+                total_written += count
+                print(f"✓ 成功: {filename_base} - {query_name} -> 输出 {count} 条序列")
 
-    except Exception as exc:
-        print(f"错误: 写入输出文件失败 - {output_file}: {exc}")
+        except Exception as exc:
+            print(f"错误: 写入输出文件失败 - {output_file}: {exc}")
+
+    if total_written == 0:
         return False
+
+    return True
 
 
 def main():
