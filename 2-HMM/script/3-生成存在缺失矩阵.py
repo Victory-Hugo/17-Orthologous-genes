@@ -11,6 +11,7 @@ from pathlib import Path
 # ==============================
 BASE_DIR = Path("/home/luolintao/5-AB-Baoman/2-Lol家族基因搜索")  # 包含所有tbl的文件夹
 OUTPUT_TSV = Path("/home/luolintao/5-AB-Baoman/2-Lol家族基因搜索/presence_absence_matrix.tsv")
+MERGED_TSV = Path("/home/luolintao/5-AB-Baoman/2-Lol家族基因搜索/tbl_merge.tsv")
 EVALUE_CUTOFF = 1e-10  # E-value 阈值，小于该值记为1
 
 # 控制台颜色
@@ -20,10 +21,43 @@ COLOR_WARNING = "\033[93m"
 COLOR_RESET = "\033[0m"
 
 
+def parse_tbl_file(file_path: Path):
+    """
+    解析单个 .tbl 文件。
+
+    返回:
+        rows: List[List[str]] => 数据行, 每行长度为19
+        has_hit: True/False/None => e-value < 阈值时为True; 文件可读但不满足为False; 读取失败为None
+    """
+    rows = []
+    has_hit = False
+    try:
+        with file_path.open("r", encoding="utf-8", errors="ignore") as handle:
+            for line in handle:
+                stripped = line.strip()
+                if not stripped or stripped.startswith("#"):
+                    continue
+                parts = stripped.split(maxsplit=18)
+                if len(parts) < 19:
+                    missing = 19 - len(parts)
+                    parts.extend(["" for _ in range(missing)])
+                    print(f"{COLOR_WARNING}[WARN]{COLOR_RESET} 行格式异常, 已补齐空字段: {file_path}")
+                rows.append(parts)
+                e_full = _parse_float_evalue(parts[4])
+                if e_full is not None and e_full < EVALUE_CUTOFF:
+                    has_hit = True
+        return rows, (True if has_hit else False)
+    except OSError as exc:
+        print(f"{COLOR_WARNING}[WARN]{COLOR_RESET} 无法读取文件 {file_path}: {exc}")
+        return [], None
+
+
 def collect_tbl_files(base_dir: Path):
     """
     遍历指定目录下的所有 .tbl 文件。
-    返回列表: (gene_name, genome_name, has_hit)
+    返回:
+        tbl_pairs: List[(gene_name, genome_name, has_hit)]
+        merged_rows: List[(genome_name, row_values)]
 
     其中:
     - gene_name = 基因目录名 (比如 geneA)
@@ -37,20 +71,23 @@ def collect_tbl_files(base_dir: Path):
     total = len(tbl_paths)
     if total == 0:
         print(f"{COLOR_WARNING}[WARN]{COLOR_RESET} 未在 {base_dir} 找到 .tbl 文件")
-        return []
+        return [], []
 
     tbl_pairs = []
+    merged_rows = []
     for index, file_path in enumerate(sorted(tbl_paths), start=1):
         gene_name = file_path.parent.name
         genome_name = file_path.stem
-        has_hit = tbl_has_hit(file_path)
+        rows, has_hit = parse_tbl_file(file_path)
+        for row in rows:
+            merged_rows.append((genome_name, row))
         tbl_pairs.append((gene_name, genome_name, has_hit))
         render_progress(index, total, prefix="[COLLECT]")
 
     if total:
         sys.stdout.write("\n")
         sys.stdout.flush()
-    return tbl_pairs
+    return tbl_pairs, merged_rows
 
 
 def build_presence_absence_matrix(tbl_pairs):
@@ -103,36 +140,6 @@ def _parse_float_evalue(token: str):
         return None
 
 
-def tbl_has_hit(file_path: Path):
-    """
-    检查 .tbl 文件是否有符合 EVALUE_CUTOFF 的命中。
-
-    逻辑:
-    - 扫描非注释、非空行
-    - 取第5列 (full sequence E-value)
-    - 如果 e-value < EVALUE_CUTOFF => True
-    - 如果文件能读但都不满足 => False
-    - 如果文件读失败(IO错误等) => None
-    """
-    try:
-        with file_path.open("r", encoding="utf-8", errors="ignore") as handle:
-            for line in handle:
-                stripped = line.strip()
-                if not stripped or stripped.startswith("#"):
-                    continue
-                cols = stripped.split()
-                if len(cols) < 5:
-                    continue
-                e_full = _parse_float_evalue(cols[4])
-                if e_full is not None and e_full < EVALUE_CUTOFF:
-                    return True
-        # 能正常读完整个文件，但没有命中
-        return False
-    except OSError as exc:
-        print(f"{COLOR_WARNING}[WARN]{COLOR_RESET} 无法读取文件 {file_path}: {exc}")
-        return None
-
-
 def render_progress(current, total, prefix=""):
     """简单进度条"""
     if total == 0:
@@ -166,6 +173,41 @@ def write_matrix(output_path: Path, gene_names, genome_names, presence):
             handle.write("\t".join(row) + "\n")
 
 
+def write_merged_tsv(output_path: Path, merged_rows):
+    """
+    将所有 .tbl 数据汇总写入一个 TSV 文件。
+    第一列: 文件名(即 genome 名)
+    """
+    header = [
+        "文件名",
+        "target name",
+        "accession",
+        "query name",
+        "accession",
+        "E-value",
+        "score",
+        "bias",
+        "E-value",
+        "score",
+        "bias",
+        "exp",
+        "reg",
+        "clu",
+        "ov",
+        "env",
+        "dom",
+        "rep",
+        "inc",
+        "description of target",
+    ]
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w", encoding="utf-8") as handle:
+        handle.write("\t".join(header) + "\n")
+        for genome_name, row in merged_rows:
+            line = [genome_name, *row]
+            handle.write("\t".join(line) + "\n")
+
+
 def main():
     print(f"{COLOR_INFO}[INFO]{COLOR_RESET} 开始扫描 {BASE_DIR}")
     if not BASE_DIR.exists():
@@ -174,15 +216,20 @@ def main():
 
     print(f"{COLOR_INFO}[INFO]{COLOR_RESET} 使用 e-value 阈值: {EVALUE_CUTOFF:g}")
 
-    tbl_pairs = collect_tbl_files(BASE_DIR)
+    tbl_pairs, merged_rows = collect_tbl_files(BASE_DIR)
     total_files = len(tbl_pairs)
+    total_entries = len(merged_rows)
     print(f"{COLOR_INFO}[INFO]{COLOR_RESET} 共发现 {total_files} 个 .tbl 文件")
 
     gene_names, genome_names, presence = build_presence_absence_matrix(tbl_pairs)
     print(f"{COLOR_INFO}[INFO]{COLOR_RESET} 基因数量: {len(gene_names)} | 样本数量: {len(genome_names)}")
 
     write_matrix(OUTPUT_TSV, gene_names, genome_names, presence)
-    print(f"{COLOR_SUCCESS}[DONE]{COLOR_RESET} 结果已写入: {OUTPUT_TSV}")
+    print(f"{COLOR_SUCCESS}[DONE]{COLOR_RESET} 存在缺失矩阵已写入: {OUTPUT_TSV}")
+
+    write_merged_tsv(MERGED_TSV, merged_rows)
+    print(f"{COLOR_INFO}[INFO]{COLOR_RESET} 合并条目数量: {total_entries}")
+    print(f"{COLOR_SUCCESS}[DONE]{COLOR_RESET} 合并结果已写入: {MERGED_TSV}")
 
 
 if __name__ == "__main__":
