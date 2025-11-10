@@ -1,147 +1,205 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import csv
 import os
 import sys
 import argparse
 from pathlib import Path
 
-def extract_best_hit_sequence(faa_file, results_dir, output_dir, results_prefix="hits_"):
+
+def load_hits_for_sample(tbl_file, sample_name):
     """
-    从 FAA 文件中提取最佳匹配的序列
-    
-    参数:
-        faa_file: FAA 文件路径
-        results_dir: HMM 比对结果目录
-        output_dir: 输出目录
-        results_prefix: 结果文件前缀（默认 "hits_"）
+    从合并后的 tbl 文件中提取指定样本的命中蛋白 ID（target name 列）。
     """
-    
-    # 检查文件是否存在
-    if not os.path.isfile(faa_file):
-        print(f"警告: FAA 文件不存在 - {faa_file}")
-        return False
-    
-    # 获取文件名（不含扩展名）
-    filename = os.path.basename(faa_file)
-    filename_base = filename.replace('.faa', '')
-    
-    # 对应的结果文件
-    result_file = os.path.join(results_dir, f"{results_prefix}{filename_base}.tbl")
-    
-    # 检查结果文件是否存在
-    if not os.path.isfile(result_file):
-        print(f"❌ 无匹配结果: {filename_base}")
-        return False
-    
-    # 读取结果文件，获取最佳匹配的蛋白 ID（第一行就是最佳匹配）
-    best_hit = None
+    hits = []
+
     try:
-        with open(result_file, 'r', encoding='utf-8', errors='ignore') as f:
-            for line in f:
-                # 跳过注释行和空行
-                if line.startswith('#') or not line.strip():
+        with open(tbl_file, 'r', encoding='utf-8', errors='ignore', newline='') as handle:
+            reader = csv.reader(handle, delimiter='\t')
+            header = next(reader, None)
+            if header is None:
+                return hits
+
+            # 尝试定位样本和 target 列
+            try:
+                sample_idx = header.index('文件名')
+            except ValueError:
+                sample_idx = 0
+
+            try:
+                target_idx = header.index('target name')
+            except ValueError:
+                target_idx = 1 if len(header) > 1 else 0
+
+            header_sample_value = header[sample_idx] if sample_idx < len(header) else ''
+            header_target_value = header[target_idx] if target_idx < len(header) else ''
+
+            for row in reader:
+                if not row:
                     continue
-                # 第一列是蛋白 ID（target name）
-                fields = line.split()
-                if len(fields) > 0:
-                    best_hit = fields[0]
-                    break  # 只取第一行（最佳匹配）
-    except Exception as e:
-        print(f"错误: 读取结果文件失败 - {result_file}: {e}")
-        return False
-    
-    # 如果没有找到任何匹配
-    if best_hit is None:
-        print(f"❌ 无匹配结果: {filename_base}")
-        return False
-    
-    # 从 FAA 文件中提取最佳匹配的序列
-    sequence = None
+                if row[0].startswith('#'):
+                    continue
+                # 如果合并时重复了表头，则跳过
+                if sample_idx < len(row) and target_idx < len(row):
+                    if row[sample_idx] == header_sample_value and row[target_idx] == header_target_value:
+                        continue
+                else:
+                    continue
+
+                if row[sample_idx] == sample_name:
+                    hits.append(row[target_idx])
+
+    except FileNotFoundError:
+        raise
+    except Exception as exc:
+        raise RuntimeError(f"解析 {tbl_file} 失败: {exc}") from exc
+
+    return hits
+
+
+def extract_sequences_from_faa(faa_file, target_ids):
+    """
+    在 FAA FASTA 中提取目标蛋白序列，返回 {target_id: sequence}。
+    """
+    sequences = {}
+    targets = set(target_ids)
+
     try:
-        with open(faa_file, 'r', encoding='utf-8', errors='ignore') as f:
+        with open(faa_file, 'r', encoding='utf-8', errors='ignore') as handle:
             current_id = None
             current_seq = []
-            
-            for line in f:
+
+            for line in handle:
                 line = line.rstrip('\n')
+                if not line:
+                    continue
                 if line.startswith('>'):
-                    # 检查是否找到了目标序列
-                    if current_id == best_hit and current_seq:
-                        sequence = ''.join(current_seq)
-                        break
-                    
-                    # 新的序列开始
-                    # 提取序列 ID（第一列，空格分隔）
+                    if current_id in targets and current_seq:
+                        sequences[current_id] = ''.join(current_seq)
+
                     current_id = line[1:].split()[0]
                     current_seq = []
                 else:
                     current_seq.append(line)
-            
-            # 检查最后一个序列
-            if current_id == best_hit and current_seq:
-                sequence = ''.join(current_seq)
-    
-    except Exception as e:
-        print(f"错误: 读取 FAA 文件失败 - {faa_file}: {e}")
+
+            if current_id in targets and current_seq:
+                sequences[current_id] = ''.join(current_seq)
+
+    except Exception as exc:
+        raise RuntimeError(f"读取 FAA 文件失败 - {faa_file}: {exc}") from exc
+
+    return sequences
+
+
+def format_fasta_sequence(sequence, width=60):
+    for i in range(0, len(sequence), width):
+        yield sequence[i:i + width]
+
+
+def extract_hit_sequences(faa_file, tbl_file, output_dir):
+    """
+    从 FAA 文件中提取所有命中序列，每个命中以 >sample_编号 的形式输出。
+    """
+    if not os.path.isfile(faa_file):
+        print(f"警告: FAA 文件不存在 - {faa_file}")
         return False
-    
-    # 如果没有找到序列
-    if sequence is None:
-        print(f"⚠️  警告: 在 FAA 文件中未找到蛋白 {best_hit} - {filename_base}")
+
+    if not os.path.isfile(tbl_file):
+        print(f"警告: tbl 文件不存在 - {tbl_file}")
         return False
-    
-    # 写入输出文件
-    output_file = os.path.join(output_dir, f"{filename_base}.best_hit.faa")
+
+    filename_base = Path(faa_file).stem
+
     try:
-        with open(output_file, 'w', encoding='utf-8') as f:
-            # 按要求格式化序列名称：使用原始文件名
-            f.write(f">{filename_base}|lolD\n")
-            # 按 60 个字符每行写入序列
-            for i in range(0, len(sequence), 60):
-                f.write(sequence[i:i+60] + '\n')
-        
-        print(f"✓ 成功: {filename_base} -> {best_hit}")
+        hits = load_hits_for_sample(tbl_file, filename_base)
+    except FileNotFoundError:
+        print(f"警告: tbl 文件不存在 - {tbl_file}")
+        return False
+    except RuntimeError as exc:
+        print(exc)
+        return False
+
+    if not hits:
+        print(f"❌ 无匹配结果: {filename_base}")
+        return False
+
+    ordered_hits = []
+    seen = set()
+    for hit in hits:
+        if hit not in seen:
+            ordered_hits.append(hit)
+            seen.add(hit)
+
+    try:
+        sequences = extract_sequences_from_faa(faa_file, ordered_hits)
+    except RuntimeError as exc:
+        print(exc)
+        return False
+
+    if not sequences:
+        print(f"⚠️  警告: 在 FAA 文件中未找到任何命中序列 - {filename_base}")
+        return False
+
+    missing = [hit for hit in ordered_hits if hit not in sequences]
+    if missing:
+        print(f"⚠️  警告: {filename_base} 缺失 {len(missing)} 条序列 (示例: {', '.join(missing[:3])})")
+
+    output_file = os.path.join(output_dir, f"{filename_base}.hits.faa")
+
+    try:
+        with open(output_file, 'w', encoding='utf-8') as handle:
+            count = 0
+            for hit in ordered_hits:
+                sequence = sequences.get(hit)
+                if not sequence:
+                    continue
+                count += 1
+                header = f"{filename_base}_{count}"
+                handle.write(f">{header}\n")
+                for chunk in format_fasta_sequence(sequence):
+                    handle.write(chunk + '\n')
+
+        if count == 0:
+            print(f"⚠️  警告: 未能为 {filename_base} 写入任何序列")
+            return False
+
+        print(f"✓ 成功: {filename_base} -> 输出 {count} 条序列")
         return True
-    
-    except Exception as e:
-        print(f"错误: 写入输出文件失败 - {output_file}: {e}")
+
+    except Exception as exc:
+        print(f"错误: 写入输出文件失败 - {output_file}: {exc}")
         return False
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description='从 HMM 比对结果中提取最佳匹配的蛋白序列',
+        description='从 HMM 合并结果中提取指定样本的全部命中序列',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog='''
 示例用法:
   # 处理单个文件
-  python3 4-提取最佳匹配序列.py /path/to/file.faa /path/to/results /path/to/output
+  python3 4-提取最佳匹配序列.py /path/to/sample.faa /path/to/tbl_merge.tsv /path/to/output
   
   # 使用 parallel 处理多个文件（假设 faa_files.txt 包含所有文件路径）
-  cat faa_files.txt | parallel python3 4-提取最佳匹配序列.py {} /path/to/results /path/to/output
+  cat faa_files.txt | parallel python3 4-提取最佳匹配序列.py {} /path/to/tbl_merge.tsv /path/to/output
         '''
     )
-    
+
     parser.add_argument('faa_file', help='FAA 文件路径')
-    parser.add_argument('results_dir', help='HMM 比对结果目录')
+    parser.add_argument('tbl_file', help='合并的 tbl 结果文件路径')
     parser.add_argument('output_dir', help='输出目录')
-    parser.add_argument('--results-prefix', default='hits_', 
-                       help='结果文件前缀 (默认: hits_)')
-    
+
     args = parser.parse_args()
-    
-    # 确保输出目录存在
+
     os.makedirs(args.output_dir, exist_ok=True)
-    
-    # 处理文件
-    success = extract_best_hit_sequence(
+
+    success = extract_hit_sequences(
         args.faa_file,
-        args.results_dir,
+        args.tbl_file,
         args.output_dir,
-        args.results_prefix
     )
-    
+
     sys.exit(0 if success else 1)
 
 
