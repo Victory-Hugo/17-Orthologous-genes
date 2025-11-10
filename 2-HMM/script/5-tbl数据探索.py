@@ -11,17 +11,16 @@ HMM匹配数据质量分析和可视化脚本
 
 使用方法：
   python tbl_data_analysis.py --input <输入文件> --output <输出目录>
+  python3 /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-HMM/script/5-tbl数据探索.py --input /mnt/c/Users/Administrator/Desktop/tbl_merge.tsv --output /mnt/c/Users/Administrator/Desktop/output/
+
+提示：
+  自 v2.0 起，可视化图表由同目录下的 5-tbl数据探索.R 创建，可通过 5-tbl数据探索_调用.sh 一次性运行分析与绘图。
 """
 
 import os
 import sys
 import argparse
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-from aquarel import load_theme
-from scipy import stats
 
 
 def load_data(input_file):
@@ -252,97 +251,6 @@ def filter_by_criteria(df):
     """)
 
 
-def generate_visualization(df, output_dir):
-    """生成可视化图表"""
-    print("\n" + "="*80)
-    print("生成可视化图表")
-    print("="*80)
-
-    # 配置主题和字体
-    theme = load_theme("boxy_light")
-    theme.apply()
-    plt.rcParams['font.sans-serif'] = ['Arial']
-    plt.rcParams['pdf.fonttype'] = 42
-    plt.rcParams['ps.fonttype'] = 42
-
-    # 创建图表
-    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
-    fig.suptitle('HMM matching quality assessment', fontsize=16, fontweight='bold')
-
-    # 1. E-value 分布
-    ax1 = axes[0, 0]
-    evalue_bins = [1e-120, 1e-110, 1e-100, 1e-90, 1e-80, 1e-70, 1e-60, 1e-50, 
-                   1e-40, 1e-30, 1e-20, 1e-10, 1e-5, 0.001, 1]
-    evalue_counts = []
-    for i in range(len(evalue_bins) - 1):
-        count = ((df['E-value'] >= evalue_bins[i]) & 
-                 (df['E-value'] < evalue_bins[i + 1])).sum()
-        evalue_counts.append(count)
-
-    categories = ['<1e-110', '1e-110~100', '1e-100~90', '1e-90~80', '1e-80~70', 
-                  '1e-70~60', '1e-60~50', '1e-50~40', '1e-40~30', '1e-30~20', 
-                  '1e-20~10', '1e-10~5', '>0.001']
-    new_colors = ['#085FE3', '#085FE3', '#085FE3', '#00AFFF', '#00AFFF', '#23A5AC', '#23A5AC',
-                  '#DB9C15', '#DB9C15', '#7A1616', '#7A1616', '#7A1616', '#7A1616', '#7A1616']
-    ax1.bar(range(len(evalue_counts)), evalue_counts, 
-            color=new_colors[:len(evalue_counts)], alpha=0.5)
-    ax1.set_xticks(range(len(categories)))
-    ax1.set_xticklabels(categories, rotation=90, ha='right')
-    ax1.set_ylabel('Matching count')
-    ax1.set_title('The distribution of E-value', fontweight='bold')
-    ax1.set_yscale('log')
-    ax1.grid(False)
-
-    # 2. Score 分布
-    ax2 = axes[0, 1]
-    colors_list = ['#3498db', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6']
-    for idx, gene in enumerate(df['query name'].unique()):
-        gene_data = df[df['query name'] == gene]['score']
-        color = colors_list[idx % len(colors_list)]
-        ax2.hist(gene_data, bins=50, alpha=0.6, label=gene, color=color)
-    ax2.set_xlabel('Value of score')
-    ax2.set_ylabel('Matching count')
-    ax2.set_title('The distribution of score', fontweight='bold')
-    ax2.legend()
-    ax2.grid(False)
-
-    # 3. Bias 分布
-    ax3 = axes[1, 0]
-    bias_hist, bias_bins, patches = ax3.hist(df['bias'], bins=100, 
-                                             color='#23A5AC', alpha=0.5)
-    ax3.set_xlabel('Value of bias')
-    ax3.set_ylabel('Matching count')
-    ax3.set_title('The distribution of bias', fontweight='bold')
-    ax3.grid(False)
-
-    # 4. Score vs Bias 散点图
-    ax4 = axes[1, 1]
-    sample_idx = np.random.choice(len(df), 5000, replace=False)
-    scatter = ax4.scatter(df.iloc[sample_idx]['bias'],
-                         df.iloc[sample_idx]['score'],
-                         c=np.log10(df.iloc[sample_idx]['E-value']),
-                         cmap='RdYlGn_r', s=20, alpha=0.6)
-    ax4.set_xlabel('Bias')
-    ax4.set_ylabel('Score')
-    ax4.set_title('Score vs bias', fontweight='bold')
-    cbar = plt.colorbar(scatter, ax=ax4)
-    cbar.set_label('log10(E-value)')
-    ax4.grid(False)
-
-    plt.tight_layout()
-    theme.apply_transforms()
-
-    # 保存图表
-    pdf_path = os.path.join(output_dir, 'tbl_data_exploration.pdf')
-    png_path = os.path.join(output_dir, 'tbl_data_exploration.png')
-    plt.savefig(pdf_path, dpi=300, bbox_inches='tight')
-    plt.savefig(png_path, dpi=300, bbox_inches='tight')
-    plt.close()
-
-    print(f"[OK] PDF已保存: {pdf_path}")
-    print(f"[OK] PNG已保存: {png_path}")
-
-
 def export_filtered_data(df, output_dir):
     """导出严格筛选后的数据"""
     print("\n" + "="*80)
@@ -442,7 +350,6 @@ def main():
     analyze_genes(df)
     show_case_examples(df)
     filter_by_criteria(df)
-    generate_visualization(df, args.output)
     export_filtered_data(df, args.output)
     export_sample_copy_count(df, args.output)
 

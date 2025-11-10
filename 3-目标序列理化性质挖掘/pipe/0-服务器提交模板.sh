@@ -3,8 +3,8 @@
 
 # 配置
 SESSION_NAME="2-tmhmm_run"
-SCRIPT_PATH="/home/luolintao/0_Github/17-Orthologous-genes/3-目标序列理化性质挖掘/pipe/2-tmhmm.sh"
-LOG_FILE="/home/luolintao/5-AB-Baoman/2-Lol家族基因搜索/log/2-tmhmm_run.log"
+SCRIPT_PATH="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/3-目标序列理化性质挖掘/pipe/3-FASTA或FAA状态.sh"
+LOG_FILE="/home/luolintao/5-AB-Baoman/2-Lol家族基因搜索/log/3-FASTA或FAA状态_run.log"
 
 echo "🧬 启动 $SESSION_NAME 批处理..."
 echo "会话名称: $SESSION_NAME"
