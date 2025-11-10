@@ -4,13 +4,13 @@
 
 set -euo pipefail
 
-FAA_LIST="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/3-目标序列理化性质挖掘/conf/signal_faa.txt"
+FAA_LIST="/home/luolintao/0_Github/17-Orthologous-genes/3-目标序列理化性质挖掘/conf/signal_faa.txt"
 SOFTWARE="tmhmm"
-JOBS=4
+JOBS=8
 
-TEMP_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/3-目标序列理化性质挖掘/tmp"
-OUTPUT_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/3-目标序列理化性质挖掘/output/2-tmhmm"
-JOB_LOG="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/3-目标序列理化性质挖掘/tmp/tmhmm_parallel.log"
+TEMP_DIR="/home/luolintao/5-AB-Baoman/2-Lol家族基因搜索/tmp2"
+OUTPUT_DIR="/home/luolintao/5-AB-Baoman/2-Lol家族基因搜索/output/2-tmhmm/"
+JOB_LOG="/home/luolintao/5-AB-Baoman/2-Lol家族基因搜索/log/tmhmm_parallel.log"
 
 mkdir -p "$TEMP_DIR" "$OUTPUT_DIR"
 cd "$OUTPUT_DIR"

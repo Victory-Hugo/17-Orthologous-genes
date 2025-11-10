@@ -42152,3 +42152,6 @@
 /home/luolintao/5-AB-Baoman/2-Lol家族基因搜索/data/lolD.aln.trim/SRR14852290.hits.faa
 /home/luolintao/5-AB-Baoman/2-Lol家族基因搜索/data/lolD.aln.trim/SRR14862568.hits.faa
 /home/luolintao/5-AB-Baoman/2-Lol家族基因搜索/data/lolD.aln.trim/ERR246680.hits.faa
+/home/luolintao/5-AB-Baoman/2-Lol家族基因搜索/data/.job_state/job_log_1347563.txt
+/home/luolintao/5-AB-Baoman/2-Lol家族基因搜索/data/.job_state/job_log_1361939.txt
+/home/luolintao/5-AB-Baoman/2-Lol家族基因搜索/data/.job_state/job_log_1366687.txt
