@@ -3,10 +3,10 @@
 
 set -euo pipefail
 
-PYTHON_SCRIPT="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/3-目标序列理化性质挖掘/src/FASTA或faa状态.py"
+PYTHON_SCRIPT="/home/luolintao/0_Github/17-Orthologous-genes/3-目标序列理化性质挖掘/src/FASTA或faa状态.py"
 
-FASTA_LIST_TXT="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/3-目标序列理化性质挖掘/conf/signal_faa.txt"
-OUTPUT_BASE="/mnt/c/Users/Administrator/Desktop/output"
+FASTA_LIST_TXT="/home/luolintao/0_Github/17-Orthologous-genes/3-目标序列理化性质挖掘/conf/4-搜索完_list.txt"
+OUTPUT_BASE="/home/luolintao/5-AB-Baoman/2-Lol家族基因搜索/output/"
 LENGTH_DIR="${OUTPUT_BASE}/1-序列长度"
 GC_DIR="${OUTPUT_BASE}/2-GC含量"
 PI_DIR="${OUTPUT_BASE}/3-等电点"
@@ -14,7 +14,7 @@ HYDRO_DIR="${OUTPUT_BASE}/4-疏水性指数"
 CAI_DIR="${OUTPUT_BASE}/5-CAI"
 
 # 配置 CAI 计算所需的宿主高表达基因 CDS 参考序列（DNA）
-CAI_REFERENCE_FASTA="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/3-目标序列理化性质挖掘/data/鲍曼参考_GCF_014672775.1_CDS.fna"   # 直接指定一个 FASTA 文件路径
+CAI_REFERENCE_FASTA="/home/luolintao/0_Github/17-Orthologous-genes/3-目标序列理化性质挖掘/data/鲍曼参考_GCF_014672775.1_CDS.fna"   # 直接指定一个 FASTA 文件路径
 CAI_REFERENCE_LIST=""    # 或者指定一个列出多个 FASTA 文件路径的文本文件
 
 PROGRESS_WIDTH=40
