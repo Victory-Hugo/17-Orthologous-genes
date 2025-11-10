@@ -1,5 +1,5 @@
 HMMER3/f [3.4 | Aug 2023]
-NAME  LolF.aln
+NAME  lolF.aln
 LENG  540
 ALPH  amino
 RF    no
@@ -7,7 +7,7 @@ MM    no
 CONS  yes
 CS    no
 MAP   yes
-DATE  Mon Nov 10 16:20:43 2025
+DATE  Mon Nov 10 16:22:31 2025
 NSEQ  35
 EFFN  0.764771
 CKSUM 2902677488
