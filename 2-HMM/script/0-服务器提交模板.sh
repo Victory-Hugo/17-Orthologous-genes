@@ -4,7 +4,7 @@
 # 配置
 SESSION_NAME="HMM_run"
 SCRIPT_PATH="/home/luolintao/0_Github/17-Orthologous-genes/2-HMM/script/2-HMM比对.sh"
-LOG_FILE="/home/luolintao/0-tmp/3-Bam_Tam/HMM_run.log"
+LOG_FILE="/home/luolintao/5-AB-Baoman/2-Lol家族基因搜索/HMM_run.log"
 
 echo "🧬 启动 $SESSION_NAME 批处理..."
 echo "会话名称: $SESSION_NAME"
