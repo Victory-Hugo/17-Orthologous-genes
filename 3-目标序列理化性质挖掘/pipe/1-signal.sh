@@ -50,3 +50,6 @@ parallel \
     --joblog "$JOB_LOG" \
     --resume-failed \
     process_faa {} :::: "$FAA_LIST"
+
+#* 完成之后的清理工作
+rm -rf "$TEMP_DIR"
