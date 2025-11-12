@@ -272,7 +272,7 @@ def export_filtered_data(df, output_dir):
 def export_sample_copy_count(df, output_dir):
     """导出每个样本符合条件的拷贝数统计"""
     print("\n" + "="*80)
-    print("样本拷贝数统计")
+    print("样本拷贝数统计（所有基因总计）")
     print("="*80)
 
     # 严格筛选标准
@@ -314,6 +314,64 @@ def export_sample_copy_count(df, output_dir):
         print(f"     {copy_num}个拷贝的样本: {count:,} 个")
 
 
+def export_query_copy_count_by_gene(df, output_dir):
+    """按基因分别导出每个样本的拷贝数统计"""
+    print("\n" + "="*80)
+    print("样本拷贝数统计（按基因分别）")
+    print("="*80)
+
+    # 严格筛选标准
+    strict_filtered = df[(df['E-value'] <= 1e-20) &
+                         (df['score'] >= 100) &
+                         (df['bias'] <= 1.0)]
+
+    # 获取所有样本列表
+    all_samples = sorted(df['文件名'].unique())
+    all_samples_df = pd.DataFrame({'ID': all_samples})
+    
+    # 获取所有基因列表
+    all_genes = sorted(df['query name'].unique())
+    
+    # 构建样本-基因矩阵
+    result_df = all_samples_df.copy()
+    
+    for gene in all_genes:
+        gene_data = strict_filtered[strict_filtered['query name'] == gene]
+        gene_copy_count = gene_data.groupby('文件名').size().reset_index(name=gene)
+        gene_copy_count.rename(columns={'文件名': 'ID'}, inplace=True)
+        
+        # 左连接
+        result_df = result_df.merge(gene_copy_count, on='ID', how='left')
+        result_df[gene] = result_df[gene].fillna(0).astype(int)
+    
+    # 计算总拷贝数列
+    result_df['Total'] = result_df[all_genes].sum(axis=1)
+    
+    # 按总拷贝数降序排序
+    result_df = result_df.sort_values('Total', ascending=False)
+
+    # 保存为TSV文件
+    output_file = os.path.join(output_dir, 'sample_copy_count_by_gene.tsv')
+    result_df.to_csv(output_file, sep='\t', index=False)
+
+    print(f"[OK] 按基因分别统计的样本拷贝数已保存: {output_file}")
+    print(f"\n统计摘要:")
+    print(f"     总样本数: {len(result_df):,}")
+    print(f"     统计的基因数: {len(all_genes)}")
+    print(f"     基因列表: {', '.join(all_genes)}")
+    print(f"     有符合条件匹配的样本: {(result_df['Total'] > 0).sum():,}")
+    print(f"     无符合条件匹配的样本: {(result_df['Total'] == 0).sum():,}")
+    print(f"     平均总拷贝数: {result_df['Total'].mean():.2f}")
+    print(f"     最多总拷贝数: {result_df['Total'].max()}")
+    print(f"     最少总拷贝数: {result_df['Total'].min()}")
+    
+    print(f"\n各基因统计:")
+    for gene in all_genes:
+        gene_total = result_df[gene].sum()
+        gene_present = (result_df[gene] > 0).sum()
+        print(f"     {gene}: 总计 {gene_total:,} 个拷贝，{gene_present:,} 个样本包含此基因")
+
+
 def main():
     """主函数"""
     parser = argparse.ArgumentParser(
@@ -352,6 +410,7 @@ def main():
     filter_by_criteria(df)
     export_filtered_data(df, args.output)
     export_sample_copy_count(df, args.output)
+    export_query_copy_count_by_gene(df, args.output)
 
     print("\n" + "="*80)
     print("✅ 分析完成！")
