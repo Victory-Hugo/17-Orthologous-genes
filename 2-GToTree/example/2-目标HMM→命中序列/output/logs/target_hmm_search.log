@@ -1,0 +1,24 @@
+[2025-11-16 16:21:05] 开始目标 HMM 搜索流程。
+[2025-11-16 16:21:05] HMM：LolD.hmm 缺少 GA cutoff，已自动补上 "GA 0 0;"。
+[2025-11-16 16:21:05] 开始处理 HMM：LolD.hmm，输出目录：/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/2-目标HMM→命中序列/output/LolD/run_20251116_162105
+[2025-11-16 16:21:21] HMM：LolD.hmm 处理完成，结果位于：/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/2-目标HMM→命中序列/output/LolD/run_20251116_162105
+[2025-11-16 16:21:21] HMM：lolF.hmm 缺少 GA cutoff，已自动补上 "GA 0 0;"。
+[2025-11-16 16:21:21] 开始处理 HMM：lolF.hmm，输出目录：/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/2-目标HMM→命中序列/output/lolF/run_20251116_162121
+[2025-11-16 16:21:38] HMM：lolF.hmm 处理完成，结果位于：/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/2-目标HMM→命中序列/output/lolF/run_20251116_162121
+[2025-11-16 16:21:38] 所有 HMM 搜索任务完成。
+[2025-11-16 16:24:02] 开始目标 HMM 搜索流程。
+[2025-11-16 16:24:02] HMM：LolD.hmm 缺少 GA cutoff，已自动补上 "GA 0 0;"。
+[2025-11-16 16:24:02] 开始处理 HMM：LolD.hmm，输出目录：/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/2-目标HMM→命中序列/output/LolD/run_20251116_162402
+[2025-11-16 16:24:14] HMM：LolD.hmm 处理完成，结果位于：/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/2-目标HMM→命中序列/output/LolD/run_20251116_162402
+[2025-11-16 16:24:15] HMM：lolF.hmm 缺少 GA cutoff，已自动补上 "GA 0 0;"。
+[2025-11-16 16:24:15] 开始处理 HMM：lolF.hmm，输出目录：/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/2-目标HMM→命中序列/output/lolF/run_20251116_162414
+[2025-11-16 16:24:29] HMM：lolF.hmm 处理完成，结果位于：/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/2-目标HMM→命中序列/output/lolF/run_20251116_162414
+[2025-11-16 16:24:29] 所有 HMM 搜索任务完成。
+[2025-11-16 16:24:36] 开始目标 HMM 搜索流程。
+[2025-11-16 16:24:36] HMM：LolD.hmm 缺少 GA cutoff，已自动补上 "GA 0 0;"。
+[2025-11-16 16:24:36] 开始处理 HMM：LolD.hmm，输出目录：/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/2-目标HMM→命中序列/output/LolD/run_20251116_162436
+[2025-11-16 16:24:52] HMM：LolD.hmm 处理完成，结果位于：/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/2-目标HMM→命中序列/output/LolD/run_20251116_162436
+[2025-11-16 16:24:52] HMM：lolF.hmm 缺少 GA cutoff，已自动补上 "GA 0 0;"。
+[2025-11-16 16:24:52] 开始处理 HMM：lolF.hmm，输出目录：/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/2-目标HMM→命中序列/output/lolF/run_20251116_162452
+[2025-11-16 16:25:10] HMM：lolF.hmm 处理完成，结果位于：/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/2-目标HMM→命中序列/output/lolF/run_20251116_162452
+[2025-11-16 16:25:10] 所有 HMM 搜索任务完成。

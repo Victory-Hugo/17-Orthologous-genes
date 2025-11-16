@@ -1,4 +1,0 @@
-assembly_id	label	label_source	taxid	num_SCG_hits	uniq_SCG_hits	perc_comp	perc_redund	num_SCG_hits_after_len_filt	in_final_tree
-GCF_000027325.1	Mycoplasmoides_genitalium_G37	user_map	NA	56	49	75.68	9.46	39	Yes
-GCF_000069245.1	Acinetobacter_baumannii_AYE	user_map	NA	74	73	100.00	2.70	70	Yes
-GCF_000185905.1	Mesorhizobium_ciceri_WSM1271	user_map	NA	73	71	98.65	2.70	60	Yes

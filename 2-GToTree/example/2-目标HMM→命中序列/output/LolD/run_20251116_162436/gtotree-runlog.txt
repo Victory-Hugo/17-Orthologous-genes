@@ -1,0 +1,150 @@
+
+
+               GToTree v1.8.16 (github.com/AstrobioMike/GToTree)
+
+    Command entered:
+
+ ---------------------------------  RUN INFO  --------------------------------- 
+
+    /home/luolintao/miniconda3/envs/gtotree/bin/GToTree -A /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/2-目标HMM→命中序列/conf/sequence_path.txt -H /tmp/LolD.42EYOm.hmm -o /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/2-目标HMM→命中序列/output/LolD/run_20251116_162436 -j 16 -n 16 -M 16 -N -k -B
+
+
+    Input genome sources include:
+      - Amino-acid files listed in /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/2-目标HMM→命中序列/conf/sequence_path.txt (10 genomes)
+
+                             Total input genomes: 10
+
+    HMM source to be used:
+      - /tmp/LolD.42EYOm.hmm (1 targets)
+
+    Options set:
+      - The output directory has been set to "/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/2-目标HMM→命中序列/output/LolD/run_20251116_162436/"
+      - Only generating alignment, no tree, as the "-N" option has been provided
+      - Individual protein alignment files will be retained, due to the "-k" flag being provided
+      - Number of cpus to use during hmm search ("-n") has been set to 16
+      - Number of jobs to run during parallelizable steps has been set to 16
+      - Running in "best-hit" mode
+
+  ********************************** NOTICE **********************************  
+    Filtering by gene-length using the median length of a gene set (set with
+    the `-c` flag) becomes less reliable with fewer genomes. With 10 total
+    input genomes, if a lot of sequences are dropped, consider increasing
+    the parameter and/or visually inspecting the alignments.
+
+    More info can be found here:
+      github.com/AstrobioMike/GToTree/wiki/Things-to-consider
+
+	        Moving forward with "-c" set to 0.2 this run.
+  ****************************************************************************  
+
+
+ ############################################################################## 
+ ####         Working on the genomes provided as amino acid files          ####
+ ############################################################################## 
+
+           It is currently 04:24 PM; the process started at 04:24 PM.
+               Current process runtime: 0 hours and 0 minutes.
+
+_______________________________________________________________________________
+
+
+ ############################################################################## 
+ ####                     Filtering genes by length                        ####
+ ############################################################################## 
+
+     Keeping those with lengths within 20% of the median for the gene set.
+
+           It is currently 04:24 PM; the process started at 04:24 PM.
+               Current process runtime: 0 hours and 0 minutes.
+
+________________________________________________________________________________ 
+
+
+
+ ############################################################################## 
+ ####                Filtering genomes with too few hits                   ####
+ ############################################################################## 
+
+     Removing those with fewer than 50% of the total SCGs targeted.
+
+           It is currently 04:24 PM; the process started at 04:24 PM.
+               Current process runtime: 0 hours and 0 minutes.
+
+             No genomes were removed for having too few hits :)
+
+________________________________________________________________________________
+
+
+
+ ############################################################################## 
+ ####          Aligning, trimming, and inserting gap-sequences             ####
+ ############################################################################## 
+
+           It is currently 04:24 PM; the process started at 04:24 PM.
+               Current process runtime: 0 hours and 0 minutes.
+
+
+
+________________________________________________________________________________
+
+
+
+ ############################################################################## 
+ ####                  Catting all alignments together                     ####
+ ############################################################################## 
+
+           It is currently 04:24 PM; the process started at 04:24 PM.
+               Current process runtime: 0 hours and 0 minutes.
+
+
+________________________________________________________________________________
+
+
+
+
+#################################################################################
+####                                 Done!!                                  ####
+#################################################################################
+
+            All 10 input genomes were retained through the workflow!
+
+    Alignment written to:
+        /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/2-目标HMM→命中序列/output/LolD/run_20251116_162436/Aligned_SCGs.faa
+
+    Individual protein alignments stored in:
+        /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/2-目标HMM→命中序列/output/LolD/run_20251116_162436/run_files/individual_alignments/
+
+    Main genomes summary table written to:
+        /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/2-目标HMM→命中序列/output/LolD/run_20251116_162436/Genomes_summary_info.tsv
+
+    Summary table with hits per target gene per genome written to:
+        /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/2-目标HMM→命中序列/output/LolD/run_20251116_162436/SCG_hit_counts.tsv
+
+    Partitions file (for downstream use with mixed-model treeing) written to:
+        /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/2-目标HMM→命中序列/output/LolD/run_20251116_162436/run_files/Partitions.txt
+        /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/2-目标HMM→命中序列/output/LolD/run_20251116_162436/run_files/Partitions.nex
+
+ _______________________________________________________________________________
+
+  Notes:
+
+        10 genome(s) had an estimated redundancy of >= 10%.
+
+    Reported along with additional informative run files in:
+        /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/2-目标HMM→命中序列/output/LolD/run_20251116_162436/run_files/
+
+ _______________________________________________________________________________
+
+    Log file written to:
+        /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/2-目标HMM→命中序列/output/LolD/run_20251116_162436/gtotree-runlog.txt
+ _______________________________________________________________________________
+
+    Programs used and their citations have been written to:
+        /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/2-目标HMM→命中序列/output/LolD/run_20251116_162436/citations.txt
+
+ _______________________________________________________________________________
+
+
+                                         Total process runtime: 0 hours and 0 minutes.
+                                                      Happy Sunday :)
+

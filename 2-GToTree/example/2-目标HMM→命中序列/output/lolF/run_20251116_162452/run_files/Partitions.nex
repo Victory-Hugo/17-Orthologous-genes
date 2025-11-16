@@ -1,0 +1,4 @@
+#NEXUS
+begin sets;
+  charset lolF.aln = 1-494;
+end;

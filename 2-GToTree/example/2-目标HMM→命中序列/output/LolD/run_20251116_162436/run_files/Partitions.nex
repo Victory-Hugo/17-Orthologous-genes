@@ -1,0 +1,4 @@
+#NEXUS
+begin sets;
+  charset lolD.aln.trim = 1-228;
+end;

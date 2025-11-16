@@ -10,12 +10,6 @@ Edgar RC. MUSCLE v5 enables improved estimates of phylogenetic tree confidence b
 TrimAl v1.5.rev0
 Gutierrez SC. et al. TrimAl: a Tool for automatic alignment trimming. Bioinformatics. 2009; 25, 1972-1973. doi.org/10.1093/bioinformatics/btp348
 
-Prodigal v2.6.3
-Hyatt, D. et al. Gene and translation initiation site prediction in metagenomic sequences. Bioinformatics. 2010; 28, 2223-2230. doi.org/10.1186/1471-2105-11-119
-
-FastTree2 v2.1.11
-Price MN et al. FastTree2 - approximately maximum-likelihood trees for large alignments. PLoS One. 2010; 5. doi.org/10.1371/journal.pone.0009490
-
 GNU Parallel v20250822
 Tange O. GNU Parallel 2018. doi.org/10.5281/zenodo.1146014
 

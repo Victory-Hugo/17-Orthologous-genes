@@ -1,0 +1,2 @@
+/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/2-目标HMM→命中序列/data/1-HMM/LolD.hmm
+/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/2-目标HMM→命中序列/data/1-HMM/lolF.hmm
