@@ -12,7 +12,7 @@ OUTDIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/
 LOG_FILE="$OUTDIR/gene_download_log.txt"
 CSV_FILE="$OUTDIR/gene_download_map.csv"
 DEFAULT_PARALLEL_JOBS=8  # 基因查询相对较轻，可以使用更多并发
-FORMAT="FAA"  # 下载格式: FAA (蛋白质) 或 FNA (核苷酸)，或 AUTO (优先蛋白质，无则下载核苷酸)
+FORMAT="FNA"  # 下载格式: FAA (蛋白质) 或 FNA (核苷酸)，或 AUTO (优先蛋白质，无则下载核苷酸)
 
 # NCBI API配置
 NCBI_API_KEY="29b326d54e7a21fc6c8b9afe7d71f441d809" # 请替换为您自己的API密钥
