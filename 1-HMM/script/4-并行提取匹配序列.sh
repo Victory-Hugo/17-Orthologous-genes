@@ -47,6 +47,13 @@ LOG_FILE="${OUTPUT_DIR}/parallel_extract.log"
 TEMP_FILE_LIST="/tmp/extract_file_list_$$.txt"
 CHECKPOINT_FILE="${STATE_DIR}/checkpoint_$$.json"
 
+# ==================== 命中过滤参数（可以按需修改） ====================
+MAX_EVALUE="1e-20"        # 允许的最大 E-value，留空表示不过滤
+MIN_COVERAGE="0.6"        # 命中序列长度 / HMM 模型长度，留空表示不过滤
+MIN_LENGTH="180"          # 命中序列的最小氨基酸长度，留空表示不过滤
+EXTRACT_MODE="only_one"   # all: 输出全部命中；only_one: 每株只保留最高分
+HMM_MODEL_LENGTH="225"    # LolD.hmm 的 LENG 数值（用于覆盖度计算）
+
 # ==================== 函数定义 ====================
 
 # 彩色打印函数
@@ -153,6 +160,26 @@ get_total_count() {
     wc -l < "$TEMP_FILE_LIST"
 }
 
+build_python_command() {
+    local cmd="python3 '$SCRIPT_DIR/4-提取匹配序列.py' {} '$TBL_FILE' '$OUTPUT_DIR'"
+    if [[ -n "$MAX_EVALUE" ]]; then
+        cmd+=" --max-evalue '$MAX_EVALUE'"
+    fi
+    if [[ -n "$MIN_COVERAGE" ]]; then
+        cmd+=" --min-coverage '$MIN_COVERAGE'"
+    fi
+    if [[ -n "$MIN_LENGTH" ]]; then
+        cmd+=" --min-length '$MIN_LENGTH'"
+    fi
+    if [[ -n "$EXTRACT_MODE" ]]; then
+        cmd+=" --mode '$EXTRACT_MODE'"
+    fi
+    if [[ -n "$HMM_MODEL_LENGTH" ]]; then
+        cmd+=" --model-length '$HMM_MODEL_LENGTH'"
+    fi
+    echo "$cmd"
+}
+
 
 # 中断处理函数
 cleanup_on_interrupt() {
@@ -179,8 +206,11 @@ run_parallel_processing() {
     echo ""
     
     local total=$(get_total_count)
+    local python_cmd
+    python_cmd=$(build_python_command)
     print_info "待处理文件总数: $total"
     print_info "并行任务数: $JOBS"
+    print_info "过滤条件: E-value<=${MAX_EVALUE:-不限}, 覆盖度>=${MIN_COVERAGE:-不限}, 长度>=${MIN_LENGTH:-不限}, 模式=${EXTRACT_MODE:-all}"
     echo ""
     
     # 使用 parallel 并行处理，添加进度条
@@ -191,7 +221,7 @@ run_parallel_processing() {
         --bar \
         --line-buffer \
         --joblog "$STATE_DIR/job_log_$$.txt" \
-        "python3 '$SCRIPT_DIR/4-提取匹配序列.py' {} '$TBL_FILE' '$OUTPUT_DIR' 2>&1" >> "$LOG_FILE" 2>&1
+        "$python_cmd 2>&1" >> "$LOG_FILE" 2>&1
     local exit_code=$?
     
     if [ $exit_code -eq 0 ]; then

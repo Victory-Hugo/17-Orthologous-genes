@@ -18,6 +18,6 @@ JTZQ01000010.1_80    -          lolF.aln             -              0.075   10.2
 # Query file:      /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/2-HMM库/lolF.hmm
 # Target file:     /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/3-样本序列/GCA_000797395.1_AZPAE13756_genomic.faa
 # Option settings: hmmsearch --tblout /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/.checkpoint/temp/lolF_GCA_000797395.1_AZPAE13756_genomic.tbl.tmp -E 1e-1 --cpu 2 /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/2-HMM库/lolF.hmm /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/3-样本序列/GCA_000797395.1_AZPAE13756_genomic.faa 
-# Current dir:     /mnt/c/Users/Administrator/Desktop
-# Date:            Sun Nov 16 21:42:18 2025
+# Current dir:     /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output
+# Date:            Sun Nov 16 22:27:51 2025
 # [ok]

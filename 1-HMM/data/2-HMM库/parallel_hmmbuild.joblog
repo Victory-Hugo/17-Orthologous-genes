@@ -1,3 +1,0 @@
-Seq	Host	Starttime	JobRuntime	Send	Receive	Exitval	Signal	Command
-1	:	1762762951.561	     0.200	0	173	0	0	build_one /home/luolintao/0_Github/17-Orthologous-genes/2-HMM/data/1-\Â\∫\è\Â\à\ó/lolD.aln.faa
-2	:	1762762951.562	     0.289	0	173	0	0	build_one /home/luolintao/0_Github/17-Orthologous-genes/2-HMM/data/1-\Â\∫\è\Â\à\ó/lolF.aln.faa
