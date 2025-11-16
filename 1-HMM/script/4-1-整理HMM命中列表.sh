@@ -10,7 +10,7 @@ PYTHON_SCRIPT="${SCRIPT_DIR}/4-1-整理HMM命中列表.py"
 # ==================== 用户可修改区域 ====================
 HITS_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output"
 OUTPUT_TSV="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/LolD_pipeline/hits_manifest.tsv"
-QUERIES=("lolD.trim")   # 留空 () 表示处理全部 query
+QUERIES=("lolD.aln")   # 留空 () 表示处理全部 query
 # ==================== 用户可修改区域 ====================
 
 cmd=(python3 "$PYTHON_SCRIPT" --hits-dir "$HITS_DIR" --output-tsv "$OUTPUT_TSV")

@@ -11,7 +11,7 @@ PYTHON_SCRIPT="${SCRIPT_DIR}/4-2-提取命中CDS蛋白序列.py"
 MANIFEST="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/LolD_pipeline/hits_manifest.tsv"
 SAMPLE_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/3-样本序列"
 OUTPUT_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/LolD_pipeline/sequences"
-QUERIES=("lolD.trim")
+QUERIES=("lolD.aln")
 # ==================== 用户可修改区域 ====================
 
 cmd=(python3 "$PYTHON_SCRIPT" --manifest "$MANIFEST" --sample-dir "$SAMPLE_DIR" --output-dir "$OUTPUT_DIR")
