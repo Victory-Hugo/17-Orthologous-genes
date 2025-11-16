@@ -9,9 +9,9 @@ from pathlib import Path
 # ==============================
 # 硬编码配置
 # ==============================
-BASE_DIR = Path("/home/luolintao/5-AB-Baoman/2-Lol家族基因搜索")  # 包含所有tbl的文件夹
-OUTPUT_TSV = Path("/home/luolintao/5-AB-Baoman/2-Lol家族基因搜索/presence_absence_matrix.tsv")
-MERGED_TSV = Path("/home/luolintao/5-AB-Baoman/2-Lol家族基因搜索/tbl_merge.tsv")
+BASE_DIR = Path("/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output")  # 包含所有tbl的文件夹
+OUTPUT_TSV = Path("/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/presence_absence_matrix.tsv")
+MERGED_TSV = Path("/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/tbl_merge.tsv")
 EVALUE_CUTOFF = 1e-10  # E-value 阈值，小于该值记为1
 
 # 控制台颜色

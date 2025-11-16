@@ -34,12 +34,12 @@ NC='\033[0m' # No Color
 #*├── 基因名字3
 
 # ==================== 全部变量写死 ====================
-BASEDIR="/home/luolintao/0_Github/17-Orthologous-genes/2-HMM"
+BASEDIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM"
 SCRIPT_DIR="${BASEDIR}/script"
-LIST_FILE="${BASEDIR}/conf/鲍曼faa.list.txt"
+LIST_FILE="${BASEDIR}/conf/1-prodigal_faa_list.txt"
 
-TBL_FILE="/home/luolintao/5-AB-Baoman/2-Lol家族基因搜索/tbl_merge.tsv" #! 这里写上一步合成的tbl文件
-OUTPUT_DIR="/home/luolintao/5-AB-Baoman/2-Lol家族基因搜索/data/" #! 这里写提取序列的输出目录
+TBL_FILE="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/tbl_merge.tsv" #! 这里写上一步合成的tbl文件
+OUTPUT_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/" #! 这里写提取序列的输出目录
 
 JOBS=4
 STATE_DIR="${OUTPUT_DIR}/.job_state"
@@ -134,8 +134,8 @@ validate_inputs() {
         exit 1
     fi
     
-    if [ ! -f "$SCRIPT_DIR/4-提取最佳匹配序列.py" ]; then
-        print_error "Python 脚本不存在: $SCRIPT_DIR/4-提取最佳匹配序列.py"
+    if [ ! -f "$SCRIPT_DIR/4-提取匹配序列.py" ]; then
+        print_error "Python 脚本不存在: $SCRIPT_DIR/4-提取匹配序列.py"
         exit 1
     fi
     
@@ -191,7 +191,7 @@ run_parallel_processing() {
         --bar \
         --line-buffer \
         --joblog "$STATE_DIR/job_log_$$.txt" \
-        "python3 '$SCRIPT_DIR/4-提取最佳匹配序列.py' {} '$TBL_FILE' '$OUTPUT_DIR' 2>&1" >> "$LOG_FILE" 2>&1
+        "python3 '$SCRIPT_DIR/4-提取匹配序列.py' {} '$TBL_FILE' '$OUTPUT_DIR' 2>&1" >> "$LOG_FILE" 2>&1
     local exit_code=$?
     
     if [ $exit_code -eq 0 ]; then

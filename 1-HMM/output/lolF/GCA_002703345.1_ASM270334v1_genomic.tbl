@@ -1,0 +1,18 @@
+#                                                               --- full sequence ---- --- best 1 domain ---- --- domain number estimation ----
+# target name        accession  query name           accession    E-value  score  bias   E-value  score  bias   exp reg clu  ov env dom rep inc description of target
+#------------------- ---------- -------------------- ---------- --------- ------ ----- --------- ------ -----   --- --- --- --- --- --- --- --- ---------------------
+NZTM01000022.1_5     -          lolF.aln             -            5.2e-05   18.3   0.0   7.9e-05   17.7   0.0   1.1   1   0   0   1   1   1   1 # 2843 # 4402 # -1 # ID=19_5;partial=00;start_type=ATG;rbs_motif=None;rbs_spacer=None;gc_cont=0.442
+NZTM01000028.1_35    -          lolF.aln             -             0.0036   12.2   0.0    0.0054   11.7   0.0   1.2   1   0   0   1   1   1   1 # 32043 # 33428 # -1 # ID=25_35;partial=00;start_type=ATG;rbs_motif=AGGA;rbs_spacer=5-10bp;gc_cont=0.412
+NZTM01000008.1_23    -          lolF.aln             -             0.0061   11.5   0.0     0.013   10.4   0.0   1.4   1   1   0   1   1   1   1 # 21177 # 22334 # 1 # ID=5_23;partial=01;start_type=ATG;rbs_motif=None;rbs_spacer=None;gc_cont=0.397
+NZTM01000018.1_9     -          lolF.aln             -             0.0062   11.5   0.0     0.011   10.6   0.0   1.5   1   0   0   1   1   1   1 # 8039 # 9214 # -1 # ID=15_9;partial=00;start_type=ATG;rbs_motif=None;rbs_spacer=None;gc_cont=0.396
+NZTM01000030.1_22    -          lolF.aln             -             0.0064   11.4   0.0    0.0088   10.9   0.0   1.2   1   0   0   1   1   1   1 # 20698 # 22092 # -1 # ID=27_22;partial=00;start_type=ATG;rbs_motif=AGxAGG/AGGxGG;rbs_spacer=5-10bp;gc_cont=0.425
+#
+# Program:         hmmsearch
+# Version:         3.4 (Aug 2023)
+# Pipeline mode:   SEARCH
+# Query file:      /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/2-HMM库/lolF.hmm
+# Target file:     /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/3-样本序列/GCA_002703345.1_ASM270334v1_genomic.faa
+# Option settings: hmmsearch --tblout /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/.checkpoint/temp/lolF_GCA_002703345.1_ASM270334v1_genomic.tbl.tmp -E 1e-1 --cpu 2 /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/2-HMM库/lolF.hmm /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/3-样本序列/GCA_002703345.1_ASM270334v1_genomic.faa 
+# Current dir:     /mnt/c/Users/Administrator/Desktop
+# Date:            Sun Nov 16 21:42:19 2025
+# [ok]

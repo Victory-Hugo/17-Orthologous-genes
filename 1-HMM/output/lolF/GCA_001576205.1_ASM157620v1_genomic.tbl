@@ -1,0 +1,15 @@
+#                                                               --- full sequence ---- --- best 1 domain ---- --- domain number estimation ----
+# target name        accession  query name           accession    E-value  score  bias   E-value  score  bias   exp reg clu  ov env dom rep inc description of target
+#------------------- ---------- -------------------- ---------- --------- ------ ----- --------- ------ -----   --- --- --- --- --- --- --- --- ---------------------
+LOPD01000008.1_168   -          lolF.aln             -              0.035   11.0   0.0      0.17    8.7   0.0   1.9   2   0   0   2   2   2   0 # 163045 # 164334 # 1 # ID=8_168;partial=00;start_type=ATG;rbs_motif=GGAG/GAGG;rbs_spacer=5-10bp;gc_cont=0.547
+LOPD01000007.1_86    -          lolF.aln             -              0.046   10.5   0.0     0.074    9.9   0.0   1.2   1   0   0   1   1   1   0 # 94223 # 95647 # -1 # ID=7_86;partial=00;start_type=ATG;rbs_motif=GGAG/GAGG;rbs_spacer=5-10bp;gc_cont=0.531
+#
+# Program:         hmmsearch
+# Version:         3.4 (Aug 2023)
+# Pipeline mode:   SEARCH
+# Query file:      /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/2-HMM库/lolF.hmm
+# Target file:     /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/3-样本序列/GCA_001576205.1_ASM157620v1_genomic.faa
+# Option settings: hmmsearch --tblout /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/.checkpoint/temp/lolF_GCA_001576205.1_ASM157620v1_genomic.tbl.tmp -E 1e-1 --cpu 2 /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/2-HMM库/lolF.hmm /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/3-样本序列/GCA_001576205.1_ASM157620v1_genomic.faa 
+# Current dir:     /mnt/c/Users/Administrator/Desktop
+# Date:            Sun Nov 16 21:42:18 2025
+# [ok]

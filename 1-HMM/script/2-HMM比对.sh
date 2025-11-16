@@ -31,10 +31,10 @@ set -o pipefail
 # ============================================================================
 # 配置变量（全部写死）
 # ============================================================================
-LIST_FILE="/home/luolintao/0_Github/17-Orthologous-genes/2-HMM/conf/鲍曼faa.list.txt"
+LIST_FILE="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/conf/1-prodigal_faa_list.txt"
 # TXT文件，每行一个HMM文件的绝对路径
-HMM_FILE_TXT="/home/luolintao/0_Github/17-Orthologous-genes/2-HMM/conf/hmm_list.txt"
-OUTPUT_DIR="/home/luolintao/5-AB-Baoman/2-Lol家族基因搜索/"
+HMM_FILE_TXT="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/conf/2-hmm库_list.txt"
+OUTPUT_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/"
 CHECKPOINT_DIR="${OUTPUT_DIR}.checkpoint"
 LOG_FILE="${OUTPUT_DIR}processing.log"
 FAILED_LOG_FILE="${OUTPUT_DIR}failed_tasks.log"

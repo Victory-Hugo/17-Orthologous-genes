@@ -1,0 +1,14 @@
+#                                                               --- full sequence ---- --- best 1 domain ---- --- domain number estimation ----
+# target name        accession  query name           accession    E-value  score  bias   E-value  score  bias   exp reg clu  ov env dom rep inc description of target
+#------------------- ---------- -------------------- ---------- --------- ------ ----- --------- ------ -----   --- --- --- --- --- --- --- --- ---------------------
+CP021896.1_1930      -          lolF.aln             -               0.06   10.0   0.1      0.19    8.3   0.0   1.7   2   0   0   2   2   2   0 # 2110651 # 2112216 # 1 # ID=1_1930;partial=00;start_type=ATG;rbs_motif=GGAG/GAGG;rbs_spacer=5-10bp;gc_cont=0.577
+#
+# Program:         hmmsearch
+# Version:         3.4 (Aug 2023)
+# Pipeline mode:   SEARCH
+# Query file:      /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/2-HMM库/lolF.hmm
+# Target file:     /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/3-样本序列/GCA_002201815.1_ASM220181v1_genomic.faa
+# Option settings: hmmsearch --tblout /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/.checkpoint/temp/lolF_GCA_002201815.1_ASM220181v1_genomic.tbl.tmp -E 1e-1 --cpu 2 /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/2-HMM库/lolF.hmm /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/3-样本序列/GCA_002201815.1_ASM220181v1_genomic.faa 
+# Current dir:     /mnt/c/Users/Administrator/Desktop
+# Date:            Sun Nov 16 21:42:18 2025
+# [ok]

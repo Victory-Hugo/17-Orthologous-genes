@@ -1,18 +1,16 @@
 [0;34m[INFO][0m 检查依赖软件...
-[1;33m[WARNING][0m 未找到 pv，进度条将不可用
 [0;32m[✓ SUCCESS][0m 所有依赖软件检查通过
 [0;34m[INFO][0m 检查输入文件...
-[0;34m[INFO][0m 列表文件总行数: 10 (空行: 0)
+[0;34m[INFO][0m FAA列表有效文件数: 34 (总行数: 34, 空行: 0)
+[0;34m[INFO][0m HMM列表有效文件数: 2 (总行数: 2, 空行: 0)
 [0;32m[✓ SUCCESS][0m 输入文件检查完成
 [0;34m[INFO][0m 开始处理...
-[0;34m[INFO][0m 输出目录: /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-HMM/output/
-[0;34m[INFO][0m 并行任务数: 4
+[0;34m[INFO][0m 输出目录: /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/
+[0;34m[INFO][0m 并行任务数: 8
 [0;34m[INFO][0m 每任务CPU线程数: 2
-[0;34m[INFO][0m 总任务数: 10
+[0;34m[INFO][0m 总任务数: 68
 [0;34m[INFO][0m 已完成任务数: 0
-[0;34m[INFO][0m 收集处理结果...
-[0;32m[✓ SUCCESS][0m 成功完成任务数: 10
 [0;32m[✓ SUCCESS][0m 所有任务处理完成！
-[0;34m[INFO][0m 输出目录: /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-HMM/output/
-[0;34m[INFO][0m 日志文件: /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-HMM/output/processing.log
+[0;34m[INFO][0m 输出目录: /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/
+[0;34m[INFO][0m 日志文件: /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/processing.log
 [0;32m[✓ SUCCESS][0m 脚本执行成功！

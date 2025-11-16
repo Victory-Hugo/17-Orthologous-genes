@@ -1,0 +1,23 @@
+#                                                               --- full sequence ---- --- best 1 domain ---- --- domain number estimation ----
+# target name        accession  query name           accession    E-value  score  bias   E-value  score  bias   exp reg clu  ov env dom rep inc description of target
+#------------------- ---------- -------------------- ---------- --------- ------ ----- --------- ------ -----   --- --- --- --- --- --- --- --- ---------------------
+JTUK01000038.1_122   -          lolF.aln             -            8.9e-50  168.3   0.0   4.2e-31  106.6   0.0   2.0   2   0   0   2   2   2   2 # 114567 # 116042 # -1 # ID=68_122;partial=00;start_type=ATG;rbs_motif=GGAG/GAGG;rbs_spacer=5-10bp;gc_cont=0.673
+JTUK01000046.1_51    -          lolF.aln             -            3.2e-32  110.3   0.0   1.1e-20   72.3   0.0   2.0   2   0   0   2   2   2   2 # 50075 # 51619 # 1 # ID=77_51;partial=00;start_type=ATG;rbs_motif=AGGAG;rbs_spacer=5-10bp;gc_cont=0.649
+JTUK01000014.1_18    -          lolF.aln             -            5.5e-20   69.9   0.1   2.2e-19   68.0   0.0   1.7   2   0   0   2   2   2   1 # 17865 # 19391 # -1 # ID=40_18;partial=00;start_type=ATG;rbs_motif=AGGAGG;rbs_spacer=3-4bp;gc_cont=0.601
+JTUK01000023.1_47    -          lolF.aln             -            1.7e-12   45.2   0.0   6.1e-11   40.1   0.0   2.1   2   0   0   2   2   2   1 # 47494 # 48993 # 1 # ID=52_47;partial=00;start_type=ATG;rbs_motif=GGAG/GAGG;rbs_spacer=5-10bp;gc_cont=0.670
+JTUK01000002.1_44    -          lolF.aln             -            0.00091   16.4   0.1    0.0036   14.4   0.0   1.8   2   0   0   2   2   2   1 # 41423 # 42823 # -1 # ID=48_44;partial=00;start_type=ATG;rbs_motif=AGGAG;rbs_spacer=5-10bp;gc_cont=0.693
+JTUK01000072.1_24    -          lolF.aln             -             0.0087   13.2   0.0     0.018   12.1   0.0   1.5   2   0   0   2   2   2   1 # 26054 # 27292 # 1 # ID=106_24;partial=00;start_type=ATG;rbs_motif=GGAG/GAGG;rbs_spacer=5-10bp;gc_cont=0.722
+JTUK01000063.1_8     -          lolF.aln             -              0.016   12.3   0.0     0.025   11.7   0.0   1.2   1   0   0   1   1   1   0 # 10146 # 11636 # -1 # ID=96_8;partial=00;start_type=ATG;rbs_motif=GGAG/GAGG;rbs_spacer=5-10bp;gc_cont=0.669
+JTUK01000044.1_24    -          lolF.aln             -              0.043   10.9   0.0     0.076   10.1   0.0   1.4   1   1   0   1   1   1   0 # 22709 # 24061 # 1 # ID=75_24;partial=00;start_type=ATG;rbs_motif=GGAG/GAGG;rbs_spacer=5-10bp;gc_cont=0.695
+JTUK01000014.1_21    -          lolF.aln             -              0.051   10.6   0.2     0.075   10.1   0.2   1.1   1   0   0   1   1   1   0 # 21754 # 23121 # 1 # ID=40_21;partial=00;start_type=ATG;rbs_motif=GGAG/GAGG;rbs_spacer=5-10bp;gc_cont=0.613
+JTUK01000030.1_14    -          lolF.aln             -              0.068   10.2   0.0     0.088    9.9   0.0   1.1   1   0   0   1   1   1   0 # 24462 # 25556 # -1 # ID=60_14;partial=00;start_type=GTG;rbs_motif=GGAGG;rbs_spacer=5-10bp;gc_cont=0.681
+#
+# Program:         hmmsearch
+# Version:         3.4 (Aug 2023)
+# Pipeline mode:   SEARCH
+# Query file:      /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/2-HMM库/lolF.hmm
+# Target file:     /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/3-样本序列/GCA_000789835.1_AZPAE14851_genomic.faa
+# Option settings: hmmsearch --tblout /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/.checkpoint/temp/lolF_GCA_000789835.1_AZPAE14851_genomic.tbl.tmp -E 1e-1 --cpu 2 /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/2-HMM库/lolF.hmm /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/3-样本序列/GCA_000789835.1_AZPAE14851_genomic.faa 
+# Current dir:     /mnt/c/Users/Administrator/Desktop
+# Date:            Sun Nov 16 21:42:18 2025
+# [ok]
