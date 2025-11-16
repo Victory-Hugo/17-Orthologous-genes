@@ -1,0 +1,213 @@
+
+
+               GToTree v1.8.16 (github.com/AstrobioMike/GToTree)
+
+    Command entered:
+    /home/luolintao/miniconda3/envs/gtotree/bin/GToTree -f /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/1-多物种序列→直接建树/conf/fasta_files.txt -H Bacteria -m /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/1-多物种序列→直接建树/conf/genome_to_id_map.tsv -o /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/1-多物种序列→直接建树/output/run_20251116_155823 -j 16 -n 16 -M 16
+
+ ---------------------------------  RUN INFO  --------------------------------- 
+
+
+
+    Input genome sources include:
+      - Fasta files listed in /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/1-多物种序列→直接建树/conf/fasta_files.txt (2 genomes)
+
+                             Total input genomes: 2
+
+    HMM source to be used:
+      - Bacteria (74 targets)
+
+    Options set:
+      - The output directory has been set to "/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/1-多物种序列→直接建树/output/run_20251116_155823/"
+      - The file "/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/1-多物种序列→直接建树/conf/genome_to_id_map.tsv" will be used to modify labels of the specified genomes
+      - Number of cpus to use during hmm search ("-n") has been set to 16
+      - Number of jobs to run during parallelizable steps has been set to 16
+
+  ********************************** NOTICE **********************************  
+    Filtering by gene-length using the median length of a gene set (set with
+    the `-c` flag) becomes less reliable with fewer genomes. With 2 total
+    input genomes, if a lot of sequences are dropped, consider increasing
+    the parameter and/or visually inspecting the alignments.
+
+    More info can be found here:
+      github.com/AstrobioMike/GToTree/wiki/Things-to-consider
+
+	        Moving forward with "-c" set to 0.2 this run.
+  ****************************************************************************  
+
+
+ ############################################################################## 
+ ####            Working on the genomes provided as fasta files            ####
+ ############################################################################## 
+
+           It is currently 03:58 PM; the process started at 03:58 PM.
+               Current process runtime: 0 hours and 0 minutes.
+
+_______________________________________________________________________________
+
+
+ ############################################################################## 
+ ####                     Filtering genes by length                        ####
+ ############################################################################## 
+
+     Keeping those with lengths within 20% of the median for the gene set.
+
+           It is currently 03:58 PM; the process started at 03:58 PM.
+               Current process runtime: 0 hours and 0 minutes.
+
+  ********************************** NOTICE **********************************  
+    2 gene(s) either had no hits in any genome, a hit in only one genome, or
+    only multiple hits per genome... Just so ya know!!
+
+        These included:
+
+                     Adenylsucc_synt
+                     Peptidase_A8
+
+    Reported in "/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/1-多物种序列→直接建树/output/run_20251116_155823/run_files/Target-genes-not-found-or-retained.txt".
+
+   If interested, you can figure out which of those scenarios was the cause by
+   checking out "/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/1-多物种序列→直接建树/output/run_20251116_155823/SCG_hit_counts.tsv".
+  ****************************************************************************  
+
+     ******************************* NOTICE *******************************  
+	  2 gene(s) had no hits in any genomes after filtering by length. Just so ya know...
+
+	    Length-filtered out of existence:
+
+          SecE
+          TsaE
+
+     Reported in "/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/1-多物种序列→直接建树/output/run_20251116_155823/run_files/Genes_with_no_hits_after_length_filter.txt".
+     ************************************************************************ 
+
+________________________________________________________________________________ 
+
+
+
+ ############################################################################## 
+ ####                Filtering genomes with too few hits                   ####
+ ############################################################################## 
+
+     Removing those with fewer than 50% of the total SCGs targeted.
+
+           It is currently 03:58 PM; the process started at 03:58 PM.
+               Current process runtime: 0 hours and 0 minutes.
+
+             No genomes were removed for having too few hits :)
+
+________________________________________________________________________________
+
+
+
+ ############################################################################## 
+ ####          Aligning, trimming, and inserting gap-sequences             ####
+ ############################################################################## 
+
+           It is currently 03:58 PM; the process started at 03:58 PM.
+               Current process runtime: 0 hours and 0 minutes.
+
+
+
+________________________________________________________________________________
+
+
+
+ ############################################################################## 
+ ####                  Catting all alignments together                     ####
+ ############################################################################## 
+
+           It is currently 03:59 PM; the process started at 03:58 PM.
+               Current process runtime: 0 hours and 0 minutes.
+
+
+________________________________________________________________________________
+
+
+
+ ############################################################################## 
+ ####                   Adding more informative headers                    ####
+ ############################################################################## 
+
+
+________________________________________________________________________________
+
+
+
+ ############################################################################## 
+ ####                         Running FastTreeMP                           ####
+ ############################################################################## 
+
+           It is currently 03:59 PM; the process started at 03:58 PM.
+               Current process runtime: 0 hours and 0 minutes.
+
+FastTree Version 2.1.11 Double precision (No SSE3), OpenMP (16 threads)
+Alignment: /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/1-多物种序列→直接建树/output/run_20251116_155823/Aligned_SCGs_mod_names.faa
+Amino acid distances: BLOSUM45 Joins: balanced Support: SH-like 1000
+Search: Normal +NNI +SPR (2 rounds range 10) +ML-NNI opt-each=1
+TopHits: 1.00*sqrtN close=default refresh=0.80
+ML Model: Jones-Taylor-Thorton, CAT approximation with 20 rate categories
+Ignored unknown character X (seen 1035 times)
+Initial topology in 0.02 seconds
+Refining topology: 6 rounds ME-NNIs, 2 rounds ME-SPRs, 3 rounds ML-NNIs
+Total branch-length 1.230 after 0.02 sec
+ML-NNI round 1: LogLk = -57446.817 NNIs 0 max delta 0.00 Time 0.05
+      0.10 seconds: Site likelihoods with rate category 16 of 20
+Switched to using 20 rate categories (CAT approximation)
+Rate categories were divided by 0.730 so that average rate = 1.0
+CAT-based log-likelihoods may not be comparable across runs
+Use -gamma for approximate but comparable Gamma(20) log-likelihoods
+ML-NNI round 2: LogLk = -55234.617 NNIs 0 max delta 0.00 Time 0.12
+Turning off heuristics for final round of ML NNIs (converged)
+ML-NNI round 3: LogLk = -55234.617 NNIs 0 max delta 0.00 Time 0.12 (final)
+Optimize all lengths: LogLk = -55216.625 Time 0.15
+Total time: 0.19 seconds Unique: 3/3 Bad splits: 0/0
+
+
+#################################################################################
+####                                 Done!!                                  ####
+#################################################################################
+
+  Overall, 3 genomes of the input 2 were retained (see notes below).
+
+    Tree written to:
+        /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/1-多物种序列→直接建树/output/run_20251116_155823/run_20251116_155823.tre
+
+    Alignment written to:
+        /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/1-多物种序列→直接建树/output/run_20251116_155823/Aligned_SCGs_mod_names.faa
+
+    Main genomes summary table written to:
+        /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/1-多物种序列→直接建树/output/run_20251116_155823/Genomes_summary_info.tsv
+
+    Summary table with hits per target gene per genome written to:
+        /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/1-多物种序列→直接建树/output/run_20251116_155823/SCG_hit_counts.tsv
+
+    Partitions file (for downstream use with mixed-model treeing) written to:
+        /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/1-多物种序列→直接建树/output/run_20251116_155823/run_files/Partitions.txt
+        /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/1-多物种序列→直接建树/output/run_20251116_155823/run_files/Partitions.nex
+
+ _______________________________________________________________________________
+
+  Notes:
+
+        2 gene(s) either had no hits or only multiple hits in each genome.
+        2 gene(s) had no hits after filtering by length.
+
+    Reported along with additional informative run files in:
+        /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/1-多物种序列→直接建树/output/run_20251116_155823/run_files/
+
+ _______________________________________________________________________________
+
+    Log file written to:
+        /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/1-多物种序列→直接建树/output/run_20251116_155823/gtotree-runlog.txt
+ _______________________________________________________________________________
+
+    Programs used and their citations have been written to:
+        /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/1-多物种序列→直接建树/output/run_20251116_155823/citations.txt
+
+ _______________________________________________________________________________
+
+
+                                         Total process runtime: 0 hours and 0 minutes.
+                                                      Happy Sunday :)
+

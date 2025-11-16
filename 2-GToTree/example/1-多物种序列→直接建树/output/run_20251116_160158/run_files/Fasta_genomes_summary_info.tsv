@@ -1,0 +1,4 @@
+Assembly_name	Original_file_name	taxid	num_SCG_hits	uniq_SCG_hits	perc_comp	perc_redund
+GCF_000027325.1	/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/1-多物种序列→直接建树/data/GCF_000027325.1.fa	NA	56	49	75.68	9.46
+GCF_000069245.1	/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/1-多物种序列→直接建树/data/GCF_000069245.1.fa	NA	74	73	100.00	2.70
+GCF_000185905.1	/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/1-多物种序列→直接建树/data/GCF_000185905.1.fa	NA	73	71	98.65	2.70

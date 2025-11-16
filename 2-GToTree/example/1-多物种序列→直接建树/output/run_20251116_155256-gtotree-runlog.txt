@@ -1,0 +1,20 @@
+
+
+               GToTree v1.8.16 (github.com/AstrobioMike/GToTree)
+
+    Command entered:
+    /home/luolintao/miniconda3/envs/gtotree/bin/GToTree -f /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/1-多物种序列→直接建树/conf/fasta_files.txt -H Bacteria -m /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/1-多物种序列→直接建树/conf/genome_to_id_map.tsv -o /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/1-多物种序列→直接建树/output/run_20251116_155256 -j 16 -n 16 -M 16
+
+ ---------------------------------  RUN INFO  --------------------------------- 
+
+
+
+    Input genome sources include:
+
+      Some fasta files specified in /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/1-多物种序列→直接建树/conf/fasta_files.txt cannot be found or are empty :(
+
+  Double-check the provided locations and where they should be, here's one of the problems:
+            /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/data/GCF_000027325.1.fa
+
+Exiting for now.
+
