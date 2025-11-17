@@ -53,6 +53,6 @@ CP011280.1_293       -          lolD.aln             -            7.7e-14   47.9
 # Query file:      /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/2-HMM库/LolD.hmm
 # Target file:     /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/3-样本序列/GCA_000973085.1_ASM97308v1_genomic.faa
 # Option settings: hmmsearch --tblout /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/.checkpoint/temp/LolD_GCA_000973085.1_ASM97308v1_genomic.tbl.tmp -E 1e-1 --cpu 2 /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/2-HMM库/LolD.hmm /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/3-样本序列/GCA_000973085.1_ASM97308v1_genomic.faa 
-# Current dir:     /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output
-# Date:            Sun Nov 16 22:27:48 2025
+# Current dir:     /mnt/c/Users/Administrator/Desktop
+# Date:            Mon Nov 17 09:13:12 2025
 # [ok]

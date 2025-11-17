@@ -31,9 +31,8 @@ set -o pipefail
 # ============================================================================
 # 配置变量（全部写死）
 # ============================================================================
-LIST_FILE="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/conf/1-prodigal_faa_list.txt"
-# TXT文件，每行一个HMM文件的绝对路径
-HMM_FILE_TXT="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/conf/2-hmm库_list.txt"
+LIST_FILE="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/conf/1-prodigal_faa_list.txt" #! TXT文件，每行一个FAA文件的绝对路径
+HMM_FILE_TXT="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/conf/2-hmm库_list.txt" #! TXT文件，每行一个HMM文件的绝对路径
 OUTPUT_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/"
 CHECKPOINT_DIR="${OUTPUT_DIR}.checkpoint"
 LOG_FILE="${OUTPUT_DIR}processing.log"
@@ -44,6 +43,12 @@ TEMP_DIR="${CHECKPOINT_DIR}/temp"
 JOBS="8"
 CPU_PER_JOB="2"
 E_VALUE="1e-1"
+
+# 存在缺失矩阵脚本及输出
+MATRIX_SCRIPT="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/script/3-生成存在缺失矩阵.py"
+PRESENCE_MATRIX_TSV="${OUTPUT_DIR}/presence_absence_matrix.tsv"
+MERGED_TBL_TSV="${OUTPUT_DIR}/tbl_merge.tsv"
+MATRIX_EVALUE_CUTOFF="1e-10"
 
 declare -a FAA_FILES=()
 declare -a HMM_FILES=()
@@ -404,6 +409,22 @@ else
         --joblog "${CHECKPOINT_DIR}/joblog.txt" \
         process_hmm_faa_combo {1} {2} "$OUTPUT_DIR" "$CHECKPOINT_DIR" "$TEMP_DIR" "$CPU_PER_JOB" "$E_VALUE" \
         :::: "$tasks_file"
+fi
+
+# 生成存在/缺失矩阵
+if [[ -f "$MATRIX_SCRIPT" ]]; then
+    print_info "开始生成存在/缺失矩阵和合并表..."
+    if python3 "$MATRIX_SCRIPT" \
+        --base-dir "$OUTPUT_DIR" \
+        --output-tsv "$PRESENCE_MATRIX_TSV" \
+        --merged-tsv "$MERGED_TBL_TSV" \
+        --evalue-cutoff "$MATRIX_EVALUE_CUTOFF"; then
+        print_success "存在/缺失矩阵生成完成。"
+    else
+        print_warning "存在/缺失矩阵生成失败，请检查日志。"
+    fi
+else
+    print_warning "未找到存在缺失矩阵脚本: $MATRIX_SCRIPT"
 fi
 
 # 打印完成信息

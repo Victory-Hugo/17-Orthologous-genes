@@ -3,9 +3,9 @@
 # 使用 MAFFT 对提取的蛋白序列进行多序列比对
 
 set -euo pipefail
-
-INPUT_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/LolD_pipeline/sequences/protein"
-OUTPUT_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/LolD_pipeline/alignments/protein"
+PIPEDIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/LolD_pipeline/"
+INPUT_DIR="${PIPEDIR}/sequences/protein"
+OUTPUT_DIR="${PIPEDIR}/alignments/protein"
 THREADS=8
 MAFFT_BIN="$(command -v mafft)"
 

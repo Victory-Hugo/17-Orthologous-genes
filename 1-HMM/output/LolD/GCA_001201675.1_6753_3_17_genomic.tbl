@@ -90,6 +90,6 @@ CRKA01000014.1_3     -          lolD.aln             -             0.0053   13.1
 # Query file:      /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/2-HMM库/LolD.hmm
 # Target file:     /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/3-样本序列/GCA_001201675.1_6753_3_17_genomic.faa
 # Option settings: hmmsearch --tblout /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/.checkpoint/temp/LolD_GCA_001201675.1_6753_3_17_genomic.tbl.tmp -E 1e-1 --cpu 2 /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/2-HMM库/LolD.hmm /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/3-样本序列/GCA_001201675.1_6753_3_17_genomic.faa 
-# Current dir:     /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output
-# Date:            Sun Nov 16 22:27:49 2025
+# Current dir:     /mnt/c/Users/Administrator/Desktop
+# Date:            Mon Nov 17 09:13:12 2025
 # [ok]

@@ -10,6 +10,8 @@
 [0;34m[INFO][0m 每任务CPU线程数: 2
 [0;34m[INFO][0m 总任务数: 68
 [0;34m[INFO][0m 已完成任务数: 0
+[0;34m[INFO][0m 开始生成存在/缺失矩阵和合并表...
+[0;32m[✓ SUCCESS][0m 存在/缺失矩阵生成完成。
 [0;32m[✓ SUCCESS][0m 所有任务处理完成！
 [0;34m[INFO][0m 输出目录: /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/
 [0;34m[INFO][0m 日志文件: /mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/processing.log

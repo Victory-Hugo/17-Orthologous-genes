@@ -27,22 +27,27 @@ log_error() { log "ERROR" "$*"; }
 
 trap 'log_error "流水线在行 $LINENO 被中断"; exit 1' ERR
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/script"
 PY_PAL2NAL="${SCRIPT_DIR}/5-2-蛋白CDS转密码子比对.py"
 PY_AXT="${SCRIPT_DIR}/6-1-构建KaKs参考AXT.py"
 PY_STATS="${SCRIPT_DIR}/7-1-统计KaKs结果.py"
 PY_PLOT="${SCRIPT_DIR}/7-2-绘制KaKs分布.py"
 
-# ==================== 用户可修改区域 ====================
+#* ==================== 用户可修改区域 ====================
 # 输入/输出目录
-ALIGNMENT_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/LolD_pipeline/alignments/protein"
-CDS_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/LolD_pipeline/sequences/cds"
-CODON_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/LolD_pipeline/alignments/codon"
-AXT_ALL_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/LolD_pipeline/alignments/axt_all"
-AXT_REF_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/LolD_pipeline/axt"
-KAKS_OUTPUT_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/LolD_pipeline/kaks"
-KAKS_STATS_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/LolD_pipeline/kaks_stats"
-KAKS_PLOT_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/LolD_pipeline/kaks_plots"
+PIPEDIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/LolD_pipeline/"
+ALIGNMENT_DIR="${PIPEDIR}/alignments/protein"
+CDS_DIR="${PIPEDIR}/sequences/cds"
+CODON_DIR="${PIPEDIR}/alignments/codon"
+AXT_ALL_DIR="${PIPEDIR}/alignments/axt_all"
+AXT_REF_DIR="${PIPEDIR}/axt"
+KAKS_OUTPUT_DIR="${PIPEDIR}/kaks"
+KAKS_STATS_DIR="${PIPEDIR}/kaks_stats"
+KAKS_PLOT_DIR="${PIPEDIR}/kaks_plots"
+
+#* KaKs_Calculator
+KAKS_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/bin/"
+KAKS_BIN="${KAKS_DIR}/KaKs"
 
 # Query & 参考
 QUERIES=("lolD.aln")
@@ -53,13 +58,12 @@ PAL2NAL_BIN="pal2nal.pl"   # 若不在 PATH，请填绝对路径
 CODON_TABLE=11
 PAL2NAL_EXTRA=()           # 示例: ("-nogap")
 
-# KaKs_Calculator
-KAKS_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/4-dNdS-KaKs/1-KaKs_Calculator3/src"
-KAKS_BIN="${KAKS_DIR}/KaKs"
-
 # KaKs 绘图
 KAKS_METHOD=""  # 可选：指定 Method 名称
-# ==================== 用户可修改区域 ====================
+
+# KaKs 遗传密码表（对应 KaKs_Calculator 的 -c 选项，留空使用默认 1）
+KAKS_CODON_TABLE=11
+#* ==================== 用户可修改区域 ====================
 
 run_cmd() {
     log_info "执行命令: $*"
@@ -114,7 +118,11 @@ for axt in "$AXT_REF_DIR"/*.axt; do
     base="${filename%.axt}"
     output_file="$KAKS_OUTPUT_DIR/${base}.kaks.tsv"
     log_info "KaKs_Calculator 输入: $filename"
-    if ! "$KAKS_BIN" -i "$axt" -o "$output_file"; then
+    cmd_kaks=("$KAKS_BIN" -i "$axt" -o "$output_file")
+    if [[ -n "${KAKS_CODON_TABLE:-}" ]]; then
+        cmd_kaks+=(-c "$KAKS_CODON_TABLE")
+    fi
+    if ! "${cmd_kaks[@]}"; then
         log_error "KaKs_Calculator 处理 $filename 失败"
         exit 1
     fi

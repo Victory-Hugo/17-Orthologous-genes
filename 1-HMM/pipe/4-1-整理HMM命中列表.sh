@@ -4,12 +4,13 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PYTHON_SCRIPT="${SCRIPT_DIR}/4-1-整理HMM命中列表.py"
+
 
 # ==================== 用户可修改区域 ====================
 HITS_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output"
 OUTPUT_TSV="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/LolD_pipeline/hits_manifest.tsv"
+PYTHON_SCRIPT="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/script/4-1-整理HMM命中列表.py"
+
 QUERIES=("lolD.aln")   # 留空 () 表示处理全部 query
 # ==================== 用户可修改区域 ====================
 

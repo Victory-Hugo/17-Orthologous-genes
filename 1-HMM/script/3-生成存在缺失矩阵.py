@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 # 作者: BigLin
-# 依赖: python3 (标准库: os, pathlib, sys)
+# 依赖: python3 (标准库: argparse, pathlib, sys)
 
-import os
+import argparse
 import sys
 from pathlib import Path
 
 # ==============================
-# 硬编码配置
+# 默认配置，可被命令行/环境变量覆盖
 # ==============================
-BASE_DIR = Path("/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output")  # 包含所有tbl的文件夹
-OUTPUT_TSV = Path("/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/presence_absence_matrix.tsv")
-MERGED_TSV = Path("/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/tbl_merge.tsv")
-EVALUE_CUTOFF = 1e-10  # E-value 阈值，小于该值记为1
+DEFAULT_BASE_DIR = Path("/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output")
+DEFAULT_OUTPUT_TSV = Path("/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/presence_absence_matrix.tsv")
+DEFAULT_MERGED_TSV = Path("/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/tbl_merge.tsv")
+DEFAULT_EVALUE_CUTOFF = 1e-10  # E-value 阈值，小于该值记为1
 
 # 控制台颜色
 COLOR_INFO = "\033[94m"
@@ -21,7 +21,35 @@ COLOR_WARNING = "\033[93m"
 COLOR_RESET = "\033[0m"
 
 
-def parse_tbl_file(file_path: Path):
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="读取 Hmmsearch 生成的 *.tbl，输出存在缺失矩阵和合并表。"
+    )
+    parser.add_argument(
+        "--base-dir",
+        default=str(DEFAULT_BASE_DIR),
+        help="包含 *.tbl 结果的根目录（默认: %(default)s）",
+    )
+    parser.add_argument(
+        "--output-tsv",
+        default=str(DEFAULT_OUTPUT_TSV),
+        help="存在缺失矩阵输出路径（默认: %(default)s）",
+    )
+    parser.add_argument(
+        "--merged-tsv",
+        default=str(DEFAULT_MERGED_TSV),
+        help="合并后的 tbl 汇总输出路径（默认: %(default)s）",
+    )
+    parser.add_argument(
+        "--evalue-cutoff",
+        type=float,
+        default=DEFAULT_EVALUE_CUTOFF,
+        help="E-value 小于该值视为存在 (默认: %(default)s)",
+    )
+    return parser.parse_args()
+
+
+def parse_tbl_file(file_path: Path, evalue_cutoff: float):
     """
     解析单个 .tbl 文件。
 
@@ -44,7 +72,7 @@ def parse_tbl_file(file_path: Path):
                     print(f"{COLOR_WARNING}[WARN]{COLOR_RESET} 行格式异常, 已补齐空字段: {file_path}")
                 rows.append(parts)
                 e_full = _parse_float_evalue(parts[4])
-                if e_full is not None and e_full < EVALUE_CUTOFF:
+                if e_full is not None and e_full < evalue_cutoff:
                     has_hit = True
         return rows, (True if has_hit else False)
     except OSError as exc:
@@ -52,7 +80,7 @@ def parse_tbl_file(file_path: Path):
         return [], None
 
 
-def collect_tbl_files(base_dir: Path):
+def collect_tbl_files(base_dir: Path, evalue_cutoff: float):
     """
     遍历指定目录下的所有 .tbl 文件。
     返回:
@@ -63,7 +91,7 @@ def collect_tbl_files(base_dir: Path):
     - gene_name = 基因目录名 (比如 geneA)
     - genome_name = 文件基名 (比如 genome_001)
     - has_hit:
-        True  => 该tbl内存在 e-value < EVALUE_CUTOFF 的命中
+        True  => 该tbl内存在 e-value 小于阈值的命中
         False => 该tbl存在，但没有任何满足阈值的命中
         None  => 文件存在但读取失败 (I/O错误等)
     """
@@ -78,7 +106,7 @@ def collect_tbl_files(base_dir: Path):
     for index, file_path in enumerate(sorted(tbl_paths), start=1):
         gene_name = file_path.parent.name
         genome_name = file_path.stem
-        rows, has_hit = parse_tbl_file(file_path)
+        rows, has_hit = parse_tbl_file(file_path, evalue_cutoff)
         for row in rows:
             merged_rows.append((genome_name, row))
         tbl_pairs.append((gene_name, genome_name, has_hit))
@@ -209,14 +237,20 @@ def write_merged_tsv(output_path: Path, merged_rows):
 
 
 def main():
-    print(f"{COLOR_INFO}[INFO]{COLOR_RESET} 开始扫描 {BASE_DIR}")
-    if not BASE_DIR.exists():
-        print(f"{COLOR_WARNING}[WARN]{COLOR_RESET} 目录不存在: {BASE_DIR}")
+    args = parse_args()
+    base_dir = Path(args.base_dir).expanduser()
+    output_tsv = Path(args.output_tsv).expanduser()
+    merged_tsv = Path(args.merged_tsv).expanduser()
+    evalue_cutoff = args.evalue_cutoff
+
+    print(f"{COLOR_INFO}[INFO]{COLOR_RESET} 开始扫描 {base_dir}")
+    if not base_dir.exists():
+        print(f"{COLOR_WARNING}[WARN]{COLOR_RESET} 目录不存在: {base_dir}")
         sys.exit(1)
 
-    print(f"{COLOR_INFO}[INFO]{COLOR_RESET} 使用 e-value 阈值: {EVALUE_CUTOFF:g}")
+    print(f"{COLOR_INFO}[INFO]{COLOR_RESET} 使用 e-value 阈值: {evalue_cutoff:g}")
 
-    tbl_pairs, merged_rows = collect_tbl_files(BASE_DIR)
+    tbl_pairs, merged_rows = collect_tbl_files(base_dir, evalue_cutoff)
     total_files = len(tbl_pairs)
     total_entries = len(merged_rows)
     print(f"{COLOR_INFO}[INFO]{COLOR_RESET} 共发现 {total_files} 个 .tbl 文件")
@@ -224,12 +258,12 @@ def main():
     gene_names, genome_names, presence = build_presence_absence_matrix(tbl_pairs)
     print(f"{COLOR_INFO}[INFO]{COLOR_RESET} 基因数量: {len(gene_names)} | 样本数量: {len(genome_names)}")
 
-    write_matrix(OUTPUT_TSV, gene_names, genome_names, presence)
-    print(f"{COLOR_SUCCESS}[DONE]{COLOR_RESET} 存在缺失矩阵已写入: {OUTPUT_TSV}")
+    write_matrix(output_tsv, gene_names, genome_names, presence)
+    print(f"{COLOR_SUCCESS}[DONE]{COLOR_RESET} 存在缺失矩阵已写入: {output_tsv}")
 
-    write_merged_tsv(MERGED_TSV, merged_rows)
+    write_merged_tsv(merged_tsv, merged_rows)
     print(f"{COLOR_INFO}[INFO]{COLOR_RESET} 合并条目数量: {total_entries}")
-    print(f"{COLOR_SUCCESS}[DONE]{COLOR_RESET} 合并结果已写入: {MERGED_TSV}")
+    print(f"{COLOR_SUCCESS}[DONE]{COLOR_RESET} 合并结果已写入: {merged_tsv}")
 
 
 if __name__ == "__main__":
