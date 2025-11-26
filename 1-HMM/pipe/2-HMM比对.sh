@@ -31,9 +31,9 @@ set -o pipefail
 # ============================================================================
 # 配置变量（全部写死）
 # ============================================================================
-LIST_FILE="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/conf/1-prodigal_faa_list.txt" #! TXT文件，每行一个FAA文件的绝对路径
-HMM_FILE_TXT="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/conf/2-hmm库_list.txt" #! TXT文件，每行一个HMM文件的绝对路径
-OUTPUT_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/output/"
+LIST_FILE="/data_raid/7_luolintao/2-NCBI-2024/1-All-data/1-faa_list.txt" #! TXT文件，每行一个FAA文件的绝对路径
+HMM_FILE_TXT="/home/luolintao/0_Github/17-Orthologous-genes/1-HMM/conf/2-hmm库_list.txt" #! TXT文件，每行一个HMM文件的绝对路径
+OUTPUT_DIR="/home/luolintao/7-Rv0194/output/"
 CHECKPOINT_DIR="${OUTPUT_DIR}.checkpoint"
 LOG_FILE="${OUTPUT_DIR}processing.log"
 FAILED_LOG_FILE="${OUTPUT_DIR}failed_tasks.log"
@@ -45,7 +45,7 @@ CPU_PER_JOB="2"
 E_VALUE="1e-1"
 
 # 存在缺失矩阵脚本及输出
-MATRIX_SCRIPT="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/script/3-生成存在缺失矩阵.py"
+MATRIX_SCRIPT="/home/luolintao/0_Github/17-Orthologous-genes/1-HMM/script/3-生成存在缺失矩阵.py"
 PRESENCE_MATRIX_TSV="${OUTPUT_DIR}/presence_absence_matrix.tsv"
 MERGED_TBL_TSV="${OUTPUT_DIR}/tbl_merge.tsv"
 MATRIX_EVALUE_CUTOFF="1e-10"
