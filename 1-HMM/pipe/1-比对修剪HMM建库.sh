@@ -21,8 +21,8 @@ set -Eeuo pipefail
 ############################
 # 配置区（全部写死的变量）  #
 ############################
-INPUT_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/1-HMM序列"
-OUTPUT_DIR="/home/luolintao/0_Github/17-Orthologous-genes/2-HMM/data/2-HMM库"
+INPUT_DIR="/home/luolintao/7-Rv0194/data"
+OUTPUT_DIR="/home/luolintao/7-Rv0194/data/2-HMM库"
 FILE_GLOB_PATTERN="*.aln.faa"         # 匹配输入 MSA 的文件名模式
 JOBS=8                                 # 并行任务数（根据机器调整）
 RESULTS_DIR="${OUTPUT_DIR}/.parallel_results"
