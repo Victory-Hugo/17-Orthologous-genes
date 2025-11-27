@@ -1,1 +1,1 @@
-/home/luolintao/7-Rv0194/data/2-HMM库/Rv0194.merge.hmm
+/home/luolintao/7-Rv0194/data/2-HMM库/Rv0194.trimal.hmm

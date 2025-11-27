@@ -3,7 +3,7 @@
 
 # 配置
 SESSION_NAME="2-HMM比对_run"
-SCRIPT_PATH="/home/luolintao/0_Github/17-Orthologous-genes/1-HMM/pipe/2-HMM比对.sh"
+SCRIPT_PATH="/home/luolintao/0_Github/17-Orthologous-genes/1-HMM/pipe/2-备选-HMM比对.sh"
 LOG_FILE="/home/luolintao/7-Rv0194/2-HMM比对_run.log"
 
 echo "🧬 启动 $SESSION_NAME 批处理..."

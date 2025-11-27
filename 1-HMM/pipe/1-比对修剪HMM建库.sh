@@ -21,7 +21,7 @@ set -Eeuo pipefail
 ############################
 # 配置区（全部写死的变量）  #
 ############################
-INPUT_DIR="/home/luolintao/7-Rv0194/data"
+INPUT_DIR="/home/luolintao/7-Rv0194/data/1-HMM序列"
 OUTPUT_DIR="/home/luolintao/7-Rv0194/data/2-HMM库"
 FILE_GLOB_PATTERN="*.aln.faa"         # 匹配输入 MSA 的文件名模式
 JOBS=8                                 # 并行任务数（根据机器调整）
