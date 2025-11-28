@@ -107,7 +107,12 @@ while IFS= read -r line || [[ -n "$line" ]]; do
     [[ "$line" =~ ^[[:space:]]*$ ]] && continue
     trimmed=$(printf '%s\n' "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
     [[ "$trimmed" == \#* ]] && continue
-    FAA_FILES+=("$trimmed")
+    if [[ -f "$trimmed" && -r "$trimmed" ]]; then
+        FAA_FILES+=("$trimmed")
+    else
+        print_warning "跳过不可用的 FAA 文件: $trimmed"
+        echo "[SKIP] FAA 不存在或不可读: $trimmed" >> "$FAILED_LOG_FILE"
+    fi
 done < "$LIST_FILE"
 
 print_info "读取 HMM 列表: $HMM_FILE_TXT"
@@ -116,7 +121,12 @@ while IFS= read -r line || [[ -n "$line" ]]; do
     [[ "$line" =~ ^[[:space:]]*$ ]] && continue
     trimmed=$(printf '%s\n' "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
     [[ "$trimmed" == \#* ]] && continue
-    HMM_FILES+=("$trimmed")
+    if [[ -f "$trimmed" && -r "$trimmed" ]]; then
+        HMM_FILES+=("$trimmed")
+    else
+        print_warning "跳过不可用的 HMM 文件: $trimmed"
+        echo "[SKIP] HMM 不存在或不可读: $trimmed" >> "$FAILED_LOG_FILE"
+    fi
 done < "$HMM_FILE_TXT"
 
 TOTAL_FAA_FILES=${#FAA_FILES[@]}
@@ -141,6 +151,19 @@ for hmm_file in "${HMM_FILES[@]}"; do
         output_file="${output_subdir}/${faa_basename}.tbl"
         err_log="${output_subdir}/${faa_basename}.err"
 
+        # 追加：检查 FAA 文件是否为空或明显非 FASTA
+        if [[ ! -s "$faa_file" ]]; then
+            print_warning "跳过空文件: $faa_basename"
+            echo "[SKIP] 空 FAA 文件: ${hmm_basename}|${faa_basename} -> $faa_file" >> "$FAILED_LOG_FILE"
+            continue
+        fi
+        # 简单格式检查：首行是否以 '>' 开头（只做轻量检查，避免误报）
+        if ! head -n 1 "$faa_file" | grep -q '^>' ; then
+            print_warning "FAA 格式可能不是 FASTA: $faa_basename"
+            echo "[SKIP] FAA 非 FASTA 首行: ${hmm_basename}|${faa_basename} -> $faa_file" >> "$FAILED_LOG_FILE"
+            continue
+        fi
+
         ((task_idx++))
         print_info "任务 ${task_idx}/${TOTAL_TASKS}: HMM=${hmm_basename}, FAA=${faa_basename}"
         print_info "  hmmsearch 输入: $hmm_file  vs  $faa_file"
@@ -150,12 +173,17 @@ for hmm_file in "${HMM_FILES[@]}"; do
             --tblout "$output_file" \
             "$hmm_file" \
             "$faa_file" 2> "$err_log"; then
-
+            # 即使无命中，--tblout 也会写注释头；将“无命中”视为成功但记为缺失
             if [[ -s "$output_file" ]]; then
-                print_success "完成: ${hmm_basename} vs ${faa_basename} -> $output_file"
+                # 判断是否只有注释（无命中）
+                if grep -qv '^#' "$output_file" ; then
+                    print_success "完成(有命中): ${hmm_basename} vs ${faa_basename} -> $output_file"
+                else
+                    print_success "完成(无命中): ${hmm_basename} vs ${faa_basename} -> $output_file"
+                fi
                 rm -f "$err_log"
             else
-                print_warning "任务失败(无输出): ${hmm_basename} vs ${faa_basename}"
+                print_warning "任务失败(未生成tbl): ${hmm_basename} vs ${faa_basename}"
                 echo "[FAILED] ${hmm_basename}|${faa_basename} - 输出文件未生成" >> "$FAILED_LOG_FILE"
                 [[ -s "$err_log" ]] && cat "$err_log" >> "$FAILED_LOG_FILE"
             fi
