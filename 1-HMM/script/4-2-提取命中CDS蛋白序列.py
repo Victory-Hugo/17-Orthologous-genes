@@ -105,8 +105,17 @@ def main() -> None:
             continue
         protein_records[query].append((protein_header, protein_seq))
 
-        ffn_path = sample_dir / f"{sample}.ffn"
         if sample not in ffn_cache:
+            # 兼容多种文件命名：sample.ffn、sample_CDS.fna、sample.fna
+            candidates = [
+                sample_dir / f"{sample}.ffn",
+                sample_dir / f"{sample}_CDS.fna",
+                sample_dir / f"{sample}.fna",
+            ]
+            ffn_path = next((p for p in candidates if p.exists()), None)
+            if not ffn_path:
+                print(f"⚠️  未找到 {sample} 的 CDS 文件（尝试: .ffn/_CDS.fna/.fna），跳过 {sample}")
+                continue
             try:
                 ffn_cache[sample] = load_fasta(ffn_path)
             except FileNotFoundError:
