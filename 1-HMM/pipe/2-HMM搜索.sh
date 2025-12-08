@@ -1,10 +1,17 @@
 #!/bin/bash
 set -Eeuo pipefail
 
-########################################
-# 配置区（保持功能不变，纯顺序执行）
-########################################
-SCRIPT_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM"     # 项目根目录
+# 全局日志
+LOG_DIR="/mnt/d/5-NCBI-Reference/hmm分析示例/log"
+mkdir -p "$LOG_DIR"
+LOG_FILE="${LOG_DIR}/hmm_pipeline.log"
+exec > >(tee -a "$LOG_FILE") 2>&1
+echo "[INFO] 日志输出到: $LOG_FILE"
+
+#*#######################################
+#*                 配置区
+#*#######################################
+SCRIPT_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM"       # 当前脚本根目录
 LIST_FILE="${SCRIPT_DIR}/conf/1-prodigal_faa_list.txt"                                  # 样本蛋白列表
 HMM_FILE_TXT="${SCRIPT_DIR}/conf/2-hmm库_list.txt"                                      # HMM 库列表
 OUTPUT_DIR="/mnt/d/5-NCBI-Reference/hmm分析示例/output/"                                # 输出目录
@@ -13,11 +20,18 @@ CPU_PER_JOB="2"                                                                 
 E_VALUE="1e-5"                                                                          # hmmsearch e-value 阈值
 MATRIX_EVALUE_CUTOFF="1e-10"                                                            # 矩阵筛选阈值
 
-MATRIX_SCRIPT="${SCRIPT_DIR}/script/3-生成存在缺失矩阵.py"                               # 矩阵生成脚本
+PYTHON_PATH="python3"                                                                   # Python 路径
+MATRIX_SCRIPT="${SCRIPT_DIR}/script/3-生成存在缺失矩阵.py"                                # 矩阵生成脚本
 HMM_SEARCH_SCRIPT="${SCRIPT_DIR}/script/2-备选-HMM比对.sh"                              # 顺序 hmmsearch 脚本
 EXTRACT_SCRIPT="${SCRIPT_DIR}/script/4-提取匹配序列.py"                                  # 提取匹配序列
 HITS_PYTHON_SCRIPT="${SCRIPT_DIR}/script/4-1-整理HMM命中列表.py"                         # 整理命中清单
+EXTRACT_NUC_SCRIPT="${SCRIPT_DIR}/script/4-2-提取命中核酸序列.py"                       # 提取命中核酸序列
 HITS_QUERIES="FimH.aln"                                                                 # 目标 query 名
+
+# gffread 配置（用于提取命中 CDS）
+GFFREAD_BIN="gffread"                                                                   # gffread 路径
+GFF_DIR="/mnt/d/5-NCBI-Reference/hmm分析示例/data"                                      # GFF 目录
+GENOME_DIR="/mnt/d/5-NCBI-Reference/hmm分析示例/data"                                   # fna/fasta 目录
 
 PRESENCE_MATRIX_TSV="${OUTPUT_DIR}/presence_absence_matrix.tsv"                         # 矩阵输出
 MERGED_TBL_TSV="${OUTPUT_DIR}/tbl_merge.tsv"                                            # 合并 tbl 输出
@@ -41,7 +55,7 @@ fi
 echo "[INFO] 提取匹配序列到: $OUTPUT_DIR"
 while IFS= read -r faa_path || [[ -n "$faa_path" ]]; do
   [[ -z "$faa_path" ]] && continue
-  cmd=(python3 "$EXTRACT_SCRIPT" "$faa_path" "$MERGED_TBL_TSV" "$OUTPUT_DIR" --mode only_one)
+  cmd=(${PYTHON_PATH} "$EXTRACT_SCRIPT" "$faa_path" "$MERGED_TBL_TSV" "$OUTPUT_DIR" --mode only_one)
   echo "运行命令: ${cmd[*]}"
   if "${cmd[@]}"; then
     :
@@ -51,10 +65,22 @@ while IFS= read -r faa_path || [[ -n "$faa_path" ]]; do
 done < "$LIST_FILE"
 
 ########################################
-# 3) 整理命中清单 (直接 Python)
+# 3) 提取命中 CDS 核酸序列 (gffread)
+########################################
+HITS_SEQ_DIR="${OUTPUT_DIR}/${HITS_QUERIES}/sequence"
+echo "[INFO] 提取命中 CDS 序列到: $HITS_SEQ_DIR"
+${PYTHON_PATH} "$EXTRACT_NUC_SCRIPT" \
+  --hits-dir "$HITS_SEQ_DIR" \
+  --gff-dir "$GFF_DIR" \
+  --genome-dir "$GENOME_DIR" \
+  --gffread-bin "$GFFREAD_BIN" \
+  --output-dir "$HITS_SEQ_DIR"
+
+########################################
+# 4) 整理命中清单 (直接 Python)
 ########################################
 echo "[INFO] 整理命中清单: $HITS_OUTPUT_TSV"
-python3 "$HITS_PYTHON_SCRIPT" \
+ ${PYTHON_PATH} "$HITS_PYTHON_SCRIPT" \
   --hits-dir "$OUTPUT_DIR" \
   --output-tsv "$HITS_OUTPUT_TSV" \
   --queries "$HITS_QUERIES"

@@ -5,10 +5,10 @@
 set -Eeuo pipefail
 shopt -s nullglob
 
-INPUT_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/1-HMM序列"
-OUTPUT_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/2-HMM库"
-FILE_GLOB_PATTERN="*.aln.faa"         # 匹配输入 MSA 的文件名模式
-HMMPROG="hmmbuild"                     # hmmbuild 程序名（在 PATH 中）
+INPUT_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/1-HMM序列" #? 输入目录
+OUTPUT_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM/data/2-HMM库"  #? 输出目录
+FILE_GLOB_PATTERN="*.aln.faa"           #! 为了之后脚本的兼容性，保持此命名
+HMMPROG="hmmbuild"                      #! hmmbuild 程序名（在 PATH 中）
 
 
 need_bin() {

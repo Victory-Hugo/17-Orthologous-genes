@@ -85,7 +85,7 @@ task_idx=0
 for hmm in "${HMM_FILES[@]}"; do
   hmm_name="$(basename "$hmm")"
   hmm_base="${hmm_name%.*}"
-  out_dir="${OUTPUT_DIR}/${hmm_base}"
+  out_dir="${OUTPUT_DIR}/${hmm_base}_tbl"
   mkdir -p "$out_dir"
 
   for faa in "${FAA_FILES[@]}"; do
@@ -97,7 +97,8 @@ for hmm in "${HMM_FILES[@]}"; do
     task_idx=$((task_idx + 1))
     echo "[TASK ${task_idx}/${TOTAL_TASKS}] $hmm_name vs $faa_name"
 
-    if hmmsearch --cpu "$CPU_PER_JOB" -E "$E_VALUE" --tblout "$tbl" "$hmm" "$faa" 2> "$err"; then
+    # 静默主输出，保留 tbl/err
+    if hmmsearch --cpu "$CPU_PER_JOB" -E "$E_VALUE" --noali --tblout "$tbl" -o /dev/null "$hmm" "$faa" 2> "$err"; then
       echo "[OK] 生成: $tbl"
       rm -f "$err"
     else

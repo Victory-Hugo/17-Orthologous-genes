@@ -97,7 +97,17 @@ def collect_hits(hits_dir: Path, queries: Optional[Iterable[str]]) -> List[Dict[
         if query_filter and query_name not in query_filter:
             continue
         query_dir = hits_dir / query_name
-        fasta_files = sorted(query_dir.glob("*.hits.faa"))
+        sequence_dir = query_dir / "sequence"
+        candidates = []
+        if sequence_dir.is_dir():
+            candidates.extend(sorted(sequence_dir.glob("*.hits.faa")))
+        candidates.extend(sorted(query_dir.glob("*.hits.faa")))
+        seen = set()
+        fasta_files = []
+        for path in candidates:
+            if path not in seen:
+                fasta_files.append(path)
+                seen.add(path)
         for fasta_file in fasta_files:
             sample_name = fasta_file.name.replace(".hits.faa", "")
             for record_idx, (header, sequence) in enumerate(parse_fasta(fasta_file), start=1):

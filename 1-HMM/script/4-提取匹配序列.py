@@ -117,7 +117,7 @@ def load_hits_for_sample(tbl_file: str, sample_name: str) -> "OrderedDict[str, L
 
 def extract_sequences_from_faa(faa_file, target_ids):
     """
-    在 FAA FASTA 中提取目标蛋白序列，返回 {target_id: sequence}。
+    在 FAA FASTA 中提取目标蛋白序列，返回 {target_id: {'sequence': str, 'description': str}}。
     """
     sequences = {}
     targets = set(target_ids)
@@ -126,6 +126,7 @@ def extract_sequences_from_faa(faa_file, target_ids):
         with open(faa_file, 'r', encoding='utf-8', errors='ignore') as handle:
             current_id = None
             current_seq = []
+            current_desc = ""
 
             for line in handle:
                 line = line.rstrip('\n')
@@ -133,15 +134,24 @@ def extract_sequences_from_faa(faa_file, target_ids):
                     continue
                 if line.startswith('>'):
                     if current_id in targets and current_seq:
-                        sequences[current_id] = ''.join(current_seq)
+                        sequences[current_id] = {
+                            'sequence': ''.join(current_seq),
+                            'description': current_desc,
+                        }
 
-                    current_id = line[1:].split()[0]
+                    header_line = line[1:].strip()
+                    parts = header_line.split(maxsplit=1)
+                    current_id = parts[0]
+                    current_desc = parts[1] if len(parts) > 1 else ""
                     current_seq = []
                 else:
                     current_seq.append(line)
 
             if current_id in targets and current_seq:
-                sequences[current_id] = ''.join(current_seq)
+                sequences[current_id] = {
+                    'sequence': ''.join(current_seq),
+                    'description': current_desc,
+                }
 
     except Exception as exc:
         raise RuntimeError(f"读取 FAA 文件失败 - {faa_file}: {exc}") from exc
@@ -228,9 +238,12 @@ def extract_hit_sequences(
         if not query_hits:
             continue
 
-        query_dir = os.path.join(output_dir, query_name)
-        os.makedirs(query_dir, exist_ok=True)
-        output_file = os.path.join(query_dir, f"{filename_base}.hits.faa")
+        # 输出目录：query 名 + ".aln"（若尚未带后缀），并放入 sequence 子目录
+        query_dir_name = query_name if query_name.endswith(".aln") else f"{query_name}.aln"
+        query_dir = os.path.join(output_dir, query_dir_name)
+        sequence_dir = os.path.join(query_dir, "sequence")
+        os.makedirs(sequence_dir, exist_ok=True)
+        output_file = os.path.join(sequence_dir, f"{filename_base}.hits.faa")
 
         try:
             with open(output_file, 'w', encoding='utf-8') as handle:
@@ -238,9 +251,13 @@ def extract_hit_sequences(
                 filtered_hits = []
 
                 for hit in query_hits:
-                    sequence = sequences.get(hit.target_name)
-                    if not sequence:
+                    sequence_entry = sequences.get(hit.target_name)
+                    if not sequence_entry:
                         continue
+
+                    sequence = sequence_entry.get('sequence', '')
+                    description = sequence_entry.get('description', '')
+                    desc_clean = description.replace('|', '/').replace('\t', ' ').strip()
 
                     filter_summary['total'] += 1
 
@@ -265,6 +282,7 @@ def extract_hit_sequences(
                         'sequence': sequence,
                         'length': length,
                         'coverage': coverage,
+                        'description': desc_clean,
                     })
                     filter_summary['passed'] += 1
 
@@ -291,6 +309,8 @@ def extract_hit_sequences(
                     ]
                     if packaged.get('coverage') is not None:
                         meta_parts.append(f"cov={packaged['coverage']:.3f}")
+                    if packaged.get('description'):
+                        meta_parts.append(f"desc={packaged['description']}")
                     header = f"{filename_base}_{count}|" + "|".join(meta_parts)
                     handle.write(f">{header}\n")
                     for chunk in format_fasta_sequence(packaged['sequence']):
