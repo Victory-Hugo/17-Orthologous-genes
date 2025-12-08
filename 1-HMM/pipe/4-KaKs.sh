@@ -22,7 +22,7 @@ PY_PLOT="${SCRIPT_DIR}/script/7-2-绘制KaKs分布.py"
 #* ==================== 用户可修改区域 ====================
 # 输入/输出目录（已包含 FimH 的密码子比对）
 PIPEDIR="/mnt/d/5-NCBI-Reference/hmm分析示例/output/FimH.aln"
-CODON_DIR="${PIPEDIR}/alignment"        # 内含 *.codon.aln.fna（pal2nal 结果）
+CODON_DIR="${PIPEDIR}/alignment"        #! 内含 *.codon.aln.fna（pal2nal 结果）
 AXT_REF_DIR="${PIPEDIR}/axt"
 KAKS_OUTPUT_DIR="${PIPEDIR}/kaks"
 KAKS_STATS_DIR="${PIPEDIR}/kaks_stats"
@@ -43,7 +43,7 @@ KAKS_METHOD=""  # 可选：指定 Method 名称
 KAKS_CODON_TABLE=11
 
 # 拆分 AXT（按 block 数）。0 表示不拆分；>0 则对每个 AXT 拆分后并发跑 KaKs
-KAKS_SPLIT_BLOCKS=0
+KAKS_SPLIT_BLOCKS=10
 #* ==================== 用户可修改区域 ====================
 
 log() {
