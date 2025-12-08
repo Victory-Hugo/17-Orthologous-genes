@@ -155,8 +155,8 @@ process reroot {
     tuple val(name), path(nt_newick), path(aa_newick)
 
   output:
-    tuple val(name), file("${nt_newick}.rooted"), emit: nt optional true
-    tuple val(name), file("${aa_newick}.rooted"), emit: aa optional true
+    tuple val(name), file("${nt_newick}.rooted"), optional: true, emit: nt
+    tuple val(name), file("${aa_newick}.rooted"), optional: true, emit: aa
     tuple val(name), env(ROOTED), emit: worked
 
   // TODO: a comma separated list can be in params.outgroup! split and join(' ')!

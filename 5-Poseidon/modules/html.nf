@@ -12,8 +12,8 @@ process html {
     output: 
         tuple val(name), file("index.html"), emit: index
         tuple val(name), file("tex"), emit: tex_dir
-        path("html", type: 'dir') optional true
-        tuple val(name), path("fragment_*", type: 'dir') optional true
+        path "html", type: 'dir', optional: true
+        tuple val(name), path("fragment_*", type: 'dir'), optional: true, emit: fragments
         
     script:
     """
@@ -86,7 +86,7 @@ process html_codeml {
         tuple val(name), file(html_main_index), path(tex_dir), path(lrt_files), val(fragment_names)
 
     output: 
-        tuple val(name), path("codeml.html") optional true
+        tuple val(name), path("codeml.html"), optional: true
         
     script:
     """
@@ -109,7 +109,7 @@ process html_params {
         path tools
 
     output: 
-        tuple val(name), path("params.html") optional true
+        tuple val(name), path("params.html"), optional: true
         
     script:
     """
@@ -163,7 +163,7 @@ process html_recomb {
         tuple val(name), path(html_index), path(gard_html), path(full_nt_tree), path(frag_nt_trees)
 
     output: 
-        path "recomb.html" optional true
+        path "recomb.html", optional: true
         
     script:
     """
