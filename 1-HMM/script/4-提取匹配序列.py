@@ -301,6 +301,7 @@ def extract_hit_sequences(
 
                 for idx, packaged in enumerate(filtered_hits, start=1):
                     count += 1
+                    header_prefix = filename_base if mode == 'only_one' else f"{filename_base}_{idx}"
                     meta_parts = [
                         f"id={packaged['hit'].target_name}",
                         f"score={packaged['hit'].score:.2f}" if math.isfinite(packaged['hit'].score) else "score=NA",
@@ -311,7 +312,7 @@ def extract_hit_sequences(
                         meta_parts.append(f"cov={packaged['coverage']:.3f}")
                     if packaged.get('description'):
                         meta_parts.append(f"desc={packaged['description']}")
-                    header = f"{filename_base}_{count}|" + "|".join(meta_parts)
+                    header = f"{header_prefix}|" + "|".join(meta_parts)
                     handle.write(f">{header}\n")
                     for chunk in format_fasta_sequence(packaged['sequence']):
                         handle.write(chunk + '\n')

@@ -1,14 +1,20 @@
 #!/bin/bash
 set -euo pipefail
 #*================================
-#* 配置区
+#* 软件配置区
+#*================================
+SCRIPT_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM" #? 脚本目录
+QC_FILTER_PY="${SCRIPT_DIR}/script/codon_qc_filter.py" #? QC 过滤脚本
+PAL2NAL_BIN="${SCRIPT_DIR}/bin/pal2nal.pl"    #? PAL2NAL 可执行文件路径
+MAFFT_BIN="mafft"           #? MAFFT 可执行文件路径
+#*================================
+#* 文件配置区
 #*================================
 FAA_FNA_DIR="/mnt/d/5-NCBI-Reference/hmm分析示例/output/FimH.aln/sequence" #? 输入目录（同时包含 .hits.faa 与 .hits.cds.fna）
 OUTPUT_DIR="/mnt/d/5-NCBI-Reference/hmm分析示例/output/FimH.aln/alignment" #? 输出目录（会自动创建）
-MAFFT_BIN="mafft"           #? MAFFT 可执行文件路径
-PAL2NAL_BIN="pal2nal.pl"    #? PAL2NAL 可执行文件路径
 CODON_TABLE=11              #? 密码子表：11 = Bacterial, archaeal and plant plastid code
 #*================================
+
 
 #######################################
 # 主逻辑
@@ -32,8 +38,17 @@ for bin in "$MAFFT_BIN" "$PAL2NAL_BIN"; do
     exit 1
   fi
 done
+if [[ ! -x "$QC_FILTER_PY" ]]; then
+  log ERROR "未找到 QC Python 脚本: $QC_FILTER_PY"
+  exit 1
+fi
 
 mkdir -p "$OUTPUT_DIR"
+TMP_DIR="$(mktemp -d)"
+cleanup() {
+  rm -rf "$TMP_DIR"
+}
+trap cleanup EXIT
 
 # 以父目录名作为 query 名（示例: FimH.aln）
 QUERY_NAME="$(basename "$(dirname "$OUTPUT_DIR")")"
@@ -60,8 +75,17 @@ for faa in "${FAA_FILES[@]}"; do
     log ERROR "缺少匹配的 CDS 文件: $cds_file"
     exit 1
   fi
-  cat "$faa" >> "$PROTEIN_FASTA"
-  cat "$cds_file" >> "$CDS_FASTA"
+  filtered_faa="$TMP_DIR/${sample_base}.filtered.faa"
+  filtered_cds="$TMP_DIR/${sample_base}.filtered.cds.fna"
+  log INFO "质控序列: $sample_base"
+  python3 "$QC_FILTER_PY" \
+    --faa "$faa" \
+    --cds "$cds_file" \
+    --out-faa "$filtered_faa" \
+    --out-cds "$filtered_cds" \
+    --codon-table "$CODON_TABLE"
+  cat "$filtered_faa" >> "$PROTEIN_FASTA"
+  cat "$filtered_cds" >> "$CDS_FASTA"
   count=$((count + 1))
 done
 log INFO "已合并 $count 个样本的蛋白与 CDS 序列。"
