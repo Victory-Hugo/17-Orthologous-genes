@@ -58,11 +58,22 @@ if [[ ${#faa_files[@]} -eq 0 ]]; then
     exit 1
 fi
 
+# 为了在输出中保留来源文件信息（如 GCA/GCF），给每条序列 header 前加上文件名前缀，使用临时目录避免改动原始文件。
+prefixed_dir="$(mktemp -d)"
+prefixed_faa_files=()
+for faa in "${faa_files[@]}"; do
+    base="$(basename "${faa}" .faa)"
+    prefixed_faa="${prefixed_dir}/${base}.faa"
+    awk -v prefix="${base}|" 'BEGIN{OFS=""} /^>/{sub(/^>/,">"prefix)} {print}' "${faa}" > "${prefixed_faa}"
+    prefixed_faa_files+=("${prefixed_faa}")
+done
+trap 'rm -rf "${prefixed_dir}"' EXIT
+
 mkdir -p "${pfam_out}" "${tmhmm_out}" "${signal_out}" "${filter_out}"
 
 # Pfam 扫描
 echo "[INFO] 开始 Pfam 扫描..."
-for faa in "${faa_files[@]}"; do
+for faa in "${prefixed_faa_files[@]}"; do
     base="$(basename "${faa}" .faa)"
     hmmscan --cpu "${threads}" --domtblout "${pfam_out}/${base}_pfam.domtblout" "${pfam_db}" "${faa}"
 done
@@ -98,7 +109,7 @@ process_tmhmm() {
 }
 export tmhmm_bin tmhmm_tmp tmhmm_out
 export -f process_tmhmm
-parallel --jobs "${threads}" process_tmhmm ::: "${faa_files[@]}"
+parallel --jobs "${threads}" process_tmhmm ::: "${prefixed_faa_files[@]}"
 # 合并 tmhmm 输出并解析出 TM 段
 tmhmm_combined="${tmhmm_out}/tmhmm_short.out"
 tmhmm_parsed="${tmhmm_out}/tmhmm_parsed.tsv"
@@ -141,5 +152,5 @@ process_signalp() {
 }
 export signalp_bin signal_tmp signal_out
 export -f process_signalp
-parallel --jobs "${threads}" process_signalp ::: "${faa_files[@]}"
+parallel --jobs "${threads}" process_signalp ::: "${prefixed_faa_files[@]}"
 rm -rf "${signal_tmp}"
