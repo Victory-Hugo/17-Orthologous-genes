@@ -3,7 +3,7 @@
 
 NEXT_FLOW="nextflow"                                                                                                   #! 版本 25.10.2
 MAIN_SRC="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/5-Poseidon/poseidon.nf"                        #? 主脚本位置
-INPUT_FILE="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/5-Poseidon/examples/Spike_ali_nucl-VIRULIGN.fasta"    #? 输入文件位置
+INPUT_FILE="/mnt/c/Users/Administrator/Desktop/cleaned.fna"    #? 输入文件位置
 OUT_BASE_DIR="/mnt/c/Users/Administrator/Desktop/"
 OUTPUT_DIR="${OUT_BASE_DIR}/output"                                  #? 输出文件目录
 WORKDIR="${OUT_BASE_DIR}/workdir"                                    #? 中间文件目录
