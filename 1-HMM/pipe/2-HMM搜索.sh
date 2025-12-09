@@ -2,7 +2,7 @@
 set -Eeuo pipefail
 
 # 全局日志
-LOG_DIR="/mnt/d/5-NCBI-Reference/hmm分析示例/log"
+LOG_DIR="/mnt/l/18-Rv0194-Gene/2-HMM/log"
 mkdir -p "$LOG_DIR"
 LOG_FILE="${LOG_DIR}/hmm_pipeline.log"
 exec > >(tee -a "$LOG_FILE") 2>&1
@@ -12,9 +12,9 @@ echo "[INFO] 日志输出到: $LOG_FILE"
 #*                 配置区
 #*#######################################
 SCRIPT_DIR="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-HMM"       # 当前脚本根目录
-LIST_FILE="${SCRIPT_DIR}/conf/1-prodigal_faa_list.txt"                                  # 样本蛋白列表
+LIST_FILE="/mnt/l/18-Rv0194-Gene/2-HMM/conf/NCBI-RefSeq-path.txt"                                  # 样本蛋白列表
 HMM_FILE_TXT="${SCRIPT_DIR}/conf/2-hmm库_list.txt"                                      # HMM 库列表
-OUTPUT_DIR="/mnt/d/5-NCBI-Reference/hmm分析示例/output/"                                # 输出目录
+OUTPUT_DIR="/mnt/l/18-Rv0194-Gene/2-HMM/output/"                                # 输出目录
 
 CPU_PER_JOB="2"                                                                         # hmmsearch CPU
 E_VALUE="1e-5"                                                                          # hmmsearch e-value 阈值
@@ -26,12 +26,12 @@ HMM_SEARCH_SCRIPT="${SCRIPT_DIR}/script/2-备选-HMM比对.sh"                  
 EXTRACT_SCRIPT="${SCRIPT_DIR}/script/4-提取匹配序列.py"                                  # 提取匹配序列
 HITS_PYTHON_SCRIPT="${SCRIPT_DIR}/script/4-1-整理HMM命中列表.py"                         # 整理命中清单
 EXTRACT_NUC_SCRIPT="${SCRIPT_DIR}/script/4-2-提取命中核酸序列.py"                       # 提取命中核酸序列
-HITS_QUERIES="FimH.aln"                                                                 # 目标 query 名
+HITS_QUERIES="Rv0194-exact-domain.aln"                                                                 # 目标 query 名
 
 # gffread 配置（用于提取命中 CDS）
 GFFREAD_BIN="gffread"                                                                   # gffread 路径
-GFF_DIR="/mnt/d/5-NCBI-Reference/hmm分析示例/data"                                      # GFF 目录
-GENOME_DIR="/mnt/d/5-NCBI-Reference/hmm分析示例/data"                                   # fna/fasta 目录
+GFF_DIR="/mnt/l/18-Rv0194-Gene/2-HMM/data"                                      # GFF 目录
+GENOME_DIR="/mnt/l/18-Rv0194-Gene/2-HMM/data"                                   # fna/fasta 目录
 
 PRESENCE_MATRIX_TSV="${OUTPUT_DIR}/presence_absence_matrix.tsv"                         # 矩阵输出
 MERGED_TBL_TSV="${OUTPUT_DIR}/tbl_merge.tsv"                                            # 合并 tbl 输出
