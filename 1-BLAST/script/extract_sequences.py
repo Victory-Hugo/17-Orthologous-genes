@@ -97,17 +97,22 @@ def extract_sequences(blastp_results, faa_path_list, output_dir):
             source_file = fields[0]
             sseqid = fields[2]  # Subject sequence ID
             
+            # Extract source identifier (remove .faa extension)
+            source_id = os.path.splitext(source_file)[0]
+            
             # Get sequences from the source file
             if source_file in faa_map:
                 sequences = faa_map[source_file]
                 
                 if sseqid in sequences:
-                    # Create output filename based on subject ID
-                    output_file = os.path.join(output_dir, f"{sseqid}.faa")
+                    # Create output filename with source information
+                    # Format: {source_id}.faa
+                    output_file = os.path.join(output_dir, f"{source_id}.faa")
                     
-                    # Write sequence
+                    # Write sequence with source information in header
                     with open(output_file, 'w') as out_f:
-                        out_f.write(f">{sseqid}\n")
+                        # Header format: >{source_id}|{sseqid}
+                        out_f.write(f">{source_id}|{sseqid}\n")
                         seq = sequences[sseqid]
                         # Write sequence in 60-character lines
                         for i in range(0, len(seq), 60):

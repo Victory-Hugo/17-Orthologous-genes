@@ -36,18 +36,22 @@ def _coerce_int(value: str) -> Optional[int]:
 
 
 def _select_pfam_field(fieldnames: Iterable[str]) -> str:
-    # 优先使用明确的 pfam_id/target_accession，其次 target_name。
-    preferred = ["pfam_id", "target_accession", "target_name"]
+    # 优先使用明确的 pfam_id，其次 query_accession（hmmsearch 模式下 Pfam ID 在 query 列）
+    preferred = ["pfam_id", "query_accession", "query_name"]
     for name in preferred:
         if name in fieldnames:
             return name
-    raise ValueError("hmmscan CSV 缺少 pfam_id/target_accession/target_name 列")
+    raise ValueError("hmmscan CSV 缺少 pfam_id/query_accession/query_name 列")
 
 
 def parse_hmmscan_csv(csv_path: Path) -> Dict[str, List[Domain]]:
     """
     解析 hmmscan CSV，返回 protein_id -> ABC_tran 域列表。
     仅保留 pfam_id 以 PF00005 开头的行。
+    
+    注意：hmmsearch 模式下（HMM profile 搜索序列数据库）：
+    - query_* 列是 HMM profile 信息（Pfam ID）
+    - target_* 列是蛋白质序列信息（蛋白质 ID）
     """
     protein_to_domains: Dict[str, List[Domain]] = {}
     with csv_path.open("r", encoding="utf-8") as f:
@@ -55,7 +59,8 @@ def parse_hmmscan_csv(csv_path: Path) -> Dict[str, List[Domain]]:
         if reader.fieldnames is None:
             raise ValueError(f"{csv_path} 没有表头")
         pfam_field = _select_pfam_field(reader.fieldnames)
-        name_field = "query_name" if "query_name" in reader.fieldnames else "target_name"
+        # hmmsearch 模式下，蛋白质 ID 在 target_name 列
+        name_field = "target_name" if "target_name" in reader.fieldnames else "query_name"
         for row in reader:
             pfam_raw = row.get(pfam_field, "")
             if not pfam_raw or not pfam_raw.startswith(ABC_PFAM_ID):

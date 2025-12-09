@@ -2,25 +2,25 @@
 
 
 # 功能简介:
-# 本脚本用于批量处理蛋白质序列（.faa 文件），依次进行 Pfam-A 域注释、跨膜区段预测（TMHMM）、信号肽预测（SignalP）适用于高通量蛋白功能注释与筛选分析。
+# 本脚本用于批量处理蛋白质序列（.faa 文件），依次进行特定 Pfam domain 搜索、跨膜区段预测（TMHMM）、信号肽预测（SignalP）适用于高通量蛋白功能注释与筛选分析。
 
 # 主要流程:
 # 1. 参数与路径初始化，支持命令行参数或默认路径。
 # 2. 检查 TMHMM 和 SignalP 可执行文件是否可用。
 # 3. 查找输入目录下所有 .faa 文件。
-# 4. Pfam-A 扫描：调用 hmmscan 对每个 .faa 文件进行 Pfam-A 域注释，并格式化输出为 CSV。
-# 5. 合并所有 Pfam-A CSV 文件为一个总表。
+# 4. Pfam 搜索：调用 hmmsearch 用特定 HMM profile 搜索每个 .faa 文件，找出包含该 domain 的序列，并格式化输出为 CSV。
+# 5. 合并所有 Pfam CSV 文件为一个总表。
 # 6. TMHMM 批处理：并行预测所有蛋白的跨膜区段，合并并解析结果为标准格式。
 # 7. SignalP 批处理：并行预测所有蛋白的信号肽，输出结果。
 
 script_dir="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/6-Pfam-A"
 format_clean="${script_dir}/pipe/domtblout_to_csv.py"
-pfam_db_default="${script_dir}/data/Pfam-A.hmm"
+pfam_db_default="${script_dir}/data/PF00005.hmm"
 python="python"
 tmhmm_bin_default="tmhmm"
 signalp_bin_default="signalp4"
 
-input_dir_default="/mnt/l/18-Rv0194-Gene/1-BLAST/output/sequence"
+input_dir_default="/mnt/l/18-Rv0194-Gene/1-BLAST/data/search/sequence/"
 pfam_out_default="/mnt/l/18-Rv0194-Gene/1-BLAST/output/pfamA"
 tmhmm_out_default="/mnt/l/18-Rv0194-Gene/1-BLAST/output/tmhmm"
 signal_out_default="/mnt/l/18-Rv0194-Gene/1-BLAST/output/signal"
@@ -58,24 +58,37 @@ if [[ ${#faa_files[@]} -eq 0 ]]; then
     exit 1
 fi
 
-# 为了在输出中保留来源文件信息（如 GCA/GCF），给每条序列 header 前加上文件名前缀，使用临时目录避免改动原始文件。
+# 检查序列 header 是否已包含来源信息（格式：>source|seqid）
+# 如果已经包含，则直接使用原文件；否则添加前缀
 prefixed_dir="$(mktemp -d)"
 prefixed_faa_files=()
 for faa in "${faa_files[@]}"; do
     base="$(basename "${faa}" .faa)"
     prefixed_faa="${prefixed_dir}/${base}.faa"
-    awk -v prefix="${base}|" 'BEGIN{OFS=""} /^>/{sub(/^>/,">"prefix)} {print}' "${faa}" > "${prefixed_faa}"
+    
+    # 检查第一个 header 是否已经包含 '|' 分隔符
+    first_header=$(grep -m1 "^>" "${faa}" || true)
+    if [[ "${first_header}" =~ \| ]]; then
+        # 已经包含来源信息，直接复制
+        cp "${faa}" "${prefixed_faa}"
+    else
+        # 未包含来源信息，添加前缀
+        awk -v prefix="${base}|" 'BEGIN{OFS=""} /^>/{sub(/^>/,">"prefix)} {print}' "${faa}" > "${prefixed_faa}"
+    fi
     prefixed_faa_files+=("${prefixed_faa}")
 done
 trap 'rm -rf "${prefixed_dir}"' EXIT
 
 mkdir -p "${pfam_out}" "${tmhmm_out}" "${signal_out}" "${filter_out}"
 
-# Pfam 扫描
-echo "[INFO] 开始 Pfam 扫描..."
+# 注意：hmmsearch 不需要预先编译 HMM 文件（hmmpress），直接使用 .hmm 文件即可
+# 只有 hmmscan 才需要编译过的 HMM 数据库
+
+# Pfam 搜索（使用 hmmsearch：HMM profile → 序列数据库）
+echo "[INFO] 开始 Pfam 搜索（hmmsearch 模式）..."
 for faa in "${prefixed_faa_files[@]}"; do
     base="$(basename "${faa}" .faa)"
-    hmmscan --cpu "${threads}" --domtblout "${pfam_out}/${base}_pfam.domtblout" "${pfam_db}" "${faa}"
+    hmmsearch --cpu "${threads}" --domtblout "${pfam_out}/${base}_pfam.domtblout" "${pfam_db}" "${faa}"
 done
 ${python} "${format_clean}" -i "${pfam_out}" -o "${pfam_out}"
 
@@ -96,6 +109,7 @@ done
 # TMHMM 批处理
 echo "[INFO] 运行 TMHMM..."
 tmhmm_tmp="${tmhmm_out}/tmp"
+cd "${tmhmm_out}" 
 mkdir -p "${tmhmm_tmp}"
 process_tmhmm() {
     local faa_path="$1"

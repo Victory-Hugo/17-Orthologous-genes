@@ -7,14 +7,14 @@ set -e
 #===============================================
 # =============== 参数配置 ===============
 # 接收命令行参数，使用默认值作为后备
-IDENTITY_THRESHOLD=${1:-40}    # 最小身份相似度 (%)
+IDENTITY_THRESHOLD=${1:-30}    # 最小身份相似度 (%)
 COVERAGE_THRESHOLD=${2:-70}    # 最小查询覆盖率 (%)
 EVALUE=1e-5                    # E值阈值
 # =============== 文件路径配置 ===============
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FAA_PATH_LIST="/mnt/l/18-Rv0194-Gene/1-BLAST/meta/Actinobacteria_Mycobacterium_faa_path.txt"
 QUERY_FASTA="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-BLAST/conf/Rv0194.aln.faa"
-OUTPUT_DIR="/mnt/l/18-Rv0194-Gene/1-BLAST/output"
+OUTPUT_DIR="/mnt/l/18-Rv0194-Gene/1-BLAST/data/search/"
 OUT_FILE="$OUTPUT_DIR/Rv0194_blastp.tsv"
 OUT_SEQ_DIR="$OUTPUT_DIR/sequence"
 PY_FILTER="$SCRIPT_DIR/filter_blastp_results.py"
