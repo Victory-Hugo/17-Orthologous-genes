@@ -20,11 +20,11 @@ python="python"
 tmhmm_bin_default="tmhmm"
 signalp_bin_default="signalp4"
 
-input_dir_default="/mnt/l/18-Rv0194-Gene/1-BLAST/data/search/sequence/"
-pfam_out_default="/mnt/l/18-Rv0194-Gene/1-BLAST/output/pfamA"
-tmhmm_out_default="/mnt/l/18-Rv0194-Gene/1-BLAST/output/tmhmm"
-signal_out_default="/mnt/l/18-Rv0194-Gene/1-BLAST/output/signal"
-filter_out_default="/mnt/l/18-Rv0194-Gene/1-BLAST/output/pfamA-filter"
+input_dir_default="/mnt/l/18-Rv0194-Gene/2-扩大搜索/data/search/sequence/"
+pfam_out_default="/mnt/l/18-Rv0194-Gene/2-扩大搜索/output/pfamA"
+tmhmm_out_default="/mnt/l/18-Rv0194-Gene/2-扩大搜索/output/tmhmm"
+signal_out_default="/mnt/l/18-Rv0194-Gene/2-扩大搜索/output/signal"
+filter_out_default="/mnt/l/18-Rv0194-Gene/2-扩大搜索/output/pfamA-filter"
 threads_default=8
 
 input_dir="${1:-${input_dir_default}}"

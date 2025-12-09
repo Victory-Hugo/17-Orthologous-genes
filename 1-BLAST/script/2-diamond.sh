@@ -16,8 +16,8 @@ THREADS=${THREADS:-16}          # DIAMOND 线程数 (可通过环境变量覆盖
 # ---------- 路径配置 ----------
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 QUERY_FASTA="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-BLAST/conf/Rv0194.aln.faa"
-FAA_LIST="/mnt/l/18-Rv0194-Gene/1-BLAST/meta/Actinobacteria_Mycobacterium_faa_path.txt"
-OUTPUT_DIR="/mnt/l/18-Rv0194-Gene/1-BLAST/data/search"
+FAA_LIST="/mnt/l/18-Rv0194-Gene/2-扩大搜索/conf/NCBI-RefSeq-path.txt"
+OUTPUT_DIR="/mnt/l/18-Rv0194-Gene/2-扩大搜索/data/search"
 RAW_RESULT="$OUTPUT_DIR/Rv0194_diamond_raw.tsv"
 FILTERED_RESULT="$OUTPUT_DIR/Rv0194_diamond.tsv"
 SEQ_DIR="$OUTPUT_DIR/sequence"
