@@ -3,9 +3,9 @@ set -euo pipefail
 
 # 按样本循环运行 Rv0194 筛选
 # 路径固定配置（如需调整请直接编辑本脚本）
-pfam_dir="/mnt/l/18-Rv0194-Gene/1-BLAST/output/pfamA"
-tmhmm_dir="/mnt/l/18-Rv0194-Gene/1-BLAST/output/tmhmm"
-output_root="/mnt/l/18-Rv0194-Gene/1-BLAST/output/pfamA-filter"
+pfam_dir="/mnt/l/18-Rv0194-Gene/2-扩大搜索/output/pfamA"
+tmhmm_dir="/mnt/l/18-Rv0194-Gene/2-扩大搜索/output/tmhmm"
+output_root="/mnt/l/18-Rv0194-Gene/2-扩大搜索/output/pfamA-filter"
 # 如无需邻域过滤，可将 neighbor_tsv/neighbor_keywords 置为 "none"
 fasta_dir="none"
 neighbor_tsv="none"
