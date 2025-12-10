@@ -10,7 +10,7 @@ INDEX="${BASE}/index"
 TRANS="${BASE}/python/trans.py"
 
 # 1) 增量构建索引（默认只处理新组装）
-python ${BUILDPY} --config ${CONFIG}
+python ${BUILDPY} --config ${CONFIG} --workers 16
 
 # 2) 重建指定组装（保留其它组装）
 # python ${BUILDPY} --config ${CONFIG} --overwrite-existing --assemblies ${BASE}/database/GCA_009268105.2/..

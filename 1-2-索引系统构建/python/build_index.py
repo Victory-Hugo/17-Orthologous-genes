@@ -12,10 +12,12 @@ No external dependencies are required.
 from __future__ import annotations
 
 import argparse
+import os
 import hashlib
 import json
 import re
 import shutil
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 from typing import Dict, Iterable, List, Tuple
 
@@ -54,6 +56,12 @@ def parse_args() -> argparse.Namespace:
         "--overwrite-existing",
         action="store_true",
         help="Rebuild assemblies that already have alias/gene index files.",
+    )
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=1,
+        help="Number of worker processes to use (<=0 to use all available cores).",
     )
     return parser.parse_args()
 
@@ -206,6 +214,8 @@ def build_for_assembly(
     skipped_bad_coords = 0
     mismatched_cds = 0
 
+    # 先按 protein_id 聚合多段 CDS，避免有 ribosomal slippage/多段 CDS 被拆成多个基因
+    cds_features: Dict[str, Dict[str, object]] = {}
     with gff_path.open() as fh:
         for line in fh:
             if not line or line.startswith("#"):
@@ -213,103 +223,134 @@ def build_for_assembly(
             parts = line.strip().split("\t")
             if len(parts) != 9:
                 continue
-            seqid, _, feature_type, start, end, _, strand, _, attrs = parts
+            seqid, _, feature_type, start, end, _, strand, phase, attrs = parts
             if feature_type != "CDS":
                 continue
             attr_map = parse_gff_attributes(attrs)
-            aliases: List[str] = []
-            for vals in attr_map.values():
-                aliases.extend(vals)
             protein_id = None
             for key in ("protein_id", "Name", "ID"):
                 if key in attr_map:
                     protein_id = attr_map[key][0]
                     break
-            locus_tag = attr_map.get("locus_tag", [None])[0]
-            if locus_tag:
-                aliases.append(locus_tag)
-
-            start_i, end_i = int(start), int(end)
-            seq = genome.get(seqid, "")
-            if not seq or start_i < 1:
+            if not protein_id:
+                continue
+            entry = cds_features.setdefault(
+                protein_id,
+                {
+                    "seqid": seqid,
+                    "strand": strand,
+                    "segments": [],
+                    "aliases": [],
+                },
+            )
+            # 如果同一个 protein_id 在不同 contig/链上，直接跳过，避免拼错
+            if entry["seqid"] != seqid or entry["strand"] != strand:
                 skipped_bad_coords += 1
                 if log_skipped:
                     print(
-                        f"[skip] {assembly} {seqid}:{start}-{end} "
-                        "missing genome sequence or bad coords"
+                        f"[skip] {assembly} protein_id={protein_id} spans multiple contigs/strands"
                     )
+                cds_features.pop(protein_id, None)
                 continue
-            seq_len = len(seq)
-            if end_i > seq_len:
-                wrap_len = end_i - seq_len
-                if wrap_len >= seq_len:
-                    skipped_bad_coords += 1
-                    if log_skipped:
-                        print(
-                            f"[skip] {assembly} {seqid}:{start}-{end} "
-                            f"wrap length {wrap_len} >= contig length {seq_len}"
-                        )
-                    continue
-                subseq = seq[start_i - 1 :] + seq[:wrap_len]
-            else:
-                subseq = seq[start_i - 1 : end_i]
-            if strand == "-":
-                subseq = reverse_complement(subseq)
+            entry["segments"].append((int(start), int(end), int(phase) if phase.isdigit() else 0))
+            for vals in attr_map.values():
+                entry["aliases"].extend(vals)
 
-            if protein_id and protein_id in cds_lookup:
-                cds_seq, _ = cds_lookup[protein_id]
-                if cds_seq != subseq:
-                    mismatched_cds += 1
+    def extract_segment(seqid: str, start_i: int, end_i: int, strand: str) -> str | None:
+        seq = genome.get(seqid, "")
+        if not seq or start_i < 1:
+            return None
+        seq_len = len(seq)
+        if end_i > seq_len:
+            wrap_len = end_i - seq_len
+            if wrap_len >= seq_len:
+                return None
+            subseq = seq[start_i - 1 :] + seq[:wrap_len]
+        else:
+            subseq = seq[start_i - 1 : end_i]
+        if strand == "-":
+            subseq = reverse_complement(subseq)
+        return subseq
 
-            nuc_hash = f"n_{md5_12(subseq)}"
+    for protein_id, feature in cds_features.items():
+        seqid = feature["seqid"]
+        strand = feature["strand"]
+        segments = sorted(feature["segments"], key=lambda x: x[0])
 
-            protein_seq = None
-            protein_aliases: List[str] = []
-            if protein_id and protein_id in protein_lookup:
-                protein_seq, protein_aliases = protein_lookup[protein_id]
-            else:
-                skipped_no_protein += 1
+        subseqs: List[str] = []
+        bad_segment = False
+        for start_i, end_i, phase in segments:
+            start_adj = start_i + phase
+            subseq = extract_segment(seqid, start_adj, end_i, strand)
+            if subseq is None:
+                skipped_bad_coords += 1
+                bad_segment = True
                 if log_skipped:
                     print(
-                        f"[skip] {assembly} protein_id={protein_id} "
-                        "not found in FAA; manual translation disabled"
+                        f"[skip] {assembly} {seqid}:{start_i}-{end_i} missing genome sequence or bad coords"
                     )
+                break
+            subseqs.append(subseq)
+        if bad_segment or not subseqs:
+            continue
+
+        if strand == "-":
+            subseqs = list(reversed(subseqs))
+        joined_seq = "".join(subseqs)
+
+        if protein_id in cds_lookup:
+            cds_seq, _ = cds_lookup[protein_id]
+            if cds_seq != joined_seq:
+                mismatched_cds += 1
+
+        protein_seq = None
+        protein_aliases: List[str] = []
+        if protein_id in protein_lookup:
+            protein_seq, protein_aliases = protein_lookup[protein_id]
+        else:
+            skipped_no_protein += 1
+            if log_skipped:
+                print(
+                    f"[skip] {assembly} protein_id={protein_id} "
+                    "not found in FAA; manual translation disabled"
+                )
+            continue
+
+        nuc_hash = f"n_{md5_12(joined_seq)}"
+        prot_hash = f"p_{md5_12(protein_seq)}"
+
+        gene_key = f"{assembly}::cds{gene_counter:05d}"
+        gene_counter += 1
+
+        for alias in feature["aliases"] + protein_aliases:
+            cleaned = clean_alias(alias)
+            if not cleaned:
                 continue
+            alias_key = f"{assembly}::{cleaned}"
+            alias_index.setdefault(alias_key, [])
+            if gene_key not in alias_index[alias_key]:
+                alias_index[alias_key].append(gene_key)
 
-            prot_hash = f"p_{md5_12(protein_seq)}"
+        gene_index[gene_key] = {
+            "protein_id": prot_hash,
+            "nucleotide_id": nuc_hash,
+            "coords": [seqid, min(s[0] for s in segments), max(s[1] for s in segments), strand],
+        }
 
-            gene_key = f"{assembly}::cds{gene_counter:05d}"
-            gene_counter += 1
+        prot_bucket = bucket_for_protein(prot_hash)
+        nuc_bucket = bucket_for_nucleotide(nuc_hash)
 
-            for alias in aliases + protein_aliases:
-                cleaned = clean_alias(alias)
-                if not cleaned:
-                    continue
-                alias_key = f"{assembly}::{cleaned}"
-                alias_index.setdefault(alias_key, [])
-                if gene_key not in alias_index[alias_key]:
-                    alias_index[alias_key].append(gene_key)
+        prot_path = prot_store / prot_bucket / f"{prot_hash}.json"
+        if not prot_path.exists():
+            ensure_dir(prot_path.parent)
+            with prot_path.open("w") as out:
+                json.dump({"id": prot_hash, "sequence": protein_seq}, out)
 
-            gene_index[gene_key] = {
-                "protein_id": prot_hash,
-                "nucleotide_id": nuc_hash,
-                "coords": [seqid, start_i, end_i, strand],
-            }
-
-            prot_bucket = bucket_for_protein(prot_hash)
-            nuc_bucket = bucket_for_nucleotide(nuc_hash)
-
-            prot_path = prot_store / prot_bucket / f"{prot_hash}.json"
-            if not prot_path.exists():
-                ensure_dir(prot_path.parent)
-                with prot_path.open("w") as out:
-                    json.dump({"id": prot_hash, "sequence": protein_seq}, out)
-
-            nuc_path = nuc_store / nuc_bucket / f"{nuc_hash}.json"
-            if not nuc_path.exists():
-                ensure_dir(nuc_path.parent)
-                with nuc_path.open("w") as out:
-                    json.dump({"id": nuc_hash, "sequence": subseq}, out)
+        nuc_path = nuc_store / nuc_bucket / f"{nuc_hash}.json"
+        if not nuc_path.exists():
+            ensure_dir(nuc_path.parent)
+            with nuc_path.open("w") as out:
+                json.dump({"id": nuc_hash, "sequence": joined_seq}, out)
 
     conflict_count = sum(1 for v in alias_index.values() if len(v) > 1)
 
@@ -343,6 +384,11 @@ def build_for_assembly(
     )
 
 
+def build_wrapper(assembly_dir: str, index_dir: str, log_skipped: bool) -> str:
+    build_for_assembly(Path(assembly_dir), Path(index_dir), log_skipped)
+    return Path(assembly_dir).name
+
+
 def main() -> None:
     args = parse_args()
     config_data = {}
@@ -351,8 +397,8 @@ def main() -> None:
         if config_path.exists():
             with config_path.open() as fh:
                 config_data = json.load(fh)
-    assemblies_dir = Path(config_data.get("assemblies_dir", args.assemblies))
-    index_dir = Path(config_data.get("index_dir", args.index))
+    assemblies_dir = Path(config_data.get("assemblies_dir", args.assemblies)).resolve()
+    index_dir = Path(config_data.get("index_dir", args.index)).resolve()
 
     if index_dir.exists() and args.force:
         shutil.rmtree(index_dir)
@@ -363,6 +409,7 @@ def main() -> None:
     ensure_dir(index_dir / "alias_index")
     ensure_dir(index_dir / "gene_index")
 
+    todo: List[Path] = []
     for assembly_dir in sorted(assemblies_dir.iterdir()):
         if not assembly_dir.is_dir():
             continue
@@ -373,11 +420,30 @@ def main() -> None:
         if not args.overwrite_existing and alias_path.exists() and gene_path.exists():
             print(f"[skip] {assembly} already indexed (use --overwrite-existing to rebuild)")
             continue
-        build_for_assembly(
-            assembly_dir,
-            index_dir,
-            args.log_skipped,
-        )
+        todo.append(assembly_dir.resolve())
+
+    if not todo:
+        return
+
+    workers = args.workers if args.workers != 0 else (os.cpu_count() or 1)
+    workers = max(1, workers)
+
+    if workers == 1 or len(todo) == 1:
+        for assembly_dir in todo:
+            build_wrapper(str(assembly_dir), str(index_dir), args.log_skipped)
+        return
+
+    with ProcessPoolExecutor(max_workers=workers) as executor:
+        future_map = {
+            executor.submit(build_wrapper, str(assembly_dir), str(index_dir), args.log_skipped): assembly_dir.name
+            for assembly_dir in todo
+        }
+        for future in as_completed(future_map):
+            assembly = future_map[future]
+            try:
+                future.result()
+            except Exception as exc:
+                print(f"[error] {assembly} failed: {exc}")
 
 
 if __name__ == "__main__":
