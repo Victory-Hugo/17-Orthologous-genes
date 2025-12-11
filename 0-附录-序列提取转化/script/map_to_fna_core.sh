@@ -2,13 +2,15 @@
 set -euo pipefail
 
 usage() {
-    echo "用法: $0 <map_file> <out_dir> [threads]" >&2
-    echo "示例: $0 map.csv /path/to/out 16" >&2
+    echo "用法: $0 <map_file> <out_dir> [threads] [feature_type]" >&2
+    echo "示例: $0 map.csv /path/to/out 16 CDS" >&2
 }
 
 map_file="${1:-}"
 out_dir="${2:-}"
 threads="${3:-16}"
+# 可选：限制第三列feature类型（如CDS），为空则不限制
+feature_type="${4:-}"
 
 if [[ -z "$map_file" || -z "$out_dir" ]]; then
     usage
@@ -47,10 +49,10 @@ process_line() {
     trap cleanup RETURN
 
     local target_gff="${tmp_dir}/target.gff"
-    # 精确匹配属性字段，避免子串误伤，保留注释头
-    awk -F'\t' -v pid="$protein_id" '
+    # 精确匹配属性字段，避免子串误伤，保留注释头；可选限制feature类型
+    awk -F'\t' -v pid="$protein_id" -v ft="$feature_type" '
         /^#/ { print; next }
-        $9 ~ ("(^|;)(ID|Name|Parent)=" pid "([;]|$)") { print }
+        (ft == "" || $3 == ft) && $9 ~ ("(^|;)(ID|Name|Parent)=" pid "([;]|$)") { print }
     ' "$gff_path" > "$target_gff"
 
     out_fna="${out_dir}/${asm_id}.fna"
@@ -88,7 +90,7 @@ export -f process_line
 export out_dir
 
 if command -v parallel >/dev/null 2>&1; then
-    parallel --halt soon,fail=1 --line-buffer -j "$threads" process_line :::: "$map_file"
+    parallel --halt soon,fail=1 --line-buffer --bar -j "$threads" process_line :::: "$map_file"
 else
     while IFS= read -r line || [[ -n "$line" ]]; do
         printf '%s\0' "$line"
