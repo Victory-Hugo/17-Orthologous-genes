@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# #! 魔方服务器权限问题：需要在运行脚本前执行如下：
+# #! 不要在/data_ssd目录下运行，否则权限会出问题
+# newgrp docker
+# conda activate nextflow
+# chmod -R 777 /17-Orthologous-genes/1-2-索引系统构建
 
 NEXT_FLOW="nextflow"                                                                                                   #! 版本 25.10.2
 MAIN_SRC="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/5-Poseidon/poseidon.nf"                        #? 主脚本位置
