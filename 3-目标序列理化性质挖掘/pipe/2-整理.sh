@@ -4,13 +4,13 @@
 # Description: Merge physicochemical TSV outputs into one table and drop columns that are entirely NA.
 
 set -euo pipefail
-
-LENGTH_TSV="/mnt/c/Users/Administrator/Desktop/output/1-序列长度/length.tsv"
-GC_TSV="/mnt/c/Users/Administrator/Desktop/output/2-GC含量/gc_content.tsv"
-PI_TSV="/mnt/c/Users/Administrator/Desktop/output/3-等电点/isoelectric_point.tsv"
-HYDRO_TSV="/mnt/c/Users/Administrator/Desktop/output/4-疏水性指数/hydrophobicity.tsv"
-CAI_TSV="/mnt/c/Users/Administrator/Desktop/output/5-CAI/cai.tsv"
-MERGED_TSV="/mnt/c/Users/Administrator/Desktop/output/merged_physicochemical.tsv"
+OUTPUT_BASE="/mnt/l/18-Rv0194-Gene/3-SingleGene-tree/output/理化性质/"
+LENGTH_TSV="${OUTPUT_BASE}/1-序列长度/length.tsv"
+GC_TSV="${OUTPUT_BASE}/2-GC含量/gc_content.tsv"
+PI_TSV="${OUTPUT_BASE}/3-等电点/isoelectric_point.tsv"
+HYDRO_TSV="${OUTPUT_BASE}/4-疏水性指数/hydrophobicity.tsv"
+CAI_TSV="${OUTPUT_BASE}/5-CAI/cai.tsv"
+MERGED_TSV="${OUTPUT_BASE}/merged_physicochemical.tsv"
 
 for file in "${LENGTH_TSV}" "${GC_TSV}" "${PI_TSV}" "${HYDRO_TSV}" "${CAI_TSV}"; do
     if [[ ! -f "${file}" ]]; then
