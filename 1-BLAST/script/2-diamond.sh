@@ -7,23 +7,18 @@ set -euo pipefail
 # ===============================================
 
 # ---------- 参数配置 ----------
-IDENTITY_THRESHOLD=${1:-40}    # 身份相似度阈值 (%)
-COVERAGE_THRESHOLD=${2:-70}    # 查询覆盖率阈值 (%)
-LENGTH_THRESHOLD=${3:-1000}    # 比对长度阈值 (alignment length)
-EVALUE=1e-5                    # E-value 阈值
-THREADS=${THREADS:-16}          # DIAMOND 线程数 (可通过环境变量覆盖)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONF_FILE="/mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-BLAST/conf/Rv1819c/diamond.conf"
+[[ -f "$CONF_FILE" ]] || { echo "错误: 配置文件不存在: $CONF_FILE" >&2; exit 1; }
+# shellcheck source=/dev/null
+source "$CONF_FILE"
+
+IDENTITY_THRESHOLD=${1:-$IDENTITY_THRESHOLD}    # 身份相似度阈值 (%)
+COVERAGE_THRESHOLD=${2:-$COVERAGE_THRESHOLD}    # 查询覆盖率阈值 (%)
+LENGTH_THRESHOLD=${3:-$LENGTH_THRESHOLD}        # 比对长度阈值 (alignment length)
 
 # ---------- 路径配置 ----------
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-QUERY_FASTA="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/1-BLAST/conf/Rv0194.aln.faa"
-FAA_LIST="/mnt/l/18-Rv0194-Gene/2-扩大搜索/conf/NCBI-RefSeq-path.txt"
-OUTPUT_DIR="/mnt/l/18-Rv0194-Gene/2-扩大搜索/data/search"
-RAW_RESULT="$OUTPUT_DIR/Rv0194_diamond_raw.tsv"
-FILTERED_RESULT="$OUTPUT_DIR/Rv0194_diamond.tsv"
-SEQ_DIR="$OUTPUT_DIR/sequence"
-
-PY_FILTER="$SCRIPT_DIR/filter_blastp_results.py"
-PY_EXTRACT="$SCRIPT_DIR/extract_sequences.py"
+# 所有路径变量由配置文件提供
 
 # ---------- 前置检查 ----------
 command -v diamond >/dev/null 2>&1 || { echo "错误: 未找到 diamond，请先安装。" >&2; exit 1; }
