@@ -13,19 +13,12 @@
 # 6. TMHMM 批处理：并行预测所有蛋白的跨膜区段，合并并解析结果为标准格式。
 # 7. SignalP 批处理：并行预测所有蛋白的信号肽，输出结果。
 
-script_dir="/mnt/f/OneDrive/文档（科研）/脚本/Download/17-Orthologous-genes/6-Pfam-A"
-format_clean="${script_dir}/pipe/domtblout_to_csv.py"
-pfam_db_default="${script_dir}/data/Rv1819c_selected_pfam.hmm"
-python="python"
-tmhmm_bin_default="tmhmm"
-signalp_bin_default="signalp4"
-
-input_dir_default="/mnt/l/19-Rv1819c-Gene/1-BLAST/data/search/sequence/"
-pfam_out_default="/mnt/l/19-Rv1819c-Gene/1-BLAST/output/pfamA"
-tmhmm_out_default="/mnt/l/19-Rv1819c-Gene/1-BLAST/output/tmhmm"
-signal_out_default="/mnt/l/19-Rv1819c-Gene/1-BLAST/output/signal"
-filter_out_default="/mnt/l/19-Rv1819c-Gene/1-BLAST/output/pfamA-filter"
-threads_default=8
+conf_file="/mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/6-Pfam-A/conf/1-PfamA-Signal-TmHMM.conf"
+if [[ ! -f "${conf_file}" ]]; then
+    echo "未找到配置文件：${conf_file}" >&2
+    exit 1
+fi
+source "${conf_file}"
 
 input_dir="${1:-${input_dir_default}}"
 pfam_db="${2:-${pfam_db_default}}"
@@ -33,14 +26,14 @@ threads="${3:-${threads_default}}"
 pfam_out="${4:-${pfam_out_default}}"
 tmhmm_out="${5:-${tmhmm_out_default}}"
 signal_out="${6:-${signal_out_default}}"
-filter_out="${7:-${filter_out_default}}"
+merge_out="${7:-${merge_out_default}}"
 tmhmm_bin="${8:-${tmhmm_bin_default}}"
 signalp_bin="${9:-${signalp_bin_default}}"
 
 echo "[INFO] 输入目录: ${input_dir}"
 echo "[INFO] Pfam DB: ${pfam_db}"
 echo "[INFO] 线程数: ${threads}"
-echo "[INFO] 输出目录: pfam=${pfam_out}, tmhmm=${tmhmm_out}, signal=${signal_out}, combined=${filter_out}"
+echo "[INFO] 输出目录: pfam=${pfam_out}, tmhmm=${tmhmm_out}, signal=${signal_out}, combined=${merge_out}"
 echo "[INFO] 可执行: tmhmm=${tmhmm_bin}, signalp=${signalp_bin}"
 
 if ! command -v "${tmhmm_bin}" >/dev/null 2>&1; then
@@ -79,7 +72,7 @@ for faa in "${faa_files[@]}"; do
 done
 trap 'rm -rf "${prefixed_dir}"' EXIT
 
-mkdir -p "${pfam_out}" "${tmhmm_out}" "${signal_out}" "${filter_out}"
+mkdir -p "${pfam_out}" "${tmhmm_out}" "${signal_out}" "${merge_out}"
 
 # 注意：hmmsearch 不需要预先编译 HMM 文件（hmmpress），直接使用 .hmm 文件即可
 # 只有 hmmscan 才需要编译过的 HMM 数据库
@@ -94,7 +87,7 @@ ${python} "${format_clean}" -i "${pfam_out}" -o "${pfam_out}"
 
 
 # 合并 Pfam CSV
-combined_csv="${filter_out}/pfam_combined.csv"
+combined_csv="${merge_out}/pfam_combined.csv"
 first_csv=true
 for csv_file in "${pfam_out}"/*.csv; do
     [ -e "${csv_file}" ] || continue
@@ -149,6 +142,14 @@ awk '
 }
 ' "${tmhmm_combined}" > "${tmhmm_parsed}"
 rm -rf "${tmhmm_tmp}" "${tmhmm_out}"/TMHMM_*
+tmhmm_merge_dir="${tmhmm_out}-merge"
+tmhmm_merge="${tmhmm_merge_dir}/tmhmm_merge.tsv"
+mkdir -p "${tmhmm_merge_dir}"
+: > "${tmhmm_merge}"
+for tmhmm_file in "${tmhmm_out}"/*.txt; do
+    [ -e "${tmhmm_file}" ] || continue
+    awk 'NF && $0 !~ /^#/' "${tmhmm_file}" >> "${tmhmm_merge}"
+done
 
 # SignalP 批处理
 echo "[INFO] 运行 SignalP..."
@@ -168,3 +169,11 @@ export signalp_bin signal_tmp signal_out
 export -f process_signalp
 parallel --jobs "${threads}" process_signalp ::: "${prefixed_faa_files[@]}"
 rm -rf "${signal_tmp}"
+signal_merge_dir="${signal_out}-merge"
+signal_merge="${signal_merge_dir}/signal_merge.tsv"
+mkdir -p "${signal_merge_dir}"
+: > "${signal_merge}"
+for signal_file in "${signal_out}"/*.txt; do
+    [ -e "${signal_file}" ] || continue
+    awk 'BEGIN{OFS="\t"} NF && $0 !~ /^#/ && $0 !~ /^Temporary files in:/ { $1=$1; print }' "${signal_file}" >> "${signal_merge}"
+done
