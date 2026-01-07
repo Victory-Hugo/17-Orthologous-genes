@@ -547,6 +547,26 @@ def process_record(
 
 
 
+def _parse_processed_fields(fields: List[str]) -> Optional[Tuple[str, str, str, str, str]]:
+    if len(fields) >= 8:
+        faa_path = fields[1]
+        anno_path = fields[2]
+        anchor_id = fields[3]
+        status = fields[5]
+        gbk_path = fields[7]
+        key = "\t".join([faa_path, anno_path, anchor_id])
+        return key, status, faa_path, anno_path, gbk_path
+    if len(fields) >= 5:
+        key = fields[1]
+        status = fields[3]
+        gbk_path = fields[5] if len(fields) > 5 else ""
+        parts = key.split("\t")
+        faa_path = parts[0] if len(parts) > 0 else ""
+        anno_path = parts[1] if len(parts) > 1 else ""
+        return key, status, faa_path, anno_path, gbk_path
+    return None
+
+
 def read_processed(log_path: str) -> Dict[str, str]:
     processed: Dict[str, str] = {}
     if not os.path.exists(log_path):
@@ -557,10 +577,10 @@ def read_processed(log_path: str) -> Dict[str, str]:
             if not line or line.startswith("#"):
                 continue
             fields = line.split("\t")
-            if len(fields) < 5:
+            parsed = _parse_processed_fields(fields)
+            if not parsed:
                 continue
-            key = fields[1]
-            status = fields[3]
+            key, status, _faa, _anno, _gbk = parsed
             processed[key] = status
     return processed
 
@@ -575,10 +595,10 @@ def read_processed_success_gbks(log_path: str) -> List[str]:
             if not line or line.startswith("#"):
                 continue
             fields = line.split("\t")
-            if len(fields) < 5:
+            parsed = _parse_processed_fields(fields)
+            if not parsed:
                 continue
-            status = fields[3]
-            gbk_path = fields[5] if len(fields) > 5 else ""
+            _key, status, _faa, _anno, gbk_path = parsed
             if status == "ok" and gbk_path and os.path.exists(gbk_path):
                 gbks.append(gbk_path)
     return gbks
@@ -612,8 +632,25 @@ def run_clinker(gbk_paths: List[str], outdir: str, logger: logging.Logger) -> No
         return
     clinker_dir = os.path.join(outdir, "clinker")
     os.makedirs(clinker_dir, exist_ok=True)
+    html_path = os.path.join(clinker_dir, "clinker.html")
+    align_path = os.path.join(clinker_dir, "alignments.tsv")
+    matrix_path = os.path.join(clinker_dir, "similarity_matrix.tsv")
 
-    cmd = ["clinker", *gbk_paths, "-p", clinker_dir]
+    cmd = [
+        "clinker",
+        *gbk_paths,
+        "-p",
+        html_path,
+        "-o",
+        align_path,
+        "-dl",
+        "\t",
+        "-dc",
+        "4",
+        "-mo",
+        matrix_path,
+        "-f",
+    ]
     logger.info("Running: %s", " ".join(cmd))
     result = subprocess.run(cmd, capture_output=True, text=True)
     logger.info("clinker stdout: %s", result.stdout.strip())
@@ -641,6 +678,11 @@ def main() -> int:
     parser.add_argument("--flank", type=int, default=None, help="Flanking genes on each side")
     parser.add_argument("--threads", type=int, default=None, help="Parallel threads")
     parser.add_argument("--keep_tmp", action="store_true", help="Keep intermediate files")
+    parser.add_argument(
+        "--skip_extract",
+        action="store_true",
+        help="Skip extraction and use existing processed gbk files",
+    )
 
     args = parser.parse_args()
 
@@ -695,30 +737,36 @@ def main() -> int:
 
     results: List[ProcessResult] = []
     logger.info("Pending records to process: %d", len(todo))
-    if args.threads <= 1:
-        for r in todo:
-            logger.info("Start: %s", safe_sample_id(r.anno_path or r.faa_path or f"line{r.line_no}"))
-            results.append(process_record(r, run_outdir, args.flank, args.keep_tmp))
-            logger.info("Done: %s (%s)", results[-1].sample_id, results[-1].status)
+    if not args.skip_extract:
+        if args.threads <= 1:
+            for r in todo:
+                logger.info(
+                    "Start: %s",
+                    safe_sample_id(r.anno_path or r.faa_path or f"line{r.line_no}"),
+                )
+                results.append(process_record(r, run_outdir, args.flank, args.keep_tmp))
+                logger.info("Done: %s (%s)", results[-1].sample_id, results[-1].status)
+        else:
+            with concurrent.futures.ProcessPoolExecutor(max_workers=args.threads) as exc:
+                futures = [
+                    exc.submit(process_record, r, run_outdir, args.flank, args.keep_tmp)
+                    for r in todo
+                ]
+                logger.info("Submitted %d tasks to process pool", len(futures))
+                for fut in concurrent.futures.as_completed(futures):
+                    try:
+                        res = fut.result()
+                    except Exception as exc:
+                        res = ProcessResult(
+                            key="",
+                            sample_id="unknown",
+                            status="fail",
+                            message=str(exc),
+                        )
+                    results.append(res)
+                    logger.info("Done: %s (%s)", res.sample_id, res.status)
     else:
-        with concurrent.futures.ProcessPoolExecutor(max_workers=args.threads) as exc:
-            futures = [
-                exc.submit(process_record, r, run_outdir, args.flank, args.keep_tmp)
-                for r in todo
-            ]
-            logger.info("Submitted %d tasks to process pool", len(futures))
-            for fut in concurrent.futures.as_completed(futures):
-                try:
-                    res = fut.result()
-                except Exception as exc:
-                    res = ProcessResult(
-                        key="",
-                        sample_id="unknown",
-                        status="fail",
-                        message=str(exc),
-                    )
-                results.append(res)
-                logger.info("Done: %s (%s)", res.sample_id, res.status)
+        logger.info("Skip extraction enabled; using existing processed GBKs")
 
     all_results = skipped + results
     append_processed(processed_log, results)
