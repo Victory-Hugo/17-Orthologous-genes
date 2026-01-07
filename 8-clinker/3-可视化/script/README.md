@@ -1,0 +1,5 @@
+# 代码功能
+
+The similarity matrix (pairwise genome similarity; symmetric with self-comparisons on the diagonal) and the metadata table containing taxonomic annotations (Domain–Species) were used as inputs. Assemblies present in both files were retained, and taxa with missing labels were excluded per level. For each taxonomic rank, genomes were grouped by the corresponding label, and a group‑level similarity matrix was computed as the mean of all pairwise similarities between members of two groups. For within‑group entries, self‑comparisons were excluded and the mean was calculated from off‑diagonal values only. The resulting matrices were written to tab‑separated files. Heatmaps for all ranks (Domain, Phylum, Class, Order, Family, Genus, Species) were generated using a viridis color scale, with labels on both axes and a colorbar indicating mean similarity.
+
+以相似度矩阵（对称矩阵，对角线为自比对）和含有分类注释（界‑种）的元数据表为输入。仅保留两者共有的基因组，且在每个分类层级上剔除缺失注释的条目。对每一分类层级，将基因组按分类标签分组，计算组间相似度矩阵：组与组之间的相似度为两组所有成员两两相似度的均值；组内相似度排除对角线自比对，仅对非对角元素取均值。各层级的结果矩阵输出为 TSV 文件。随后对界、门、纲、目、科、属、种全部层级绘制热图，使用 viridis 颜色映射，并在坐标轴标注分类名称，色条表示平均相似度。
