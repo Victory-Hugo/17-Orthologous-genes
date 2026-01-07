@@ -5,29 +5,53 @@ set -euo pipefail
 # conda activate gtotree
 #*=======注意激活conda========
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONF_FILE="/mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/2-GToTree/example/1-多物种序列→直接建树/conf/多物种序列建树.conf"
+if [[ $# -ge 1 ]]; then
+  CONF_FILE="$1"
+fi
 
-SCG_SET="Bacteria"    #? 设定这些物种所在的域
-PARALLEL_JOBS="16"    #? GToTree 的 -j 选项
-HMM_CPUS="16"         #? GToTree 的 -n 选项
-MUSCLE_THREADS="16"   #? GToTree 的 -M 选项
+if [[ ! -f "${CONF_FILE}" ]]; then
+  printf "错误：找不到配置文件：%s\n" "${CONF_FILE}" >&2
+  exit 1
+fi
 
-#* -------- 目录设定 --------
-PROJECT_ROOT="/mnt/d/5-NCBI-Reference/1-Bac/temp"
-DATA_DIR="${PROJECT_ROOT}/data"       #? 存放输入数据的目录,默认是每个物种一个fasta文件
-OUTPUT_DIR="${PROJECT_ROOT}/output"   #? 存放输出结果的目录,自动生成
-LOG_DIR="${OUTPUT_DIR}/logs"          #? 存放日志文件的目录,自动生成
-#* -------- 目录设定 --------
-CONF_DIR="${PROJECT_ROOT}/conf"       #? 存放配置文件的目录，其中给出fasta文件列表和基因组ID映射文件
-FASTA_LIST="${CONF_DIR}/fasta_files.txt" #? 包含所有fasta文件路径的文本文件
-# MAP_FILE="${CONF_DIR}/genome_to_id_map.tsv" #? 基因组文件名到物种ID的映射文件
-RUN_ID="run_$(date +%Y%m%d_%H%M%S)"
+# shellcheck disable=SC1090
+source "${CONF_FILE}"
+
+required_vars=(
+  SCG_SET
+  PARALLEL_JOBS
+  HMM_CPUS
+  MUSCLE_THREADS
+  PROJECT_ROOT
+  DATA_DIR
+  OUTPUT_DIR
+  LOG_DIR
+  CONF_DIR
+  FASTA_LIST
+  TREE_METHOD
+  KEEP_ALIGN
+  RUN_ID_PREFIX
+  RUN_ID_TIME_FORMAT
+  LOG_TIME_FORMAT
+  LOG_FILE
+)
+
+for var_name in "${required_vars[@]}"; do
+  if [[ -z "${!var_name:-}" ]]; then
+    printf "错误：配置文件缺少变量：%s\n" "${var_name}" >&2
+    exit 1
+  fi
+done
+
+RUN_ID="${RUN_ID_PREFIX}_$(date +"${RUN_ID_TIME_FORMAT}")"
 RUN_DIR="${OUTPUT_DIR}/${RUN_ID}"
-LOG_FILE="${LOG_DIR}/GToTree.log"
 
 # 若时间戳重复，自动等待并生成新的运行目录
 while [[ -d "${RUN_DIR}" ]]; do
   sleep 1
-  RUN_ID="run_$(date +%Y%m%d_%H%M%S)"
+  RUN_ID="${RUN_ID_PREFIX}_$(date +"${RUN_ID_TIME_FORMAT}")"
   RUN_DIR="${OUTPUT_DIR}/${RUN_ID}"
 done
 
@@ -35,7 +59,7 @@ done
 mkdir -p "${DATA_DIR}" "${OUTPUT_DIR}" "${LOG_DIR}"
 
 timestamp() {
-  date +"%Y-%m-%d %H:%M:%S"
+  date +"${LOG_TIME_FORMAT}"
 }
 
 log() {
@@ -45,23 +69,28 @@ log() {
 log "GToTree 开始运行，使用基因集：${SCG_SET}，输出目录：${RUN_DIR}"
 #? -k：保留每个目标基因的独立比对（默认：false）。
 #? -T <字符串>：指定构树程序，可选 "FastTree"（默认）或 "IQ-TREE"。
-# GToTree \
-#   -f "${FASTA_LIST}" \
-#   -H "${SCG_SET}" \
-#   -m "${MAP_FILE}" \
-#   -o "${RUN_DIR}" \
-#   -j "${PARALLEL_JOBS}" \
-#   -n "${HMM_CPUS}" \
-#   -M "${MUSCLE_THREADS}" \
-#   -k \
-#   -T "IQ-TREE"
-GToTree \
-  -f "${FASTA_LIST}" \
-  -H "${SCG_SET}" \
-  -o "${RUN_DIR}" \
-  -j "${PARALLEL_JOBS}" \
-  -n "${HMM_CPUS}" \
-  -M "${MUSCLE_THREADS}" \
-  -k \
-  -T "FastTree"
+
+gtotree_args=(
+  -f "${FASTA_LIST}"
+  -H "${SCG_SET}"
+  -o "${RUN_DIR}"
+  -j "${PARALLEL_JOBS}"
+  -n "${HMM_CPUS}"
+  -M "${MUSCLE_THREADS}"
+  -T "${TREE_METHOD}"
+)
+
+if [[ "${KEEP_ALIGN}" == "true" ]]; then
+  gtotree_args+=(-k)
+fi
+
+if [[ -n "${MAP_FILE:-}" ]]; then
+  if [[ ! -f "${MAP_FILE}" ]]; then
+    log "错误：映射文件不存在：${MAP_FILE}"
+    exit 1
+  fi
+  gtotree_args+=(-m "${MAP_FILE}")
+fi
+
+GToTree "${gtotree_args[@]}"
 log "GToTree 运行完成，结果位于：${RUN_DIR}"
