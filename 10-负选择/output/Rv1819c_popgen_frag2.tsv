@@ -1,0 +1,15 @@
+metric	value
+ingroup_n	99
+codon_count	239
+pi_n	0.234735
+pi_s	0.506818
+pi_n_over_pi_s	0.463154
+syn_sites	910038
+nonsyn_sites	2.53113e+06
+syn_diffs	461223
+nonsyn_diffs	594144
+mk_fixed_syn	0
+mk_fixed_nonsyn	0
+mk_poly_syn	44
+mk_poly_nonsyn	190
+mk_pvalue	1

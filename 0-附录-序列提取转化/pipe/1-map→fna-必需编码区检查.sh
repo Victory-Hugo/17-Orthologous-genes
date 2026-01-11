@@ -9,8 +9,8 @@ core_script="${base_dir}/script/map_to_fna_core.sh"
 threads="16"
 region="CDS"
 #*==============================
-map_file="${base_dir}/conf/map.csv"                                 #? 输入文件
-out_dir="/mnt/l/18-Rv0194-Gene/3-SingleGene-tree/data/Rv0194"       #? 输出目录
+map_file="/mnt/l/19-Rv1819c-Gene/7-正选择/conf/2-物种内_path.csv"                                 #? 输入文件
+out_dir="/mnt/l/19-Rv1819c-Gene/7-正选择/data/2-物种内"       #? 输出目录
 
 
 if [[ ! -x "$core_script" ]]; then
