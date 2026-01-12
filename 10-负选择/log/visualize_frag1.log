@@ -1,0 +1,6 @@
+2026-01-12 21:17:04,017 [INFO] PLOT fel_pvalue_hist.png created=True
+2026-01-12 21:17:04,127 [INFO] PLOT fubar_posterior_negative_hist.png created=True
+2026-01-12 21:17:04,235 [INFO] PLOT slac_pvalue_hist.png created=True
+2026-01-12 21:17:04,314 [INFO] PLOT fel_dn_vs_ds.png created=True
+2026-01-12 21:17:04,401 [INFO] PLOT slac_dn_vs_ds.png created=True
+2026-01-12 21:17:04,482 [INFO] STATUS=SUCCESS dataset=frag1

@@ -1,0 +1,10 @@
+2026-01-12 21:16:31,682 [INFO] PLOT fel_pvalue_hist.png created=True
+2026-01-12 21:16:31,782 [INFO] PLOT fubar_posterior_negative_hist.png created=True
+2026-01-12 21:16:31,878 [INFO] PLOT slac_pvalue_hist.png created=True
+2026-01-12 21:16:31,963 [INFO] PLOT fel_dn_vs_ds.png created=True
+2026-01-12 21:17:02,927 [INFO] PLOT fel_pvalue_hist.png created=True
+2026-01-12 21:17:03,030 [INFO] PLOT fubar_posterior_negative_hist.png created=True
+2026-01-12 21:17:03,133 [INFO] PLOT slac_pvalue_hist.png created=True
+2026-01-12 21:17:03,231 [INFO] PLOT fel_dn_vs_ds.png created=True
+2026-01-12 21:17:03,322 [INFO] PLOT slac_dn_vs_ds.png created=True
+2026-01-12 21:17:03,384 [INFO] STATUS=SUCCESS dataset=full

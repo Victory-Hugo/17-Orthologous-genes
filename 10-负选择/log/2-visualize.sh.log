@@ -1,0 +1,30 @@
+[2026-01-12 21:16:30] START config=/mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/10-负选择/conf/hyphy_visualization.json jobs=1 force=false
+Traceback (most recent call last):
+  File "/mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/10-负选择/python/hyphy_visualization.py", line 225, in <module>
+    main()
+  File "/mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/10-负选择/python/hyphy_visualization.py", line 215, in main
+    run(
+  File "/mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/10-负选择/python/hyphy_visualization.py", line 176, in run
+    write_plots(summary_tsv, tmp_run_dir, log)
+  File "/mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/10-负选择/python/hyphy_visualization.py", line 128, in write_plots
+    ok = plot_scatter(x, y, title, xlabel, ylabel, out_path)
+  File "/mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/10-负选择/python/hyphy_visualization.py", line 88, in plot_scatter
+    plt.scatter(x, y, s=8, alpha=0.6, color="#2A9D8F")
+  File "/home/luolintao/miniconda3/envs/BigLin/lib/python3.10/site-packages/matplotlib/_api/deprecation.py", line 453, in wrapper
+    return func(*args, **kwargs)
+  File "/home/luolintao/miniconda3/envs/BigLin/lib/python3.10/site-packages/matplotlib/pyplot.py", line 3948, in scatter
+    __ret = gca().scatter(
+  File "/home/luolintao/miniconda3/envs/BigLin/lib/python3.10/site-packages/matplotlib/_api/deprecation.py", line 453, in wrapper
+    return func(*args, **kwargs)
+  File "/home/luolintao/miniconda3/envs/BigLin/lib/python3.10/site-packages/matplotlib/__init__.py", line 1524, in inner
+    return func(
+  File "/home/luolintao/miniconda3/envs/BigLin/lib/python3.10/site-packages/matplotlib/axes/_axes.py", line 4936, in scatter
+    raise ValueError("x and y must be the same size")
+ValueError: x and y must be the same size
+parallel: This job failed:
+python3 /mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/10-负选择/python/hyphy_visualization.py --config /mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/10-负选择/conf/hyphy_visualization.json --log-dir /mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/10-负选择/log --tmp-dir /mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/10-负选择/tmp --dataset full
+[2026-01-12 21:16:32] STATUS=FAIL exit_code=1
+[2026-01-12 21:17:01] START config=/mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/10-负选择/conf/hyphy_visualization.json jobs=1 force=true
+your 131072x1 screen size is bogus. expect trouble
+[2026-01-12 21:17:05] DONE
+[2026-01-12 21:17:05] STATUS=SUCCESS

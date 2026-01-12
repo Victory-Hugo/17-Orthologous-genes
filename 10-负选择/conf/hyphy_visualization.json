@@ -1,0 +1,17 @@
+{
+  "project_dir": "/mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/10-负选择",
+  "datasets": {
+    "full": {
+      "summary_tsv": "/mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/10-负选择/output/full/summary.tsv",
+      "output_dir": "/mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/10-负选择/output/full/plots"
+    },
+    "frag1": {
+      "summary_tsv": "/mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/10-负选择/output/frag1/summary.tsv",
+      "output_dir": "/mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/10-负选择/output/frag1/plots"
+    },
+    "frag2": {
+      "summary_tsv": "/mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/10-负选择/output/frag2/summary.tsv",
+      "output_dir": "/mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/10-负选择/output/frag2/plots"
+    }
+  }
+}

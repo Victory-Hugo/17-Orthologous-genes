@@ -1,0 +1,21 @@
+{
+  "project_dir": "/mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/10-负选择",
+  "hyphy_bin": "hyphy",
+  "datasets": {
+    "full": {
+      "alignment": "/mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/10-负选择/input/Rv1819c_merge_inter_rename_full_nt_ali.fasta",
+      "tree": "/mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/10-负选择/input/Rv1819c_merge_inter_rename_full_nt.raxml.newick",
+      "output_dir": "/mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/10-负选择/output/full"
+    },
+    "frag1": {
+      "alignment": "/mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/10-负选择/input/Rv1819c_merge_inter_rename_frag1_nt_ali.fasta",
+      "tree": "/mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/10-负选择/input/Rv1819c_merge_inter_rename_fragment_1_nt.raxml.newick",
+      "output_dir": "/mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/10-负选择/output/frag1"
+    },
+    "frag2": {
+      "alignment": "/mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/10-负选择/input/Rv1819c_merge_inter_rename_frag2_nt_ali.fasta",
+      "tree": "/mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/10-负选择/input/Rv1819c_merge_inter_rename_fragment_2_nt.raxml.newick",
+      "output_dir": "/mnt/f/onedrive/文档（科研）/脚本/Download/17-Orthologous-genes/10-负选择/output/frag2"
+    }
+  }
+}
