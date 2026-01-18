@@ -1,10 +1,10 @@
 #!/bin/bash
 set -euo pipefail
 
-pfam_csv="/mnt/l/19-Rv1819c-Gene/1-BLAST/output/pfamA-merge/pfam_combined.csv"
-tmhmm_merge="/mnt/l/19-Rv1819c-Gene/1-BLAST/output/tmhmm-merge/tmhmm_merge.tsv"
-signal_merge="/mnt/l/19-Rv1819c-Gene/1-BLAST/output/signal-merge/signal_merge.tsv"
-output_dir="/mnt/l/19-Rv1819c-Gene/1-BLAST/output/Final"
+pfam_csv="/mnt/l/19-Rv1819c-Gene/8-结核分枝杆菌内部/1-BLAST/output/pfamA-merge/pfam_combined.csv"
+tmhmm_merge="/mnt/l/19-Rv1819c-Gene/8-结核分枝杆菌内部/1-BLAST/output/tmhmm-merge/tmhmm_merge.tsv"
+signal_merge="/mnt/l/19-Rv1819c-Gene/8-结核分枝杆菌内部/1-BLAST/output/signal-merge/signal_merge.tsv"
+output_dir="/mnt/l/19-Rv1819c-Gene/8-结核分枝杆菌内部/1-BLAST/output/Final"
 python_bin="python"
 
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
